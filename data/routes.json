@@ -1,0 +1,85 @@
+{
+  "routes": [
+    {
+      "id": "melbourne-lanes-street",
+      "title": "Melbourne Laneways Street Art Route",
+      "type": "Street Art/Urban Culture",
+      "description": "The iconic Melbourne laneways circuit \u2014 street art, cafe culture, and urban grit.",
+      "area": "CBD",
+      "distance": "~1.8km",
+      "duration": "2.5-3 hours",
+      "bestTimes": "Mid-morning to early afternoon",
+      "difficulty": "Easy \u2014 flat, paved",
+      "locationIds": [
+        "hosier-lane",
+        "centre-place",
+        "block-arcade",
+        "degraves-street",
+        "acdc-lane",
+        "presgrave-place"
+      ],
+      "shootCount": 0,
+      "tags": [
+        "street-art",
+        "urban",
+        "laneways",
+        "classic"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "melbourne-botanical-nature",
+      "title": "Melbourne Botanical Gardens Nature Route",
+      "type": "Nature/Botanical",
+      "description": "Lush gardens, soft natural light, and peaceful backdrops. Best for editorial and romantic shoots.",
+      "area": "Royal Botanic Gardens",
+      "distance": "~1.5km",
+      "duration": "2-3 hours",
+      "bestTimes": "Early morning or late afternoon",
+      "difficulty": "Easy \u2014 garden paths",
+      "locationIds": [
+        "rose-garden",
+        "ornamental-lake",
+        "herb-garden",
+        "observatory-lawn",
+        "fern-gully",
+        "yarra-river-bank"
+      ],
+      "shootCount": 0,
+      "tags": [
+        "nature",
+        "soft-light",
+        "romantic",
+        "editorial"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "melbourne-cbd-urban",
+      "title": "Melbourne CBD Urban Route",
+      "type": "Urban/Street",
+      "description": "Federation Square to Southbank \u2014 architecture, riverwalk, and city skyline.",
+      "area": "CBD / Southbank",
+      "distance": "~2km",
+      "duration": "2.5-3 hours",
+      "bestTimes": "Morning golden hour or late afternoon",
+      "difficulty": "Easy \u2014 flat, paved",
+      "locationIds": [
+        "federation-square",
+        "southbank-riverwalk",
+        "southgate-footbridge",
+        "arbory-bar-area",
+        "hamer-hall",
+        "kings-domain"
+      ],
+      "shootCount": 2,
+      "tags": [
+        "urban",
+        "architecture",
+        "skyline",
+        "river"
+      ],
+      "notes": "Most used route. MCC walks often start at Hamer Hall."
+    }
+  ]
+}

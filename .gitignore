@@ -1,0 +1,25 @@
+# Dashboard Project .gitignore
+
+# macOS
+.DS_Store
+._*
+
+# Secrets
+*.key
+*.pem
+config.json
+secrets/
+.env
+
+# Data files (live data, not source)
+data/*.json
+!data/README.md
+
+# Build artifacts
+node_modules/
+dist/
+*.log
+
+# Temporary files
+tmp/
+*.tmp

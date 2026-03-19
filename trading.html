@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Trading | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .trading-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .last-updated {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Portfolio Overview */
+        .portfolio-overview {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .overview-metric {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        .metric-value.positive {
+            color: var(--accent-green);
+        }
+
+        .metric-value.negative {
+            color: var(--accent-red);
+        }
+
+        .metric-value.neutral {
+            color: var(--text-primary);
+        }
+
+        .metric-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Grid Layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.25rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .card-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+
+        /* Holdings Table */
+        .holdings-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .holdings-table th {
+            text-align: left;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .holdings-table td {
+            padding: 0.875rem 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+
+        .holdings-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .holdings-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .symbol-cell {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .positive-value {
+            color: var(--accent-green);
+        }
+
+        .negative-value {
+            color: var(--accent-red);
+        }
+
+        .neutral-value {
+            color: var(--text-secondary);
+        }
+
+        /* Trade History */
+        .trade-history {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .trade-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto auto;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            align-items: center;
+        }
+
+        .trade-item:last-child {
+            border-bottom: none;
+        }
+
+        .trade-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .trade-time {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+
+        .trade-action {
+            padding: 0.25rem 0.625rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .trade-action.buy {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--accent-green);
+        }
+
+        .trade-action.sell {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+        }
+
+        .trade-symbol {
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        .trade-details {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .trade-amount {
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+
+        /* Chart */
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        /* Error State */
+        .error-state {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-red);
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .portfolio-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .portfolio-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .holdings-table {
+                font-size: 0.75rem;
+            }
+
+            .holdings-table th,
+            .holdings-table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+
+    <main class="trading-container">
+        <header class="page-header">
+            <h1>📊 Paper Trading</h1>
+            <div class="last-updated" id="lastUpdated">Loading...</div>
+        </header>
+
+        <div id="errorContainer"></div>
+
+        <!-- Portfolio Overview -->
+        <section class="portfolio-overview" id="portfolioOverview">
+            <div class="overview-metric">
+                <div class="metric-label">Total Value</div>
+                <div class="metric-value neutral" id="totalValue">—</div>
+            </div>
+            <div class="overview-metric">
+                <div class="metric-label">Total P&L</div>
+                <div class="metric-value" id="totalPnL">—</div>
+                <div class="metric-subtitle" id="totalPnLPct">—</div>
+            </div>
+            <div class="overview-metric">
+                <div class="metric-label">Starting Balance</div>
+                <div class="metric-value neutral" id="startingBalance">—</div>
+            </div>
+            <div class="overview-metric">
+                <div class="metric-label">Cash Balance</div>
+                <div class="metric-value neutral" id="cashBalance">—</div>
+            </div>
+        </section>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Holdings Table -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Holdings</div>
+                        <div class="card-subtitle">Current positions</div>
+                    </div>
+                </div>
+                <table class="holdings-table">
+                    <thead>
+                        <tr>
+                            <th>Asset</th>
+                            <th>Quantity</th>
+                            <th>Avg Cost</th>
+                            <th>Current</th>
+                            <th>Value</th>
+                            <th>P&L</th>
+                            <th>24h</th>
+                        </tr>
+                    </thead>
+                    <tbody id="holdingsBody">
+                        <tr>
+                            <td colspan="7" class="loading-state">Loading holdings...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Portfolio Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Portfolio Value</div>
+                        <div class="card-subtitle">Over time</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="portfolioChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trade History -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Trade History</div>
+                    <div class="card-subtitle" id="tradeCount">0 trades</div>
+                </div>
+            </div>
+            <div class="trade-history" id="tradeHistory">
+                <div class="loading-state">Loading trades...</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let portfolioChart = null;
+        const REFRESH_INTERVAL = 30000; // 30 seconds
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(value);
+        }
+
+        function formatPercent(value) {
+            const sign = value >= 0 ? '+' : '';
+            return sign + value.toFixed(2) + '%';
+        }
+
+        function formatNumber(value, decimals = 8) {
+            return Number(value).toFixed(decimals);
+        }
+
+        function formatDateTime(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function getPnLClass(value) {
+            if (value > 0) return 'positive';
+            if (value < 0) return 'negative';
+            return 'neutral';
+        }
+
+        function updatePortfolioOverview(data) {
+            document.getElementById('totalValue').textContent = formatCurrency(data.total_value);
+            
+            const pnlElement = document.getElementById('totalPnL');
+            pnlElement.textContent = formatCurrency(data.total_pnl);
+            pnlElement.className = 'metric-value ' + getPnLClass(data.total_pnl);
+            
+            const pnlPctElement = document.getElementById('totalPnLPct');
+            pnlPctElement.textContent = formatPercent(data.total_pnl_pct);
+            pnlPctElement.className = 'metric-subtitle ' + getPnLClass(data.total_pnl);
+            
+            document.getElementById('startingBalance').textContent = formatCurrency(data.starting_balance);
+            document.getElementById('cashBalance').textContent = formatCurrency(data.usd_balance);
+        }
+
+        function updateHoldingsTable(holdings) {
+            const tbody = document.getElementById('holdingsBody');
+            
+            if (!holdings || holdings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-secondary);">No holdings</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = holdings.map(h => `
+                <tr>
+                    <td class="symbol-cell">${h.symbol}</td>
+                    <td>${formatNumber(h.qty, 6)}</td>
+                    <td>${formatCurrency(h.avg_cost)}</td>
+                    <td>${formatCurrency(h.current_price)}</td>
+                    <td>${formatCurrency(h.value)}</td>
+                    <td class="${getPnLClass(h.pnl)}-value">
+                        ${formatCurrency(h.pnl)}<br/>
+                        <span style="font-size: 0.75rem">${formatPercent(h.pnl_pct)}</span>
+                    </td>
+                    <td class="${getPnLClass(h.change_24h)}-value">${formatPercent(h.change_24h)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateTradeHistory(trades) {
+            const container = document.getElementById('tradeHistory');
+            document.getElementById('tradeCount').textContent = `${trades.length} trades`;
+            
+            if (!trades || trades.length === 0) {
+                container.innerHTML = '<div class="loading-state">No trades yet</div>';
+                return;
+            }
+
+            // Show newest first
+            const sortedTrades = [...trades].reverse();
+            
+            container.innerHTML = sortedTrades.map(t => `
+                <div class="trade-item">
+                    <div class="trade-time">${formatDateTime(t.time)}</div>
+                    <span class="trade-action ${t.action.toLowerCase()}">${t.action}</span>
+                    <span class="trade-symbol">${t.symbol}</span>
+                    <span class="trade-details">${formatNumber(t.qty, 6)} @ ${formatCurrency(t.price)}</span>
+                    <span class="trade-amount">${formatCurrency(t.usd_amount)}</span>
+                </div>
+            `).join('');
+        }
+
+        function updatePortfolioChart(totalValue) {
+            const ctx = document.getElementById('portfolioChart');
+            
+            // For now, just show current value as a single point
+            // In the future, this could show historical data
+            const data = {
+                labels: ['Current'],
+                datasets: [{
+                    label: 'Portfolio Value',
+                    data: [totalValue],
+                    borderColor: '#22c55e',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            };
+
+            if (!portfolioChart) {
+                portfolioChart = new Chart(ctx, {
+                    type: 'line',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(26, 26, 36, 0.95)',
+                                titleColor: '#f0f0f5',
+                                bodyColor: '#9090a0',
+                                borderColor: 'rgba(255, 255, 255, 0.08)',
+                                borderWidth: 1,
+                                padding: 12,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'Value: ' + formatCurrency(context.parsed.y);
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                ticks: {
+                                    color: '#9090a0',
+                                    callback: function(value) {
+                                        return formatCurrency(value);
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.05)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#9090a0'
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                portfolioChart.data = data;
+                portfolioChart.update();
+            }
+        }
+
+        function showError(message) {
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.innerHTML = `
+                <div class="error-state">
+                    <strong>⚠️ Error loading trading data</strong><br/>
+                    ${message}
+                </div>
+            `;
+        }
+
+        async function loadTradingData() {
+            try {
+                const response = await fetch('data/trading.json?t=' + Date.now(), { cache: 'no-store' });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Update last updated timestamp
+                document.getElementById('lastUpdated').textContent = 
+                    'Updated: ' + formatDateTime(data.updated);
+                
+                // Update all sections
+                updatePortfolioOverview(data);
+                updateHoldingsTable(data.holdings);
+                updateTradeHistory(data.trades);
+                updatePortfolioChart(data.total_value);
+                
+                // Clear any previous errors
+                document.getElementById('errorContainer').innerHTML = '';
+                
+            } catch (error) {
+                console.error('Failed to load trading data:', error);
+                showError(error.message);
+            }
+        }
+
+        // Initial load
+        loadTradingData();
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadTradingData, REFRESH_INTERVAL);
+    </script>
+
+    <script src="shared.js"></script>
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERPUNK COMMAND</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-void: #0a0a0f;
+            --bg-panel: #12121a;
+            --border-neon: #00ffff;
+            --border-dim: #1a2a3a;
+            --text-primary: #00ff88;
+            --text-secondary: #88ccff;
+            --text-muted: #556677;
+            --accent-cyan: #00ffff;
+            --accent-magenta: #ff00ff;
+            --accent-green: #00ff88;
+            --accent-red: #ff0055;
+            --accent-yellow: #ffff00;
+            --glow-cyan: rgba(0, 255, 255, 0.5);
+            --glow-magenta: rgba(255, 0, 255, 0.4);
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--bg-void);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+
+        /* Scanline effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.3;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-neon);
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0 20px var(--glow-cyan);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            color: var(--accent-cyan);
+            text-shadow: 0 0 10px var(--glow-cyan);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--accent-cyan);
+        }
+
+        .system-time {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-family: monospace;
+        }
+
+        /* Main grid */
+        .command-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Agent panels */
+        .agent-panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-dim);
+            border-radius: 4px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--border-neon), transparent);
+        }
+
+        .agent-panel.quinn::before { background: linear-gradient(90deg, var(--accent-magenta), transparent); }
+        .agent-panel.forge::before { background: linear-gradient(90deg, var(--accent-cyan), transparent); }
+        .agent-panel.scout::before { background: linear-gradient(90deg, var(--accent-green), transparent); }
+        .agent-panel.reserve::before { background: linear-gradient(90deg, var(--accent-yellow), transparent); }
+
+        .agent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-dim);
+        }
+
+        .agent-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .agent-name.quinn { color: var(--accent-magenta); text-shadow: 0 0 10px var(--glow-magenta); }
+        .agent-name.forge { color: var(--accent-cyan); text-shadow: 0 0 10px var(--glow-cyan); }
+        .agent-name.scout { color: var(--accent-green); }
+        .agent-name.reserve { color: var(--accent-yellow); }
+
+        .agent-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .agent-status.available { background: rgba(0, 255, 136, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .agent-status.busy { background: rgba(255, 255, 0, 0.2); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
+        .agent-status.offline { background: rgba(85, 102, 119, 0.2); color: var(--text-muted); border: 1px solid var(--text-muted); }
+
+        .agent-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .agent-meta-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+        }
+
+        .agent-tasks {
+            margin-top: 1rem;
+        }
+
+        .agent-tasks-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .task-item {
+            padding: 0.5rem;
+            background: rgba(0, 255, 255, 0.05);
+            border-left: 2px solid var(--accent-cyan);
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .task-item.in-progress {
+            border-left-color: var(--accent-yellow);
+            background: rgba(255, 255, 0, 0.05);
+        }
+
+        .task-empty {
+            padding: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        /* Activity feed */
+        .activity-feed {
+            grid-column: 1 / -1;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-neon);
+            border-radius: 4px;
+            padding: 1.5rem;
+            box-shadow: 0 0 20px var(--glow-cyan);
+        }
+
+        .activity-feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-dim);
+        }
+
+        .activity-feed-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-cyan);
+        }
+
+        .activity-stream {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        /* Custom scrollbar */
+        .activity-stream::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .activity-stream::-webkit-scrollbar-track {
+            background: var(--bg-void);
+        }
+
+        .activity-stream::-webkit-scrollbar-thumb {
+            background: var(--border-neon);
+            border-radius: 4px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: rgba(0, 255, 255, 0.03);
+            border-left: 3px solid var(--border-dim);
+            transition: all 0.2s ease;
+        }
+
+        .activity-item:hover {
+            background: rgba(0, 255, 255, 0.08);
+            border-left-color: var(--accent-cyan);
+        }
+
+        .activity-item.quinn { border-left-color: var(--accent-magenta); }
+        .activity-item.forge { border-left-color: var(--accent-cyan); }
+        .activity-item.scout { border-left-color: var(--accent-green); }
+        .activity-item.cron { border-left-color: var(--text-muted); }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            min-width: 80px;
+        }
+
+        .activity-agent {
+            font-weight: bold;
+            font-size: 0.85rem;
+            min-width: 80px;
+        }
+
+        .activity-agent.quinn { color: var(--accent-magenta); }
+        .activity-agent.forge { color: var(--accent-cyan); }
+        .activity-agent.scout { color: var(--accent-green); }
+        .activity-agent.cron { color: var(--text-muted); }
+
+        .activity-content {
+            flex: 1;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .activity-headline {
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-details {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Placeholder state */
+        .agent-panel.placeholder {
+            opacity: 0.4;
+            border-style: dashed;
+        }
+
+        .placeholder-text {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">◉</div>
+                <h1 class="title">Cyberpunk Command</h1>
+            </div>
+            <div class="system-time" id="system-time">LOADING...</div>
+        </div>
+
+        <!-- Agent Grid -->
+        <div class="command-grid">
+            <!-- Quinn Panel -->
+            <div class="agent-panel quinn" id="agent-quinn">
+                <div class="agent-header">
+                    <span class="agent-name quinn">🔮 QUINN</span>
+                    <span class="agent-status available" id="quinn-status">AVAILABLE</span>
+                </div>
+                <div class="agent-meta">
+                    <div class="agent-meta-item">
+                        <span>Model:</span>
+                        <span id="quinn-model">opus</span>
+                    </div>
+                    <div class="agent-meta-item">
+                        <span>Last Active:</span>
+                        <span id="quinn-last-active">--</span>
+                    </div>
+                    <div class="agent-meta-item">
+                        <span>Current Task:</span>
+                        <span id="quinn-task">Monitoring</span>
+                    </div>
+                </div>
+                <div class="agent-tasks">
+                    <div class="agent-tasks-title">Task Queue</div>
+                    <div id="quinn-tasks" class="task-empty">No pending tasks</div>
+                </div>
+            </div>
+
+            <!-- Forge Panel -->
+            <div class="agent-panel forge" id="agent-forge">
+                <div class="agent-header">
+                    <span class="agent-name forge">⚒️ FORGE</span>
+                    <span class="agent-status available" id="forge-status">AVAILABLE</span>
+                </div>
+                <div class="agent-meta">
+                    <div class="agent-meta-item">
+                        <span>Model:</span>
+                        <span id="forge-model">sonnet</span>
+                    </div>
+                    <div class="agent-meta-item">
+                        <span>Last Active:</span>
+                        <span id="forge-last-active">--</span>
+                    </div>
+                    <div class="agent-meta-item">
+                        <span>Current Task:</span>
+                        <span id="forge-task">Idle</span>
+                    </div>
+                </div>
+                <div class="agent-tasks">
+                    <div class="agent-tasks-title">Task Queue</div>
+                    <div id="forge-tasks" class="task-empty">No pending tasks</div>
+                </div>
+            </div>
+
+            <!-- Scout Panel (Placeholder) -->
+            <div class="agent-panel scout placeholder" id="agent-scout">
+                <div class="agent-header">
+                    <span class="agent-name scout">🔍 SCOUT</span>
+                    <span class="agent-status offline">OFFLINE</span>
+                </div>
+                <div class="placeholder-text">
+                    [ AGENT SLOT RESERVED ]<br>
+                    Research & Intelligence
+                </div>
+            </div>
+
+            <!-- Reserve Panel (Placeholder) -->
+            <div class="agent-panel reserve placeholder" id="agent-reserve">
+                <div class="agent-header">
+                    <span class="agent-name reserve">◆ RESERVE</span>
+                    <span class="agent-status offline">OFFLINE</span>
+                </div>
+                <div class="placeholder-text">
+                    [ AGENT SLOT AVAILABLE ]<br>
+                    Future Deployment
+                </div>
+            </div>
+
+            <!-- Activity Feed -->
+            <div class="activity-feed">
+                <div class="activity-feed-header">
+                    <span class="activity-feed-title">◈ Activity Stream</span>
+                    <span class="system-time" id="activity-time">LIVE</span>
+                </div>
+                <div class="activity-stream" id="activity-stream">
+                    <div class="activity-item">
+                        <div class="activity-time">--:--</div>
+                        <div class="activity-agent">SYSTEM</div>
+                        <div class="activity-content">
+                            <div class="activity-headline">Loading activity feed...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // System time
+        function updateSystemTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-AU', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false 
+            });
+            const dateStr = now.toLocaleDateString('en-AU', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            document.getElementById('system-time').textContent = `${dateStr} ${timeStr}`;
+            document.getElementById('activity-time').textContent = `LIVE • ${timeStr}`;
+        }
+        setInterval(updateSystemTime, 1000);
+        updateSystemTime();
+
+        // Format time ago
+        function timeAgo(dateStr) {
+            const diff = Date.now() - new Date(dateStr).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'Just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return `${hrs}h ago`;
+            const days = Math.floor(hrs / 24);
+            return `${days}d ago`;
+        }
+
+        // Format time for activity items
+        function formatActivityTime(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
+
+        // Load agent data
+        async function loadAgentData() {
+            try {
+                const [agentsRes, activityRes] = await Promise.all([
+                    fetch('data/agents.json'),
+                    fetch('data/agent-activity.json')
+                ]);
+                
+                const agents = await agentsRes.json();
+                const activity = await activityRes.json();
+
+                // Update Quinn
+                const quinn = agents.agents?.find(a => a.id === 'quinn');
+                if (quinn) {
+                    document.getElementById('quinn-status').textContent = (quinn.status || 'available').toUpperCase();
+                    document.getElementById('quinn-status').className = `agent-status ${quinn.status || 'available'}`;
+                    document.getElementById('quinn-model').textContent = quinn.model || 'opus';
+                    document.getElementById('quinn-last-active').textContent = quinn.lastActive ? timeAgo(quinn.lastActive) : '--';
+                    document.getElementById('quinn-task').textContent = quinn.currentTask || 'Monitoring';
+                }
+
+                // Update Forge
+                const forge = agents.agents?.find(a => a.id === 'forge');
+                if (forge) {
+                    document.getElementById('forge-status').textContent = (forge.status || 'available').toUpperCase();
+                    document.getElementById('forge-status').className = `agent-status ${forge.status || 'available'}`;
+                    document.getElementById('forge-model').textContent = forge.model || 'sonnet';
+                    document.getElementById('forge-last-active').textContent = forge.lastActive ? timeAgo(forge.lastActive) : '--';
+                    document.getElementById('forge-task').textContent = forge.currentTask || 'Idle';
+                }
+
+                // Load Forge tasks
+                await loadForgeTasks();
+
+                // Render activity feed
+                renderActivityFeed(activity);
+
+            } catch (err) {
+                console.error('Error loading agent data:', err);
+            }
+        }
+
+        // Load Forge task queue
+        async function loadForgeTasks() {
+            try {
+                const res = await fetch('/api/file?path=agents/builder/TASK-QUEUE.md');
+                const text = await res.text();
+                
+                const taskMatches = text.match(/### TASK-\d+:.*?\n[\s\S]*?(?=### TASK-\d+:|---|\n\n## |$)/g);
+                
+                const container = document.getElementById('forge-tasks');
+                
+                if (!taskMatches || taskMatches.length === 0) {
+                    container.innerHTML = '<div class="task-empty">No pending tasks</div>';
+                    return;
+                }
+
+                const tasks = taskMatches.map(block => {
+                    const titleMatch = block.match(/### (TASK-\d+): (.+)/);
+                    const statusMatch = block.match(/\*\*Status:\*\* (\w+)/);
+                    
+                    return {
+                        id: titleMatch ? titleMatch[1] : '',
+                        title: titleMatch ? titleMatch[2] : '',
+                        status: statusMatch ? statusMatch[1] : 'pending'
+                    };
+                });
+
+                container.innerHTML = tasks.map(task => `
+                    <div class="task-item ${task.status}">
+                        <strong>${task.id}:</strong> ${task.title}
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error('Error loading Forge tasks:', err);
+            }
+        }
+
+        // Render activity feed
+        function renderActivityFeed(activityData) {
+            const container = document.getElementById('activity-stream');
+            
+            // Activity data is an array
+            const events = Array.isArray(activityData) ? activityData : [];
+            
+            if (events.length === 0) {
+                container.innerHTML = `
+                    <div class="activity-item">
+                        <div class="activity-time">--:--</div>
+                        <div class="activity-agent">SYSTEM</div>
+                        <div class="activity-content">
+                            <div class="activity-headline">No recent activity</div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort by timestamp descending
+            const sorted = [...events].sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+
+            container.innerHTML = sorted.slice(0, 20).map(event => {
+                const agent = (event.agent || 'System').toLowerCase();
+                return `
+                    <div class="activity-item ${agent}">
+                        <div class="activity-time">${formatActivityTime(event.timestamp)}</div>
+                        <div class="activity-agent ${agent}">${event.agent || 'SYSTEM'}</div>
+                        <div class="activity-content">
+                            <div class="activity-headline">${event.headline || 'Activity'}</div>
+                            ${event.details ? `<div class="activity-details">${event.details}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initialize
+        loadAgentData();
+        setInterval(loadAgentData, 30000); // Refresh every 30 seconds (SSE will enhance this)
+    </script>
+
+    <!-- SSE Integration -->
+    <script type="module" src="js/sse-init-command.js"></script>
+</body>
+</html>

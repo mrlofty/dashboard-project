@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Task Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg-elevated: #11111a;
+      --bg-panel: rgba(17, 17, 26, 0.82);
+      --line: rgba(255, 255, 255, 0.08);
+      --text: #f5f7ff;
+      --muted: #9da3bb;
+      --purple: #8b5cf6;
+      --purple-soft: rgba(139, 92, 246, 0.16);
+      --gold: #f5c451;
+      --gold-soft: rgba(245, 196, 81, 0.16);
+      --green: #22c55e;
+      --green-soft: rgba(34, 197, 94, 0.16);
+      --blue: #60a5fa;
+      --blue-soft: rgba(96, 165, 250, 0.16);
+      --cyan: #22d3ee;
+      --red: #fb7185;
+      --red-soft: rgba(251, 113, 133, 0.16);
+      --gray: #94a3b8;
+      --gray-soft: rgba(148, 163, 184, 0.16);
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(139, 92, 246, 0.22), transparent 28%),
+        radial-gradient(circle at top right, rgba(245, 196, 81, 0.16), transparent 20%),
+        linear-gradient(180deg, #0d0c16 0%, var(--bg) 42%, #09090d 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0));
+    }
+
+    .shell {
+      width: min(1280px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 32px 0 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero,
+    .panel,
+    .status-card,
+    .error-banner {
+      background: var(--bg-panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+
+    .hero {
+      padding: 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 1.2rem;
+      letter-spacing: -0.03em;
+    }
+
+    .panel-subtitle,
+    .metric-note,
+    .list-label,
+    .filter-meta,
+    .footer-note,
+    .status-task,
+    .status-meta,
+    .error-copy,
+    .status-empty,
+    .refresh-meta {
+      color: var(--muted);
+    }
+
+    .panel-subtitle {
+      margin: 6px 0 0;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .refresh-meta {
+      font-size: 0.85rem;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+      gap: 12px;
+    }
+
+    .status-card {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      min-height: 116px;
+      border-radius: 20px;
+      background:
+        linear-gradient(145deg, rgba(139, 92, 246, 0.12), rgba(17, 17, 26, 0.35) 55%),
+        rgba(255, 255, 255, 0.02);
+    }
+
+    .status-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .status-agent {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .status-emoji {
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+
+    .status-name {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .status-model {
+      margin-top: 2px;
+      font-size: 0.77rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(245, 196, 81, 0.8);
+      font-weight: 700;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+
+    .status-badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 12px currentColor;
+    }
+
+    .status-available {
+      color: var(--green);
+      background: var(--green-soft);
+      border-color: rgba(34, 197, 94, 0.24);
+    }
+
+    .status-working {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: rgba(96, 165, 250, 0.24);
+    }
+
+    .status-blocked {
+      color: var(--red);
+      background: var(--red-soft);
+      border-color: rgba(251, 113, 133, 0.24);
+    }
+
+    .status-offline {
+      color: var(--gray);
+      background: var(--gray-soft);
+      border-color: rgba(148, 163, 184, 0.24);
+    }
+
+    .status-task {
+      font-size: 0.94rem;
+      line-height: 1.45;
+      min-width: 0;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+
+    .status-task strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .status-meta {
+      font-size: 0.83rem;
+    }
+
+    .error-banner {
+      display: none;
+      margin: 16px 0 0;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(251, 113, 133, 0.08);
+      border-color: rgba(251, 113, 133, 0.24);
+    }
+
+    .error-banner.visible {
+      display: block;
+    }
+
+    .error-title {
+      margin: 0 0 4px;
+      color: var(--red);
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .error-copy {
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin: 22px 0 18px;
+      flex-wrap: wrap;
+    }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      padding: 11px 15px;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .filter-pill:hover,
+    .filter-pill:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(245, 196, 81, 0.45);
+      outline: none;
+    }
+
+    .filter-pill.active {
+      background: linear-gradient(135deg, var(--purple-soft), var(--gold-soft));
+      border-color: rgba(245, 196, 81, 0.35);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .metric-card {
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -18px -18px auto;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.18), transparent 64%);
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+    }
+
+    .metric-value {
+      margin-top: 12px;
+      font-size: clamp(1.7rem, 3vw, 2.6rem);
+      letter-spacing: -0.05em;
+      font-weight: 800;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.95fr);
+      gap: 18px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .panel {
+      padding: 22px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 320px;
+    }
+
+    .chart-wrap.compact {
+      height: 280px;
+    }
+
+    .legend-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .legend-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex: none;
+    }
+
+    .feed {
+      display: grid;
+      gap: 12px;
+      max-height: 314px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .feed::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .feed::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+    }
+
+    .feed-item {
+      padding: 14px 14px 13px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.03);
+      display: grid;
+      gap: 8px;
+    }
+
+    .feed-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .feed-id {
+      color: var(--gold);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+    }
+
+    .feed-date {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .feed-title {
+      font-size: 0.98rem;
+      line-height: 1.4;
+      font-weight: 600;
+    }
+
+    .feed-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.04);
+      color: #d9dcef;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .tag .legend-dot {
+      width: 8px;
+      height: 8px;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      font-size: 0.9rem;
+      text-align: right;
+    }
+
+    @media (max-width: 1100px) {
+      .dashboard,
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        width: min(100vw - 20px, 100%);
+        padding-top: 18px;
+      }
+
+      .hero,
+      .panel,
+      .metric-card,
+      .status-card {
+        border-radius: 22px;
+      }
+
+      .hero,
+      .panel {
+        padding: 20px;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar,
+      .panel-header,
+      .feed-top,
+      .hero-top,
+      .status-head {
+        flex-direction: column;
+        align-items: start;
+      }
+
+      .refresh-meta {
+        text-align: left;
+        white-space: normal;
+      }
+
+      .chart-wrap {
+        height: 280px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <h1 class="panel-title">Live Agent Status</h1>
+          <p class="panel-subtitle">Current team state from `agents.json`, with live task analytics below from `agent-activity.json`.</p>
+        </div>
+        <div class="refresh-meta" id="refreshMeta">Loading live dashboard data...</div>
+      </div>
+      <div class="status-grid" id="agentStatusGrid"></div>
+    </section>
+
+    <section class="error-banner" id="errorBanner" aria-live="polite">
+      <h2 class="error-title">Live Data Unavailable</h2>
+      <p class="error-copy" id="errorCopy">Unable to load dashboard data.</p>
+    </section>
+
+    <section class="toolbar">
+      <div class="filters" id="filters"></div>
+      <div class="filter-meta" id="filterMeta">30-day window - 0 tasks loaded</div>
+    </section>
+
+    <section class="metrics">
+      <article class="panel metric-card">
+        <div class="metric-label">Tasks Completed</div>
+        <div class="metric-value" id="metricTasks">0</div>
+        <div class="metric-note" id="metricTasksNote">Across the selected 30-day window</div>
+      </article>
+      <article class="panel metric-card">
+        <div class="metric-label">7-Day Velocity</div>
+        <div class="metric-value" id="metricVelocity">0</div>
+        <div class="metric-note" id="metricVelocityNote">Tasks per day, trailing week</div>
+      </article>
+      <article class="panel metric-card">
+        <div class="metric-label">Weekly Trend</div>
+        <div class="metric-value" id="metricTrend">0%</div>
+        <div class="metric-note" id="metricTrendNote">Compared to previous week</div>
+      </article>
+      <article class="panel metric-card">
+        <div class="metric-label">Top Category</div>
+        <div class="metric-value" id="metricCategory">-</div>
+        <div class="metric-note" id="metricCategoryNote">Most common completed work type</div>
+      </article>
+    </section>
+
+    <section class="dashboard">
+      <div class="stack">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Completion Timeline</h2>
+              <p class="panel-subtitle">Each completed task plotted by day and agent lane. Colors show task category.</p>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="timelineChart"></canvas>
+          </div>
+          <div class="legend-row" id="categoryLegend"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Velocity Trend</h2>
+              <p class="panel-subtitle">Daily completions over the last month with a 7-day moving average to expose acceleration or slowdown.</p>
+            </div>
+          </div>
+          <div class="chart-wrap compact">
+            <canvas id="velocityChart"></canvas>
+          </div>
+        </article>
+      </div>
+
+      <div class="stack">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Category Mix</h2>
+              <p class="panel-subtitle">Share of completed work by category for the current filter.</p>
+            </div>
+          </div>
+          <div class="chart-wrap compact">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Recent Completions</h2>
+              <p class="panel-subtitle">Latest finished tasks in the feed, ready to map against what the charts are signaling.</p>
+            </div>
+          </div>
+          <div class="feed" id="taskFeed"></div>
+        </article>
+      </div>
+    </section>
+
+    <div class="footer-note" id="footerNote">Live feed loading...</div>
+  </main>
+
+  <script>
+    const REFRESH_INTERVAL_MS = 60000;
+    const categoryColors = {
+      BUILD: "#8b5cf6",
+      QA: "#22d3ee",
+      PLANNING: "#f5c451",
+      RESEARCH: "#fb7185",
+      REVIEW: "#f59e0b",
+      SUBMIT: "#f5c451",
+      DECIDE: "#f97316",
+      "REVIEW-APPROVE": "#22c55e",
+      "REVIEW-REJECT": "#fb7185",
+      "FYI-READ": "#38bdf8",
+      "INPUT-PROVIDED": "#a78bfa",
+      OTHER: "#94a3b8"
+    };
+    const sourceCandidates = {
+      activity: [
+        "data/agent-activity.json",
+        "/data/agent-activity.json",
+        "../data/agent-activity.json",
+        "../../dashboard-project/data/agent-activity.json"
+      ],
+      agents: [
+        "data/agents.json",
+        "/data/agents.json",
+        "../data/agents.json",
+        "../../dashboard-project/data/agents.json"
+      ]
+    };
+    const elements = {
+      agentStatusGrid: document.getElementById("agentStatusGrid"),
+      refreshMeta: document.getElementById("refreshMeta"),
+      errorBanner: document.getElementById("errorBanner"),
+      errorCopy: document.getElementById("errorCopy"),
+      filters: document.getElementById("filters"),
+      filterMeta: document.getElementById("filterMeta"),
+      metricTasks: document.getElementById("metricTasks"),
+      metricTasksNote: document.getElementById("metricTasksNote"),
+      metricVelocity: document.getElementById("metricVelocity"),
+      metricVelocityNote: document.getElementById("metricVelocityNote"),
+      metricTrend: document.getElementById("metricTrend"),
+      metricTrendNote: document.getElementById("metricTrendNote"),
+      metricCategory: document.getElementById("metricCategory"),
+      metricCategoryNote: document.getElementById("metricCategoryNote"),
+      categoryLegend: document.getElementById("categoryLegend"),
+      taskFeed: document.getElementById("taskFeed"),
+      footerNote: document.getElementById("footerNote")
+    };
+
+    const state = {
+      selectedAgent: "All",
+      activities: [],
+      agents: [],
+      lastUpdatedAt: null,
+      sources: { activity: null, agents: null }
+    };
+
+    let timelineChart;
+    let velocityChart;
+    let categoryChart;
+    let refreshHandle;
+
+    function formatDate(dateInput, options = { month: "short", day: "numeric" }) {
+      const date = new Date(dateInput);
+      if (Number.isNaN(date.getTime())) {
+        return "Unknown";
+      }
+      return new Intl.DateTimeFormat("en-US", options).format(date);
+    }
+
+    function formatRelativeRefresh(date) {
+      if (!date) {
+        return "Auto-refresh every 60s";
+      }
+      return `Last refresh ${formatDate(date, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })} • Auto-refresh every 60s`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("\"", "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function normalizeStatus(status) {
+      const value = String(status || "").toLowerCase();
+      if (["working", "active", "building", "busy"].includes(value)) {
+        return "working";
+      }
+      if (["blocked", "error", "stuck"].includes(value)) {
+        return "blocked";
+      }
+      if (["offline", "away", "idle"].includes(value)) {
+        return "offline";
+      }
+      return "available";
+    }
+
+    function statusLabel(status) {
+      const mapped = normalizeStatus(status);
+      if (mapped === "working") return "Working";
+      if (mapped === "blocked") return "Blocked";
+      if (mapped === "offline") return "Offline";
+      return "Available";
+    }
+
+    function extractTaskId(activity) {
+      const fromHeadline = String(activity.headline || "").match(/TASK-\d+/i);
+      const fromDetails = String(activity.details || "").match(/TASK-\d+/i);
+      return (fromHeadline || fromDetails || [activity.id || "TASK"])[0].toUpperCase();
+    }
+
+    function normalizeActivity(activity) {
+      const timestamp = new Date(activity.timestamp);
+      const date = Number.isNaN(timestamp.getTime()) ? new Date() : timestamp;
+      const category = String(activity.category || "OTHER").toUpperCase();
+      return {
+        id: activity.id || `${activity.agent || "Unknown"}-${date.toISOString()}`,
+        taskId: extractTaskId(activity),
+        title: activity.headline || "Untitled activity",
+        agent: activity.agent || "Unknown",
+        category,
+        timestamp: date,
+        dateKey: date.toISOString().slice(0, 10),
+        importance: Number(activity.importance || 0),
+        details: activity.details || ""
+      };
+    }
+
+    async function fetchJsonWithFallback(candidates) {
+      const failures = [];
+      for (const url of candidates) {
+        try {
+          const response = await fetch(url, { cache: "no-store" });
+          if (!response.ok) {
+            throw new Error(`${response.status} ${response.statusText}`);
+          }
+          const data = await response.json();
+          return { data, url };
+        } catch (error) {
+          failures.push(`${url} (${error.message})`);
+        }
+      }
+      throw new Error(failures.join(" | "));
+    }
+
+    function getAgentNames() {
+      const liveAgentNames = state.agents.map((agent) => agent.name).filter(Boolean);
+      const activityNames = [...new Set(state.activities.map((activity) => activity.agent).filter(Boolean))];
+      return ["All", ...new Set([...liveAgentNames, ...activityNames])];
+    }
+
+    function getOrderedAgentLanes() {
+      const names = getAgentNames().filter((name) => name !== "All");
+      return names.length ? names : ["Unknown"];
+    }
+
+    function renderStatusCards() {
+      elements.agentStatusGrid.innerHTML = "";
+
+      if (!state.agents.length) {
+        const empty = document.createElement("div");
+        empty.className = "status-card status-empty";
+        empty.textContent = "No agent records found in agents.json.";
+        elements.agentStatusGrid.appendChild(empty);
+        return;
+      }
+
+      state.agents.forEach((agent) => {
+        const status = normalizeStatus(agent.status);
+        const task = agent.currentTask || agent.lastTask || agent.notes || "No task in progress.";
+        const card = document.createElement("article");
+        card.className = "status-card";
+        card.innerHTML = `
+          <div class="status-head">
+            <div class="status-agent">
+              <div class="status-emoji">${escapeHtml(agent.emoji || "•")}</div>
+              <div>
+                <div class="status-name">${escapeHtml(agent.name || agent.id || "Unknown")}</div>
+                <div class="status-model">${escapeHtml(agent.model || "agent")}</div>
+              </div>
+            </div>
+            <span class="status-badge status-${status}">${statusLabel(agent.status)}</span>
+          </div>
+          <div class="status-task"><strong>Current:</strong> ${escapeHtml(task)}</div>
+          <div class="status-meta">Last active ${escapeHtml(formatDate(agent.lastActive || state.lastUpdatedAt, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }))}</div>
+        `;
+        elements.agentStatusGrid.appendChild(card);
+      });
+    }
+
+    function renderFilters() {
+      const agents = getAgentNames();
+      if (!agents.includes(state.selectedAgent)) {
+        state.selectedAgent = "All";
+      }
+
+      elements.filters.innerHTML = "";
+      agents.forEach((agent) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `filter-pill${state.selectedAgent === agent ? " active" : ""}`;
+        button.textContent = agent;
+        button.addEventListener("click", () => {
+          state.selectedAgent = agent;
+          updateDashboard();
+        });
+        elements.filters.appendChild(button);
+      });
+    }
+
+    function renderLegend() {
+      elements.categoryLegend.innerHTML = "";
+      const categories = [...new Set(state.activities.map((activity) => activity.category))].sort();
+      const legendCategories = categories.length ? categories : Object.keys(categoryColors).slice(0, 4);
+      legendCategories.forEach((category) => {
+        const chip = document.createElement("div");
+        chip.className = "legend-chip";
+        chip.innerHTML = `<span class="legend-dot" style="background:${categoryColors[category] || categoryColors.OTHER}"></span>${escapeHtml(category)}`;
+        elements.categoryLegend.appendChild(chip);
+      });
+    }
+
+    function createDateRange(endDate, days) {
+      const dates = [];
+      const start = new Date(endDate);
+      start.setHours(0, 0, 0, 0);
+      start.setDate(start.getDate() - (days - 1));
+      for (let index = 0; index < days; index += 1) {
+        const current = new Date(start);
+        current.setDate(start.getDate() + index);
+        dates.push(current.toISOString().slice(0, 10));
+      }
+      return dates;
+    }
+
+    function movingAverage(values, windowSize) {
+      return values.map((_, index) => {
+        const start = Math.max(0, index - windowSize + 1);
+        const slice = values.slice(start, index + 1);
+        const total = slice.reduce((sum, value) => sum + value, 0);
+        return Number((total / slice.length).toFixed(2));
+      });
+    }
+
+    function getFilteredTasks() {
+      const latestTimestamp = state.activities.reduce((latest, activity) => {
+        return !latest || activity.timestamp > latest ? activity.timestamp : latest;
+      }, null) || new Date();
+      const windowDates = createDateRange(latestTimestamp, 30);
+      const earliest = windowDates[0];
+      const latest = windowDates[windowDates.length - 1];
+      const filtered = state.activities.filter((activity) => {
+        return activity.dateKey >= earliest
+          && activity.dateKey <= latest
+          && (state.selectedAgent === "All" || activity.agent === state.selectedAgent);
+      });
+      return { filtered, windowDates, latestDate: latestTimestamp };
+    }
+
+    function summarize(tasks, dates) {
+      const countsByDate = Object.fromEntries(dates.map((date) => [date, 0]));
+      const countsByCategory = {};
+
+      tasks.forEach((task) => {
+        countsByDate[task.dateKey] = (countsByDate[task.dateKey] || 0) + 1;
+        countsByCategory[task.category] = (countsByCategory[task.category] || 0) + 1;
+      });
+
+      const dailyCounts = dates.map((date) => countsByDate[date] || 0);
+      const last7 = dailyCounts.slice(-7).reduce((sum, count) => sum + count, 0);
+      const prev7 = dailyCounts.slice(-14, -7).reduce((sum, count) => sum + count, 0);
+      const velocity = last7 / 7;
+      const trendPct = prev7 === 0 ? (last7 > 0 ? 100 : 0) : ((last7 - prev7) / prev7) * 100;
+      const topCategoryEntry = Object.entries(countsByCategory).sort((a, b) => b[1] - a[1])[0] || ["-", 0];
+
+      return {
+        dates,
+        dailyCounts,
+        movingAvg: movingAverage(dailyCounts, 7),
+        countsByCategory,
+        total: tasks.length,
+        last7,
+        prev7,
+        velocity,
+        trendPct,
+        topCategory: topCategoryEntry[0],
+        topCategoryCount: topCategoryEntry[1]
+      };
+    }
+
+    function updateMetricCards(summary) {
+      const trendLabel = `${summary.trendPct >= 0 ? "+" : ""}${summary.trendPct.toFixed(0)}%`;
+      const agentLabel = state.selectedAgent === "All" ? "All agents" : state.selectedAgent;
+
+      elements.filterMeta.textContent = `30-day window • ${summary.total} tasks loaded • ${agentLabel}`;
+      elements.metricTasks.textContent = summary.total;
+      elements.metricTasksNote.textContent = `${summary.last7} tasks landed in the trailing week`;
+      elements.metricVelocity.textContent = summary.velocity.toFixed(1);
+      elements.metricVelocityNote.textContent = `Average tasks/day across ${agentLabel.toLowerCase()}`;
+      elements.metricTrend.textContent = trendLabel;
+      elements.metricTrend.style.color = summary.trendPct >= 0 ? "var(--green)" : "var(--red)";
+      elements.metricTrendNote.textContent = summary.trendPct >= 0 ? "Throughput is gaining week over week" : "Completion pace is trailing the prior week";
+      elements.metricCategory.textContent = summary.topCategory;
+      elements.metricCategory.style.color = categoryColors[summary.topCategory] || "var(--text)";
+      elements.metricCategoryNote.textContent = summary.topCategory === "-" ? "No tasks in this scope" : `${summary.topCategoryCount} tasks completed in ${summary.topCategory}`;
+    }
+
+    function updateTimelineChart(tasks) {
+      const agentLanes = getOrderedAgentLanes();
+      const agentLaneMap = Object.fromEntries(agentLanes.map((agent, index) => [agent, agentLanes.length - index]));
+      const timelineLabels = Object.fromEntries(agentLanes.map((agent, index) => [agentLanes.length - index, agent]));
+      const points = tasks.map((task) => ({
+        x: task.timestamp,
+        y: agentLaneMap[task.agent] || 1,
+        taskId: task.taskId,
+        title: task.title,
+        agent: task.agent,
+        category: task.category
+      }));
+
+      const data = {
+        datasets: [{
+          label: "Completed Tasks",
+          data: points,
+          pointRadius: 7,
+          pointHoverRadius: 9,
+          pointBackgroundColor: points.map((point) => categoryColors[point.category] || categoryColors.OTHER),
+          pointBorderColor: "#0a0a0f",
+          pointBorderWidth: 2,
+          showLine: false
+        }]
+      };
+
+      if (!timelineChart) {
+        timelineChart = new Chart(document.getElementById("timelineChart"), {
+          type: "scatter",
+          data,
+          options: {
+            maintainAspectRatio: false,
+            animation: { duration: 500 },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: "rgba(10, 10, 15, 0.95)",
+                borderColor: "rgba(255, 255, 255, 0.08)",
+                borderWidth: 1,
+                titleColor: "#f5f7ff",
+                bodyColor: "#d9dcef",
+                callbacks: {
+                  title(items) {
+                    return `${items[0].raw.taskId} - ${items[0].raw.title}`;
+                  },
+                  label(context) {
+                    const item = context.raw;
+                    return [`${item.agent} - ${item.category}`, formatDate(item.x, { month: "short", day: "numeric", year: "numeric" })];
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                type: "time",
+                time: { unit: "day", tooltipFormat: "MMM d, yyyy" },
+                grid: { color: "rgba(255,255,255,0.06)" },
+                ticks: { color: "#9da3bb", maxRotation: 0, autoSkipPadding: 14 }
+              },
+              y: {
+                min: 0.5,
+                max: agentLanes.length + 0.5,
+                ticks: {
+                  stepSize: 1,
+                  color: "#9da3bb",
+                  callback(value) {
+                    return timelineLabels[value] || "";
+                  }
+                },
+                grid: { color: "rgba(255,255,255,0.06)" }
+              }
+            }
+          }
+        });
+      } else {
+        timelineChart.data = data;
+        timelineChart.options.scales.y.min = 0.5;
+        timelineChart.options.scales.y.max = agentLanes.length + 0.5;
+        timelineChart.options.scales.y.ticks.callback = (value) => timelineLabels[value] || "";
+        timelineChart.update();
+      }
+    }
+
+    function updateVelocityChart(summary) {
+      const data = {
+        labels: summary.dates,
+        datasets: [
+          {
+            type: "bar",
+            label: "Daily completions",
+            data: summary.dailyCounts,
+            backgroundColor: "rgba(139, 92, 246, 0.32)",
+            borderRadius: 8,
+            borderSkipped: false
+          },
+          {
+            type: "line",
+            label: "7-day average",
+            data: summary.movingAvg,
+            borderColor: "#f5c451",
+            backgroundColor: "rgba(245, 196, 81, 0.18)",
+            fill: true,
+            tension: 0.35,
+            pointRadius: 0,
+            pointHoverRadius: 4
+          }
+        ]
+      };
+
+      if (!velocityChart) {
+        velocityChart = new Chart(document.getElementById("velocityChart"), {
+          data,
+          options: {
+            maintainAspectRatio: false,
+            animation: { duration: 500 },
+            plugins: {
+              legend: {
+                labels: { color: "#d9dcef", usePointStyle: true, boxWidth: 10 }
+              },
+              tooltip: {
+                backgroundColor: "rgba(10, 10, 15, 0.95)",
+                borderColor: "rgba(255, 255, 255, 0.08)",
+                borderWidth: 1
+              }
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: {
+                  color: "#9da3bb",
+                  maxTicksLimit: 8,
+                  callback(_, index) {
+                    return formatDate(summary.dates[index]);
+                  }
+                }
+              },
+              y: {
+                beginAtZero: true,
+                grid: { color: "rgba(255,255,255,0.06)" },
+                ticks: { color: "#9da3bb", precision: 0 }
+              }
+            }
+          }
+        });
+      } else {
+        velocityChart.data = data;
+        velocityChart.options.scales.x.ticks.callback = (_, index) => formatDate(summary.dates[index]);
+        velocityChart.update();
+      }
+    }
+
+    function updateCategoryChart(summary) {
+      const labels = Object.keys(summary.countsByCategory);
+      const hasData = labels.length > 0;
+      const data = {
+        labels: hasData ? labels : ["No data"],
+        datasets: [{
+          data: hasData ? labels.map((label) => summary.countsByCategory[label]) : [1],
+          backgroundColor: hasData ? labels.map((label) => categoryColors[label] || categoryColors.OTHER) : ["rgba(148, 163, 184, 0.35)"],
+          borderColor: "#11111a",
+          borderWidth: 3,
+          hoverOffset: 6
+        }]
+      };
+
+      if (!categoryChart) {
+        categoryChart = new Chart(document.getElementById("categoryChart"), {
+          type: "doughnut",
+          data,
+          options: {
+            maintainAspectRatio: false,
+            cutout: "62%",
+            animation: { duration: 500 },
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: {
+                  color: "#d9dcef",
+                  usePointStyle: true,
+                  boxWidth: 10,
+                  padding: 18
+                }
+              },
+              tooltip: {
+                backgroundColor: "rgba(10, 10, 15, 0.95)",
+                borderColor: "rgba(255, 255, 255, 0.08)",
+                borderWidth: 1
+              }
+            }
+          }
+        });
+      } else {
+        categoryChart.data = data;
+        categoryChart.update();
+      }
+    }
+
+    function updateTaskFeed(tasks) {
+      elements.taskFeed.innerHTML = "";
+      const latestTasks = [...tasks].sort((a, b) => b.timestamp - a.timestamp).slice(0, 8);
+
+      if (!latestTasks.length) {
+        const empty = document.createElement("div");
+        empty.className = "feed-item";
+        empty.textContent = "No completed tasks match the current filter.";
+        elements.taskFeed.appendChild(empty);
+        return;
+      }
+
+      latestTasks.forEach((task) => {
+        const item = document.createElement("article");
+        item.className = "feed-item";
+        item.innerHTML = `
+          <div class="feed-top">
+            <span class="feed-id">${escapeHtml(task.taskId)}</span>
+            <span class="feed-date">${escapeHtml(formatDate(task.timestamp, { month: "short", day: "numeric", year: "numeric" }))}</span>
+          </div>
+          <div class="feed-title">${escapeHtml(task.title)}</div>
+          <div class="feed-meta">
+            <span class="tag">${escapeHtml(task.agent)}</span>
+            <span class="tag"><span class="legend-dot" style="background:${categoryColors[task.category] || categoryColors.OTHER}"></span>${escapeHtml(task.category)}</span>
+          </div>
+        `;
+        elements.taskFeed.appendChild(item);
+      });
+    }
+
+    function updateDashboard() {
+      renderStatusCards();
+      renderFilters();
+      renderLegend();
+      const { filtered, windowDates } = getFilteredTasks();
+      const summary = summarize(filtered, windowDates);
+      updateMetricCards(summary);
+      updateTimelineChart(filtered);
+      updateVelocityChart(summary);
+      updateCategoryChart(summary);
+      updateTaskFeed(filtered);
+      elements.refreshMeta.textContent = formatRelativeRefresh(state.lastUpdatedAt);
+      elements.footerNote.textContent = `Live sources: ${state.sources.activity || "unresolved"} • ${state.sources.agents || "unresolved"}`;
+    }
+
+    function setError(message) {
+      elements.errorCopy.textContent = message;
+      elements.errorBanner.classList.add("visible");
+      elements.refreshMeta.textContent = "Live fetch failed • Retrying every 60s";
+      elements.footerNote.textContent = "No live data available.";
+    }
+
+    function clearError() {
+      elements.errorBanner.classList.remove("visible");
+    }
+
+    async function refreshData() {
+      try {
+        const [activityResult, agentResult] = await Promise.all([
+          fetchJsonWithFallback(sourceCandidates.activity),
+          fetchJsonWithFallback(sourceCandidates.agents)
+        ]);
+        state.activities = (Array.isArray(activityResult.data) ? activityResult.data : []).map(normalizeActivity).sort((a, b) => a.timestamp - b.timestamp);
+        state.agents = Array.isArray(agentResult.data.agents) ? agentResult.data.agents : [];
+        state.sources.activity = activityResult.url;
+        state.sources.agents = agentResult.url;
+        state.lastUpdatedAt = new Date();
+        clearError();
+        updateDashboard();
+      } catch (error) {
+        setError(`Tried live JSON endpoints but all fetch paths failed. ${error.message}`);
+      }
+    }
+
+    refreshData();
+    refreshHandle = window.setInterval(refreshData, REFRESH_INTERVAL_MS);
+    window.addEventListener("beforeunload", () => window.clearInterval(refreshHandle));
+  </script>
+</body>
+</html>

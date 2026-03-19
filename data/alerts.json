@@ -1,0 +1,50 @@
+{
+  "alerts": [],
+  "resolved": [
+    {
+      "id": "nas-backup-002",
+      "type": "success",
+      "title": "NAS Backup Complete",
+      "message": "Full backup to /mnt/nas-backup successful — core files, memory, dashboard, planning docs, art, scripts, skills",
+      "created": "2026-02-14T19:51:00",
+      "resolved": "2026-02-14T19:51:23",
+      "category": "backup"
+    },
+    {
+      "id": "smb-mount-001",
+      "type": "success",
+      "title": "NAS fstab Mount Configured",
+      "message": "Persistent mount at /mnt/nas-backup via fstab. 13TB available.",
+      "created": "2026-02-14T19:39:00",
+      "resolved": "2026-02-14T19:50:00",
+      "category": "infrastructure"
+    },
+    {
+      "id": "smb-auth-001",
+      "type": "success",
+      "title": "NAS Credentials Configured",
+      "message": "SMB credentials saved to ~/.smbcredentials (chmod 600)",
+      "created": "2026-02-14T19:17:00",
+      "resolved": "2026-02-14T19:39:00",
+      "category": "infrastructure"
+    },
+    {
+      "id": "api-localhost-001",
+      "type": "success",
+      "title": "API URL Fixed",
+      "message": "Changed localhost:8081 to 192.168.1.100:8081 for browser access",
+      "created": "2026-02-14T18:55:00",
+      "resolved": "2026-02-14T18:56:00",
+      "category": "infrastructure"
+    },
+    {
+      "id": "dashboard-backup-001",
+      "type": "success",
+      "title": "Dashboard V1 Backup Complete",
+      "message": "Local tar backup + git commit done. Valentine's Day milestone saved.",
+      "created": "2026-02-14T19:16:00",
+      "resolved": "2026-02-14T19:17:00",
+      "category": "backup"
+    }
+  ]
+}

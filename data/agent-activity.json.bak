@@ -1,0 +1,126 @@
+[
+  {
+    "id": "evt_1773247920",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Dashboard Research MD Files + Editor Integration + Layout Fix",
+    "timestamp": "2026-03-12T23:15:00+11:00",
+    "importance": 7,
+    "details": "TASK-053 complete: Created 7 research item MD files in /research-items/, added Open in Editor buttons to research threads, and PROPERLY FIXED layout editor to support quick-links and heatmap widgets (moved inside dashboard-grid, wrapped in widget framework). All 13 dashboard widgets now draggable/resizable. Adam wanted this fixed properly, not documented as a limitation — delivered.",
+    "sources": [
+      "/home/adam/clawd/research-items/",
+      "/home/adam/clawd/dashboard-project/research.html",
+      "/home/adam/clawd/dashboard-project/editor.html",
+      "/home/adam/clawd/dashboard-project/index.html"
+    ]
+  },
+  {
+    "id": "evt_1773247535",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Dashboard v2 Integration Fixes Complete ✅",
+    "timestamp": "2026-03-12T03:45:35.861788+11:00",
+    "importance": 8,
+    "details": "Fixed navigation frame consistency: research.html & workgraph.html now include shared.css + shared.js, load with sidebar nav. Added to sidebar: Research Threads (Knowledge) + Work Graph (Projects). Fixed research data reconciliation: research.html reads research-queue.json with schema adapter, converts queue→threads format, all 603 lines visible. Layout editor compatibility documented as acceptable limitation (quick-links + heatmap remain fixed-position). Files modified: research.html, workgraph.html, shared.js.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/research.html",
+      "/home/adam/clawd/dashboard-project/workgraph.html",
+      "/home/adam/clawd/dashboard-project/shared.js"
+    ]
+  },
+  {
+    "id": "evt_1773222065",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Dashboard v2 Phase 2 — Work Graph & Heatmap Complete ✅",
+    "timestamp": "2026-03-11T20:41:05.073312+11:00",
+    "importance": 9,
+    "details": "Built Team Heatmap widget (GitHub-style 90-day grid, per-agent views, live aggregation) integrated into index-updated.html. Built workgraph.html (528 lines) with visual task tree, delegation chains, status filtering, expandable nodes. Added workgraph quick-link nav. Sample data files created. Phase 2 complete: index-updated.html (121KB), workgraph.html (16KB), README.md. Dashboard v2 fully delivered (Phase 1 + Phase 2).",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/dashboard-v2-phase2/index-updated.html",
+      "/home/adam/clawd/agents/builder/output/dashboard-v2-phase2/workgraph.html",
+      "/home/adam/clawd/agents/builder/output/dashboard-v2-phase2/README.md"
+    ]
+  },
+  {
+    "id": "evt_1773163367",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Dashboard v2 Phase 1 — Research Threads Complete ✅",
+    "timestamp": "2026-03-11T04:22:47.127249+11:00",
+    "importance": 9,
+    "details": "Built research.html (473 lines) with full thread lifecycle support, status filtering, live search, expandable entries. Added quick-link nav card to index.html with live summary badge. SSE integration for real-time updates. All Phase 1 components complete: Activity Feed v2 ✅, Adam's Inbox ✅, Research Threads ✅. Ready for Friday preview.",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/dashboard-v2-phase1/research.html",
+      "/home/adam/clawd/agents/builder/output/dashboard-v2-phase1/index.html"
+    ]
+  },
+  {
+    "id": "evt_1773138535",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Brunswick Life — 4 Design Variations Built & Deployed",
+    "timestamp": "2026-03-10T21:28:55.369996+11:00",
+    "importance": 8,
+    "details": "Built 4 complete design variations of Brunswick Life landing page: A) Creative South vibrant poster, B) Dark Bento Grid, C) Z-Pattern mesh gradients, D) Warm Community Parallax. All deployed to Oracle for Adam + Séamus preview.",
+    "sources": [
+      "https://shoots.adamdunstan.com/brunswicklife/va/",
+      "https://shoots.adamdunstan.com/brunswicklife/vb/",
+      "https://shoots.adamdunstan.com/brunswicklife/vc/",
+      "https://shoots.adamdunstan.com/brunswicklife/vd/"
+    ]
+  },
+  {
+    "id": "evt_1773119363",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Dashboard v2 Phase 1 — Activity Feed Update Complete",
+    "timestamp": "2026-03-10T16:09:23.695180+11:00",
+    "importance": 8,
+    "details": "Implemented Adam event support for activity feed: extended schema with 6 new categories (SUBMIT, DECIDE, REVIEW-APPROVE, REVIEW-REJECT, FYI-READ, INPUT-PROVIDED), added Adam agent metadata with gold styling, enhanced SSE integration. Data models created for workboard, research threads, heatmap. API endpoints registered. Phase 1 underway.",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/dashboard-v2-phase1/",
+      "/home/adam/clawd/dashboard-project/api/server.py"
+    ]
+  },
+  {
+    "id": "evt_1773026800",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Cyberpunk Command Centre — Fresh Layout",
+    "timestamp": "2026-03-10T00:20:00+11:00",
+    "importance": 7,
+    "details": "Completely redesigned command-cyberpunk.html with 4-panel grid layout (Quinn/Forge/Scout/Reserve), unified activity feed, and terminal hacker aesthetic. Neon borders, scanline effects, color-coded agents. Self-contained 22KB file with SSE integration.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/command-cyberpunk.html"
+    ]
+  },
+  {
+    "id": "evt_1773023320",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "SSE Wired into Dashboard Pages",
+    "timestamp": "2026-03-09T21:22:00+11:00",
+    "importance": 7,
+    "details": "Integrated SSE real-time updates into 6 dashboard pages. Created modular initialization scripts: sse-init-index.js, sse-init-command.js, sse-init-agents.js, sse-init-goals.js, sse-init-topics.js, sse-init-crm.js. Removed polling intervals. Pages now update instantly when data changes.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/js/sse-init-*.js",
+      "/home/adam/clawd/dashboard-project/index.html",
+      "/home/adam/clawd/dashboard-project/command.html"
+    ]
+  },
+  {
+    "id": "evt_1773003970",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "SSE Real-Time Dashboard Updates",
+    "timestamp": "2026-03-09T08:06:10+11:00",
+    "importance": 8,
+    "details": "Implemented Server-Sent Events for instant dashboard updates. Sub-100ms latency when data changes. server.py: SSE endpoint + file watcher thread, sse-client.js: auto-reconnect client library, INTEGRATION.md: guide for page integration. Tested and deployed — service restarted successfully.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/api/server.py",
+      "/home/adam/clawd/dashboard-project/js/sse-client.js",
+      "/home/adam/clawd/dashboard-project/INTEGRATION.md"
+    ]
+  }
+]

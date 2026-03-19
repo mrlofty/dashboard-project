@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Web | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .page-container {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-title h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .title-tag {
+            background: var(--accent-purple);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .page-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .back-link {
+            color: var(--accent-purple);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+            background: var(--bg-card);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .control-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+        }
+
+        .control-btn:hover, .control-btn.active {
+            background: var(--accent-purple);
+            border-color: var(--accent-purple);
+            color: white;
+        }
+
+        .strength-slider {
+            width: 120px;
+            accent-color: var(--accent-purple);
+        }
+
+        /* Graph Container */
+        .graph-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            height: calc(100vh - 300px);
+            min-height: 500px;
+        }
+
+        .graph-container svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Nodes */
+        .node circle {
+            stroke: var(--bg-primary);
+            stroke-width: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .node circle:hover {
+            stroke: white;
+            stroke-width: 3px;
+        }
+
+        .node text {
+            font-size: 11px;
+            fill: var(--text-primary);
+            pointer-events: none;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+
+        /* Links */
+        .link {
+            stroke: var(--border);
+            stroke-opacity: 0.6;
+        }
+
+        .link.highlighted {
+            stroke: var(--accent-purple);
+            stroke-opacity: 1;
+            stroke-width: 2px;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            pointer-events: none;
+            z-index: 1000;
+            font-size: 0.85rem;
+            max-width: 250px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .tooltip h5 {
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .tooltip p {
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.4;
+            font-size: 0.8rem;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+    
+    <div class="page-container">
+        <a href="topics.html" class="back-link">← Back to Topics</a>
+        
+        <div class="page-header">
+            <div class="page-title">
+                <h1>🧠 Knowledge Web</h1>
+                <span class="title-tag">Mind Map</span>
+            </div>
+        </div>
+        
+        <p class="page-description">Interactive visualization of our shared knowledge ecosystem — topics, connections, and the evolution of our collaborative understanding.</p>
+
+        <div class="controls">
+            <div class="control-group">
+                <span class="control-label">Layout:</span>
+                <button class="control-btn active" data-layout="force">Force</button>
+                <button class="control-btn" data-layout="radial">Radial</button>
+                <button class="control-btn" data-layout="tree">Tree</button>
+            </div>
+            <div class="control-group">
+                <span class="control-label">Strength:</span>
+                <input type="range" class="strength-slider" id="strength-slider" min="-500" max="-50" value="-200">
+            </div>
+            <div class="control-group">
+                <button class="control-btn" id="reset-btn">Reset View</button>
+            </div>
+        </div>
+
+        <div class="graph-container" id="graph-container">
+            <svg id="knowledge-graph"></svg>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #a855f7;"></div>
+                <span>Core Concepts</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #22c55e;"></div>
+                <span>Technical</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #3b82f6;"></div>
+                <span>Creative</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #f59e0b;"></div>
+                <span>Personal</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #ec4899;"></div>
+                <span>Projects</span>
+            </div>
+        </div>
+    </div>
+    
+    <div id="shared-footer"></div>
+
+    <script>
+        // Knowledge Graph Data
+        const graphData = {
+            nodes: [
+                // Core Concepts
+                { id: "partnership", label: "Partnership", group: "core", description: "The foundation of Quinn & Adam collaboration" },
+                { id: "memory", label: "Memory Persistence", group: "core", description: "How Quinn maintains continuity across sessions" },
+                { id: "creativity", label: "Creative Expression", group: "core", description: "Shared creative endeavors and outputs" },
+                
+                // Technical
+                { id: "dashboard", label: "Dashboard", group: "technical", description: "Our shared workspace and tools" },
+                { id: "automation", label: "System Automation", group: "technical", description: "Scripts, crons, and automated workflows" },
+                { id: "openclaw", label: "OpenClaw", group: "technical", description: "The platform enabling Quinn's existence" },
+                
+                // Creative
+                { id: "photography", label: "Photography", group: "creative", description: "Adam's photography work and interests" },
+                { id: "art", label: "Quinn's Art Studio", group: "creative", description: "AI-generated art and creative experiments" },
+                { id: "writing", label: "Writing", group: "creative", description: "Blog posts, documentation, creative writing" },
+                
+                // Personal
+                { id: "melbourne", label: "Melbourne", group: "personal", description: "Adam's home city and local context" },
+                { id: "gaming", label: "Gaming", group: "personal", description: "Battlefield, Fallout 76, and gaming culture" },
+                { id: "coffee", label: "Coffee Culture", group: "personal", description: "Supersede, specialty coffee, morning rituals" },
+                { id: "synchronicity", label: "Synchronicity", group: "personal", description: "Meaningful coincidences and Jung's concepts" },
+                
+                // Projects
+                { id: "shoots", label: "Shoots Site", group: "projects", description: "shoots.adamdunstan.com photography CRM" },
+                { id: "immaculate", label: "Immaculate Vibes", group: "projects", description: "AI art website immaculatevibes.art" },
+                { id: "quinn-blog", label: "Quinn's Blog", group: "projects", description: "quinn.adamdunstan.com - Quinn's voice" },
+                { id: "cheeselandslide", label: "Cheese Landslide", group: "projects", description: "Fashion brand concept" },
+                { id: "whichbatman", label: "Which Batman", group: "projects", description: "Batman comparison site" }
+            ],
+            links: [
+                // Core connections
+                { source: "partnership", target: "memory" },
+                { source: "partnership", target: "creativity" },
+                { source: "partnership", target: "dashboard" },
+                
+                // Technical connections
+                { source: "dashboard", target: "automation" },
+                { source: "dashboard", target: "memory" },
+                { source: "openclaw", target: "partnership" },
+                { source: "openclaw", target: "automation" },
+                
+                // Creative connections
+                { source: "creativity", target: "photography" },
+                { source: "creativity", target: "art" },
+                { source: "creativity", target: "writing" },
+                { source: "photography", target: "shoots" },
+                { source: "art", target: "immaculate" },
+                { source: "writing", target: "quinn-blog" },
+                
+                // Personal connections
+                { source: "melbourne", target: "coffee" },
+                { source: "melbourne", target: "photography" },
+                { source: "gaming", target: "partnership" },
+                { source: "synchronicity", target: "partnership" },
+                { source: "synchronicity", target: "creativity" },
+                
+                // Project connections
+                { source: "cheeselandslide", target: "creativity" },
+                { source: "whichbatman", target: "creativity" },
+                { source: "quinn-blog", target: "memory" }
+            ]
+        };
+
+        // Color mapping
+        const colors = {
+            core: "#a855f7",
+            technical: "#22c55e",
+            creative: "#3b82f6",
+            personal: "#f59e0b",
+            projects: "#ec4899"
+        };
+
+        // Setup SVG
+        const container = document.getElementById('graph-container');
+        const svg = d3.select("#knowledge-graph");
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+
+        svg.attr("viewBox", [0, 0, width, height]);
+
+        // Create tooltip
+        const tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+        // Create simulation
+        let simulation = d3.forceSimulation(graphData.nodes)
+            .force("link", d3.forceLink(graphData.links).id(d => d.id).distance(100))
+            .force("charge", d3.forceManyBody().strength(-200))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide().radius(40));
+
+        // Create links
+        const link = svg.append("g")
+            .selectAll("line")
+            .data(graphData.links)
+            .join("line")
+            .attr("class", "link")
+            .attr("stroke-width", 1.5);
+
+        // Create nodes
+        const node = svg.append("g")
+            .selectAll("g")
+            .data(graphData.nodes)
+            .join("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+        // Add circles to nodes
+        node.append("circle")
+            .attr("r", d => d.group === "core" ? 25 : 18)
+            .attr("fill", d => colors[d.group]);
+
+        // Add labels to nodes
+        node.append("text")
+            .text(d => d.label.length > 12 ? d.label.substring(0, 10) + "..." : d.label)
+            .attr("dy", d => d.group === "core" ? 35 : 28)
+            .style("font-size", "10px")
+            .style("fill", "#a0a0b0");
+
+        // Tooltip events
+        node.on("mouseover", function(event, d) {
+            tooltip.transition().duration(200).style("opacity", 1);
+            tooltip.html(`<h5>${d.label}</h5><p>${d.description}</p>`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 10) + "px");
+            
+            // Highlight connected links
+            link.classed("highlighted", l => l.source.id === d.id || l.target.id === d.id);
+        })
+        .on("mouseout", function() {
+            tooltip.transition().duration(500).style("opacity", 0);
+            link.classed("highlighted", false);
+        });
+
+        // Simulation tick
+        simulation.on("tick", () => {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node.attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+
+        // Drag functions
+        function dragstarted(event) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            event.subject.fx = event.subject.x;
+            event.subject.fy = event.subject.y;
+        }
+
+        function dragged(event) {
+            event.subject.fx = event.x;
+            event.subject.fy = event.y;
+        }
+
+        function dragended(event) {
+            if (!event.active) simulation.alphaTarget(0);
+            event.subject.fx = null;
+            event.subject.fy = null;
+        }
+
+        // Layout controls
+        document.querySelectorAll('[data-layout]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-layout]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const layout = btn.dataset.layout;
+                simulation.stop();
+                
+                if (layout === 'radial') {
+                    const angleStep = (2 * Math.PI) / graphData.nodes.length;
+                    graphData.nodes.forEach((node, i) => {
+                        const radius = node.group === 'core' ? 100 : 250;
+                        node.x = width/2 + radius * Math.cos(i * angleStep);
+                        node.y = height/2 + radius * Math.sin(i * angleStep);
+                    });
+                    simulation.alpha(0.3).restart();
+                } else if (layout === 'tree') {
+                    // Simple hierarchical layout
+                    const groups = ['core', 'technical', 'creative', 'personal', 'projects'];
+                    const yStep = height / (groups.length + 1);
+                    groups.forEach((group, gi) => {
+                        const nodesInGroup = graphData.nodes.filter(n => n.group === group);
+                        const xStep = width / (nodesInGroup.length + 1);
+                        nodesInGroup.forEach((node, ni) => {
+                            node.x = xStep * (ni + 1);
+                            node.y = yStep * (gi + 1);
+                        });
+                    });
+                    simulation.alpha(0.3).restart();
+                } else {
+                    // Force layout - just restart
+                    simulation.alpha(1).restart();
+                }
+            });
+        });
+
+        // Strength slider
+        document.getElementById('strength-slider').addEventListener('input', (e) => {
+            simulation.force("charge").strength(parseInt(e.target.value));
+            simulation.alpha(0.3).restart();
+        });
+
+        // Reset button
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            simulation.alpha(1).restart();
+        });
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            const newWidth = container.clientWidth;
+            const newHeight = container.clientHeight;
+            svg.attr("viewBox", [0, 0, newWidth, newHeight]);
+            simulation.force("center", d3.forceCenter(newWidth / 2, newHeight / 2));
+            simulation.alpha(0.3).restart();
+        });
+    </script>
+    <script src="shared.js"></script>
+</body>
+</html>

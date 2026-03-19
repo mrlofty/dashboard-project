@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goals | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        .goals-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .search-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .search-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-home {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .section-home:hover {
+            background: rgba(168, 85, 247, 0.15);
+        }
+
+        .section-icon {
+            font-size: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            padding: 0.375rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+        }
+
+        .filter-chip:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .filter-chip.active {
+            background: rgba(168, 85, 247, 0.2);
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            gap: 0.25rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 0.25rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 0.75rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .view-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .view-btn.active {
+            background: var(--accent-purple);
+            color: white;
+        }
+
+        /* Kanban Board */
+        .kanban-board {
+            display: none;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+
+        .kanban-board.active {
+            display: flex;
+        }
+
+        .kanban-column {
+            flex: 1;
+            min-width: 300px;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .kanban-column.drag-over {
+            border-color: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.05);
+        }
+
+        .column-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .column-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .column-count {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.125rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .column-cards {
+            flex: 1;
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            min-height: 200px;
+        }
+
+        .kanban-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: grab;
+            transition: all 0.2s ease;
+        }
+
+        .kanban-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .kanban-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .kanban-card.completed {
+            opacity: 0.6;
+        }
+
+        .kanban-card-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .kanban-card-title.done {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .kanban-card-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .kanban-card-meta {
+            display: flex;
+            gap: 0.375rem;
+            flex-wrap: wrap;
+        }
+
+        .kanban-tag {
+            padding: 0.125rem 0.375rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: 500;
+        }
+
+        .kanban-card-progress {
+            margin-top: 0.75rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .kanban-progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 0.25rem;
+        }
+
+        .kanban-progress-fill {
+            height: 100%;
+            background: var(--accent-green);
+            border-radius: 2px;
+        }
+
+        .kanban-progress-text {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+        }
+
+        /* Hide list view when board is active */
+        .goals-container.hidden {
+            display: none !important;
+        }
+
+        .add-btn {
+            padding: 0.5rem 1rem;
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .add-btn:hover {
+            background: #9333ea;
+        }
+
+        /* Goals Grid */
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .goal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .goal-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .goal-card.hidden {
+            display: none;
+        }
+
+        .goal-card.completed {
+            opacity: 0.7;
+        }
+
+        .goal-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .goal-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .goal-checkbox:hover {
+            border-color: var(--accent-green);
+        }
+
+        .goal-checkbox.checked {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        .goal-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .goal-title.completed {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .goal-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .goal-meta {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .goal-tag {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .goal-progress {
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-green);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Goal Detail View */
+        .goal-detail {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .goal-detail.active {
+            display: block;
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .detail-checkbox {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .detail-checkbox:hover {
+            border-color: var(--accent-green);
+        }
+
+        .detail-checkbox.checked {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        .detail-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .edit-btn:hover {
+            background: rgba(168, 85, 247, 0.2);
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .detail-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-section h3 {
+            font-size: 1rem;
+            color: var(--accent-purple);
+            margin-bottom: 0.75rem;
+        }
+
+        .detail-section p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Subtasks */
+        .subtask-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .subtask-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .subtask-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .subtask-checkbox:hover {
+            border-color: var(--accent-green);
+        }
+
+        .subtask-checkbox.checked {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        .subtask-text {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        .subtask-text.done {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .add-subtask {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .add-subtask input {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .add-subtask input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .add-subtask button {
+            padding: 0.5rem 0.75rem;
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .detail-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .meta-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .meta-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .meta-value {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Hide grid when viewing detail */
+        .main-content.viewing-detail .goals-grid,
+        .main-content.viewing-detail .section-label,
+        .main-content.viewing-detail .goals-container {
+            display: none !important;
+        }
+
+        .section-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Edit Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h2 {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .btn-cancel {
+            padding: 0.75rem 1.25rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .btn-save {
+            padding: 0.75rem 1.25rem;
+            background: var(--accent-purple);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+    
+    <div class="container main-content" id="main-content">
+        <div class="search-section">
+            <div class="search-row">
+                <a href="#" class="section-home" onclick="closeGoal(); return false;">
+                    <span class="section-icon">🎯</span>
+                    <span class="section-title">Goals</span>
+                </a>
+                <input type="text" class="search-input" placeholder="Search goals..." id="search-input">
+                <button class="add-btn" onclick="openAddModal()">+ Add Goal</button>
+            </div>
+            <div class="filter-row">
+                <span class="filter-chip active" data-filter="all">All</span>
+                <span class="filter-chip" data-filter="active">🔥 Active</span>
+                <span class="filter-chip" data-filter="planned">📋 Planned</span>
+                <span class="filter-chip" data-filter="completed">✅ Completed</span>
+                
+                <div style="flex: 1;"></div>
+                
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="list" title="List View">
+                        📋 List
+                    </button>
+                    <button class="view-btn" data-view="board" title="Board View">
+                        ▦ Board
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="goals-container">
+            <div class="section-label" id="active-label">Active Goals</div>
+            <div class="goals-grid" id="active-goals"></div>
+            
+            <div class="section-label" id="planned-label">Planned</div>
+            <div class="goals-grid" id="planned-goals"></div>
+            
+            <div class="section-label" id="completed-label">Completed</div>
+            <div class="goals-grid" id="completed-goals"></div>
+        </div>
+
+        <div class="no-results" id="no-results" style="display: none;">
+            No goals match your search.
+        </div>
+
+        <!-- Kanban Board View -->
+        <div class="kanban-board" id="kanban-board">
+            <div class="kanban-column" data-status="planned">
+                <div class="column-header">
+                    <span style="color: #6b7280;">📋</span>
+                    <span class="column-title">Planned</span>
+                    <span class="column-count" id="count-planned">0</span>
+                </div>
+                <div class="column-cards" id="cards-planned"></div>
+            </div>
+            <div class="kanban-column" data-status="active">
+                <div class="column-header">
+                    <span style="color: #f59e0b;">🔥</span>
+                    <span class="column-title">Active</span>
+                    <span class="column-count" id="count-active">0</span>
+                </div>
+                <div class="column-cards" id="cards-active"></div>
+            </div>
+            <div class="kanban-column" data-status="paused">
+                <div class="column-header">
+                    <span style="color: #6b7280;">⏸️</span>
+                    <span class="column-title">Paused</span>
+                    <span class="column-count" id="count-paused">0</span>
+                </div>
+                <div class="column-cards" id="cards-paused"></div>
+            </div>
+            <div class="kanban-column" data-status="completed">
+                <div class="column-header">
+                    <span style="color: #22c55e;">✅</span>
+                    <span class="column-title">Completed</span>
+                    <span class="column-count" id="count-completed">0</span>
+                </div>
+                <div class="column-cards" id="cards-completed"></div>
+            </div>
+        </div>
+
+        <div class="goal-detail" id="goal-detail"></div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <h2 id="modal-title">Add Goal</h2>
+            <form id="goal-form">
+                <input type="hidden" id="goal-id">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="form-title" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="form-description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="form-category">
+                        <option value="project">🚀 Project</option>
+                        <option value="capability">⚡ Capability</option>
+                        <option value="habit">🔄 Habit</option>
+                        <option value="learning">📚 Learning</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select id="form-priority">
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="form-notes"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save Goal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="shared-footer"></div>
+
+    <script>
+        let goalsData = null;
+        let currentFilter = 'all';
+        let currentView = localStorage.getItem('goalsView') || 'list';
+        let draggedCard = null;
+
+        async function loadGoals() {
+            try {
+                const response = await fetch('data/goals.json');
+                goalsData = await response.json();
+                renderGoals();
+                
+                // Check for hash
+                const hash = window.location.hash.slice(1);
+                if (hash) openGoal(hash);
+            } catch (e) {
+                console.error('Failed to load goals:', e);
+            }
+        }
+
+        function renderGoals() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            
+            let goals = goalsData.goals;
+            
+            // Filter by status
+            if (currentFilter !== 'all') {
+                goals = goals.filter(g => g.status === currentFilter);
+            }
+            
+            // Filter by search
+            if (searchTerm) {
+                goals = goals.filter(g => 
+                    g.title.toLowerCase().includes(searchTerm) ||
+                    g.description?.toLowerCase().includes(searchTerm) ||
+                    g.notes?.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            const active = goals.filter(g => g.status === 'active');
+            const planned = goals.filter(g => g.status === 'planned');
+            const completed = goals.filter(g => g.status === 'completed');
+            
+            document.getElementById('active-goals').innerHTML = active.map(renderGoalCard).join('') || '';
+            document.getElementById('planned-goals').innerHTML = planned.map(renderGoalCard).join('') || '';
+            document.getElementById('completed-goals').innerHTML = completed.map(renderGoalCard).join('') || '';
+            
+            // Show/hide section labels
+            document.getElementById('active-label').style.display = active.length && currentFilter === 'all' ? 'block' : 'none';
+            document.getElementById('planned-label').style.display = planned.length && currentFilter === 'all' ? 'block' : 'none';
+            document.getElementById('completed-label').style.display = completed.length && currentFilter === 'all' ? 'block' : 'none';
+            
+            // No results
+            const totalVisible = active.length + planned.length + completed.length;
+            document.getElementById('no-results').style.display = totalVisible === 0 ? 'block' : 'none';
+            
+            // Add click handlers
+            document.querySelectorAll('.goal-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('.goal-checkbox')) {
+                        openGoal(card.dataset.id);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.goal-checkbox').forEach(cb => {
+                cb.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleGoalComplete(cb.dataset.id);
+                });
+            });
+        }
+
+        function renderGoalCard(goal) {
+            const cat = goalsData.categories[goal.category] || {};
+            const status = goalsData.statuses[goal.status] || {};
+            const isCompleted = goal.status === 'completed';
+            
+            // Calculate progress
+            const subtasks = goal.subtasks || [];
+            const done = subtasks.filter(s => s.done).length;
+            const total = subtasks.length;
+            const progress = total > 0 ? Math.round((done / total) * 100) : 0;
+            
+            return `
+                <div class="goal-card ${isCompleted ? 'completed' : ''}" data-id="${goal.id}">
+                    <div class="goal-header">
+                        <div class="goal-checkbox ${isCompleted ? 'checked' : ''}" data-id="${goal.id}">
+                            ${isCompleted ? '✓' : ''}
+                        </div>
+                        <span class="goal-title ${isCompleted ? 'completed' : ''}">${goal.title}</span>
+                    </div>
+                    ${goal.description ? `<p class="goal-description">${goal.description}</p>` : ''}
+                    <div class="goal-meta">
+                        <span class="goal-tag" style="background: ${cat.color}22; color: ${cat.color};">${cat.emoji || ''} ${cat.label || goal.category}</span>
+                        <span class="goal-tag" style="background: ${status.color}22; color: ${status.color};">${status.emoji || ''} ${status.label || goal.status}</span>
+                        ${goal.priority === 'high' ? '<span class="goal-tag" style="background: #ef444422; color: #ef4444;">⚡ High</span>' : ''}
+                    </div>
+                    ${total > 0 ? `
+                        <div class="goal-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%;"></div>
+                            </div>
+                            <span class="progress-text">${done}/${total} subtasks</span>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function openGoal(goalId) {
+            const goal = goalsData.goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            history.pushState(null, '', '#' + goalId);
+            
+            const cat = goalsData.categories[goal.category] || {};
+            const status = goalsData.statuses[goal.status] || {};
+            const isCompleted = goal.status === 'completed';
+            
+            const detail = document.getElementById('goal-detail');
+            detail.innerHTML = `
+                <div class="detail-header">
+                    <div class="detail-checkbox ${isCompleted ? 'checked' : ''}" onclick="toggleGoalComplete('${goal.id}')">
+                        ${isCompleted ? '✓' : ''}
+                    </div>
+                    <h2 class="detail-title">${goal.title}</h2>
+                    <div class="detail-actions">
+                        <button class="edit-btn" onclick="openEditModal('${goal.id}')">✏️ Edit</button>
+                        <button class="delete-btn" onclick="deleteGoal('${goal.id}')">🗑️ Delete</button>
+                    </div>
+                </div>
+                
+                ${goal.description ? `
+                    <div class="detail-section">
+                        <h3>Description</h3>
+                        <p>${goal.description}</p>
+                    </div>
+                ` : ''}
+                
+                <div class="detail-meta-grid">
+                    <div class="meta-item">
+                        <div class="meta-label">Category</div>
+                        <div class="meta-value">${cat.emoji || ''} ${cat.label || goal.category}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Status</div>
+                        <div class="meta-value">${status.emoji || ''} ${status.label || goal.status}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Priority</div>
+                        <div class="meta-value" style="text-transform: capitalize;">${goal.priority || 'Medium'}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Created</div>
+                        <div class="meta-value">${goal.created || 'Unknown'}</div>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h3>Subtasks</h3>
+                    <div class="subtask-list" id="subtask-list">
+                        ${(goal.subtasks || []).map((st, idx) => `
+                            <div class="subtask-item">
+                                <div class="subtask-checkbox ${st.done ? 'checked' : ''}" onclick="toggleSubtask('${goal.id}', ${idx})">
+                                    ${st.done ? '✓' : ''}
+                                </div>
+                                <span class="subtask-text ${st.done ? 'done' : ''}">${st.text}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="add-subtask">
+                        <input type="text" id="new-subtask" placeholder="Add a subtask...">
+                        <button onclick="addSubtask('${goal.id}')">Add</button>
+                    </div>
+                </div>
+                
+                ${goal.notes ? `
+                    <div class="detail-section">
+                        <h3>Notes</h3>
+                        <p>${goal.notes}</p>
+                    </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('main-content').classList.add('viewing-detail');
+            detail.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function closeGoal() {
+            document.getElementById('main-content').classList.remove('viewing-detail');
+            document.getElementById('goal-detail').classList.remove('active');
+            history.pushState(null, '', window.location.pathname);
+        }
+
+        function toggleGoalComplete(goalId) {
+            const goal = goalsData.goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            goal.status = goal.status === 'completed' ? 'active' : 'completed';
+            goal.completedDate = goal.status === 'completed' ? new Date().toISOString().slice(0, 10) : null;
+            goal.updated = new Date().toISOString().slice(0, 10);
+            
+            saveGoals();
+            renderGoals();
+            
+            // Re-open detail if viewing
+            if (document.getElementById('goal-detail').classList.contains('active')) {
+                openGoal(goalId);
+            }
+        }
+
+        function toggleSubtask(goalId, subtaskIdx) {
+            const goal = goalsData.goals.find(g => g.id === goalId);
+            if (!goal || !goal.subtasks[subtaskIdx]) return;
+            
+            goal.subtasks[subtaskIdx].done = !goal.subtasks[subtaskIdx].done;
+            goal.updated = new Date().toISOString().slice(0, 10);
+            
+            saveGoals();
+            openGoal(goalId);
+            renderGoals();
+        }
+
+        function addSubtask(goalId) {
+            const input = document.getElementById('new-subtask');
+            const text = input.value.trim();
+            if (!text) return;
+            
+            const goal = goalsData.goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            goal.subtasks = goal.subtasks || [];
+            goal.subtasks.push({ text, done: false });
+            goal.updated = new Date().toISOString().slice(0, 10);
+            
+            saveGoals();
+            openGoal(goalId);
+            renderGoals();
+        }
+
+        function openAddModal() {
+            document.getElementById('modal-title').textContent = 'Add Goal';
+            document.getElementById('goal-id').value = '';
+            document.getElementById('form-title').value = '';
+            document.getElementById('form-description').value = '';
+            document.getElementById('form-category').value = 'project';
+            document.getElementById('form-priority').value = 'medium';
+            document.getElementById('form-notes').value = '';
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        function openEditModal(goalId) {
+            const goal = goalsData.goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            document.getElementById('modal-title').textContent = 'Edit Goal';
+            document.getElementById('goal-id').value = goal.id;
+            document.getElementById('form-title').value = goal.title;
+            document.getElementById('form-description').value = goal.description || '';
+            document.getElementById('form-category').value = goal.category || 'project';
+            document.getElementById('form-priority').value = goal.priority || 'medium';
+            document.getElementById('form-notes').value = goal.notes || '';
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+        }
+
+        document.getElementById('goal-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('goal-id').value;
+            const title = document.getElementById('form-title').value;
+            const description = document.getElementById('form-description').value;
+            const category = document.getElementById('form-category').value;
+            const priority = document.getElementById('form-priority').value;
+            const notes = document.getElementById('form-notes').value;
+            
+            if (id) {
+                // Edit existing
+                const goal = goalsData.goals.find(g => g.id === id);
+                if (goal) {
+                    goal.title = title;
+                    goal.description = description;
+                    goal.category = category;
+                    goal.priority = priority;
+                    goal.notes = notes;
+                    goal.updated = new Date().toISOString().slice(0, 10);
+                }
+            } else {
+                // Add new
+                const newId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30);
+                goalsData.goals.push({
+                    id: newId,
+                    title,
+                    description,
+                    category,
+                    priority,
+                    status: 'planned',
+                    subtasks: [],
+                    notes,
+                    created: new Date().toISOString().slice(0, 10),
+                    updated: new Date().toISOString().slice(0, 10)
+                });
+            }
+            
+            saveGoals();
+            closeModal();
+            renderGoals();
+            
+            if (id && document.getElementById('goal-detail').classList.contains('active')) {
+                openGoal(id);
+            }
+        });
+
+        function deleteGoal(goalId) {
+            if (!confirm('Delete this goal?')) return;
+            
+            goalsData.goals = goalsData.goals.filter(g => g.id !== goalId);
+            saveGoals();
+            closeGoal();
+            renderGoals();
+        }
+
+        function saveGoals() {
+            // Save to localStorage as backup
+            localStorage.setItem('goalsData', JSON.stringify(goalsData));
+            
+            // Save to API (persists to file)
+            fetch(`http://${window.location.hostname}:8081/api/goals`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: goalsData })
+            })
+            .then(r => r.json())
+            .then(result => {
+                console.log('✅ Goals saved to file:', result.timestamp);
+            })
+            .catch(err => {
+                console.log('⚠️ API unavailable, saved to localStorage only');
+            });
+        }
+
+        // Check localStorage for updates on load
+        function loadLocalChanges() {
+            const local = localStorage.getItem('goalsData');
+            if (local) {
+                try {
+                    const localData = JSON.parse(local);
+                    // Use local data - it has user's edits
+                    if (localData && localData.goals) {
+                        goalsData = localData;
+                        console.log('Loaded', localData.goals.length, 'goals from localStorage');
+                        return true;
+                    }
+                } catch (e) {
+                    console.error('Failed to parse localStorage:', e);
+                }
+            }
+            return false;
+        }
+
+        // Filter chips
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                currentFilter = chip.dataset.filter;
+                renderGoals();
+                if (currentView === 'board') renderKanban();
+            });
+        });
+
+        // View toggle
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentView = btn.dataset.view;
+                localStorage.setItem('goalsView', currentView);
+                
+                applyViewMode();
+            });
+        });
+        
+        function applyViewMode() {
+            const goalsContainer = document.querySelector('.goals-container');
+            const kanbanBoard = document.getElementById('kanban-board');
+            
+            // Update button states
+            document.querySelectorAll('.view-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.view === currentView);
+            });
+            
+            if (currentView === 'board') {
+                goalsContainer.classList.add('hidden');
+                kanbanBoard.classList.add('active');
+                renderKanban();
+            } else {
+                goalsContainer.classList.remove('hidden');
+                kanbanBoard.classList.remove('active');
+            }
+        }
+
+        // Kanban rendering
+        function renderKanban() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            
+            let goals = goalsData.goals;
+            
+            // Filter by search
+            if (searchTerm) {
+                goals = goals.filter(g => 
+                    g.title.toLowerCase().includes(searchTerm) ||
+                    g.description?.toLowerCase().includes(searchTerm) ||
+                    g.notes?.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Filter by status if not "all"
+            if (currentFilter !== 'all') {
+                goals = goals.filter(g => g.status === currentFilter);
+            }
+            
+            const statuses = ['active', 'planned', 'paused', 'completed'];
+            
+            statuses.forEach(status => {
+                const cards = goals.filter(g => g.status === status);
+                const container = document.getElementById(`cards-${status}`);
+                const count = document.getElementById(`count-${status}`);
+                
+                if (container) {
+                    container.innerHTML = cards.map(renderKanbanCard).join('');
+                    
+                    // Add click handlers
+                    container.querySelectorAll('.kanban-card').forEach(card => {
+                        card.addEventListener('click', (e) => {
+                            // Only open if we didn't just finish a drag
+                            if (!card.classList.contains('was-dragged')) {
+                                openGoal(card.dataset.id);
+                            }
+                            card.classList.remove('was-dragged');
+                        });
+                    });
+                }
+                
+                if (count) {
+                    count.textContent = cards.length;
+                }
+            });
+            
+            // Initialize drag and drop
+            initDragAndDrop();
+        }
+
+        function renderKanbanCard(goal) {
+            const cat = goalsData.categories[goal.category] || {};
+            const isCompleted = goal.status === 'completed';
+            
+            // Calculate progress
+            const subtasks = goal.subtasks || [];
+            const done = subtasks.filter(s => s.done).length;
+            const total = subtasks.length;
+            const progress = total > 0 ? Math.round((done / total) * 100) : 0;
+            
+            return `
+                <div class="kanban-card ${isCompleted ? 'completed' : ''}" 
+                     data-id="${goal.id}" 
+                     draggable="true">
+                    <div class="kanban-card-title ${isCompleted ? 'done' : ''}">${goal.title}</div>
+                    ${goal.description ? `<div class="kanban-card-desc">${goal.description}</div>` : ''}
+                    <div class="kanban-card-meta">
+                        <span class="kanban-tag" style="background: ${cat.color}22; color: ${cat.color};">${cat.emoji || ''} ${cat.label || goal.category}</span>
+                        ${goal.priority === 'high' ? '<span class="kanban-tag" style="background: #ef444422; color: #ef4444;">⚡ High</span>' : ''}
+                    </div>
+                    ${total > 0 ? `
+                        <div class="kanban-card-progress">
+                            <div class="kanban-progress-bar">
+                                <div class="kanban-progress-fill" style="width: ${progress}%;"></div>
+                            </div>
+                            <span class="kanban-progress-text">${done}/${total} subtasks</span>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // Drag and Drop
+        function initDragAndDrop() {
+            const cards = document.querySelectorAll('.kanban-card');
+            const columns = document.querySelectorAll('.column-cards');
+            
+            cards.forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+            });
+            
+            columns.forEach(column => {
+                column.addEventListener('dragover', handleDragOver);
+                column.addEventListener('dragleave', handleDragLeave);
+                column.addEventListener('drop', handleDrop);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedCard = e.target;
+            e.target.classList.add('dragging');
+            e.target.classList.add('was-dragged');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', e.target.dataset.id);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            document.querySelectorAll('.kanban-column').forEach(col => {
+                col.classList.remove('drag-over');
+            });
+            draggedCard = null;
+            // Remove was-dragged after a short delay to allow click to check it
+            setTimeout(() => {
+                e.target.classList.remove('was-dragged');
+            }, 100);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const column = e.target.closest('.kanban-column');
+            if (column) {
+                column.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            const column = e.target.closest('.kanban-column');
+            if (column && !column.contains(e.relatedTarget)) {
+                column.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            
+            const column = e.target.closest('.kanban-column');
+            if (!column || !draggedCard) return;
+            
+            const newStatus = column.dataset.status;
+            const goalId = draggedCard.dataset.id;
+            
+            // Update goal status
+            const goal = goalsData.goals.find(g => g.id === goalId);
+            if (goal && goal.status !== newStatus) {
+                goal.status = newStatus;
+                goal.updated = new Date().toISOString().slice(0, 10);
+                
+                if (newStatus === 'completed') {
+                    goal.completedDate = new Date().toISOString().slice(0, 10);
+                } else {
+                    goal.completedDate = null;
+                }
+                
+                saveGoals();
+                renderKanban();
+                renderGoals(); // Keep list view in sync
+            }
+            
+            column.classList.remove('drag-over');
+        }
+
+        // Search
+        document.getElementById('search-input').addEventListener('input', () => {
+            renderGoals();
+            if (currentView === 'board') renderKanban();
+        });
+
+        // Hash change
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.slice(1);
+            if (hash) {
+                openGoal(hash);
+            } else {
+                closeGoal();
+            }
+        });
+
+        // Initialize
+        async function init() {
+            // Try localStorage first (has user's edits)
+            const hasLocal = loadLocalChanges();
+            
+            if (!hasLocal) {
+                // No local data, load from file
+                await loadGoals();
+            } else {
+                // Have local data, just need to render
+                renderGoals();
+            }
+            
+            // Apply saved view preference
+            applyViewMode();
+            
+            // Check for hash (deep link)
+            const hash = window.location.hash.slice(1);
+            if (hash) openGoal(hash);
+        }
+        init();
+    </script>
+    <script src="shared.js"></script>
+    <script type="module" src="js/sse-init-goals.js"></script>
+</body>
+</html>

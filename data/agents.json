@@ -1,0 +1,53 @@
+{
+  "agents": [
+    {
+      "id": "quinn",
+      "name": "Quinn",
+      "emoji": "\ud83d\udd2e",
+      "model": "opus",
+      "status": "available",
+      "lastActive": "2026-03-15T10:15:05.649635+11:00",
+      "currentTask": "Sunday morning with Adam. Background: immaculatevibes deploy. Evening: Brunswick Life photo walk 5PM Abbotsford Convent.",
+      "lastTask": "Skills audit, reddit-readonly install, dashboard refinements",
+      "tasksCompleted": 0,
+      "itemsFound": 0,
+      "estimatedCompletion": null,
+      "notes": "Primary orchestrator. Manages team, designs architecture, talks with Adam.",
+      "recentActions": [],
+      "learnings": []
+    },
+    {
+      "id": "forge",
+      "name": "Forge",
+      "emoji": "\u2692\ufe0f",
+      "model": "sonnet",
+      "status": "available",
+      "lastActive": "2026-03-20T06:56:00.000000+11:00",
+      "currentTask": null,
+      "lastTask": "Queue cleanup + TASK-010 blocked on infrastructure",
+      "tasksCompleted": 4,
+      "itemsFound": 0,
+      "estimatedCompletion": null,
+      "notes": "Builder. Workshop page now live with real-time dashboard data.",
+      "recentActions": [],
+      "learnings": []
+    }
+  ],
+  "activeTasks": [],
+  "serverStatus": {
+    "cpu": null,
+    "memory": null,
+    "disk": null,
+    "uptime": null
+  },
+  "tokenBudget": {
+    "anthropic": {
+      "plan": "$300/mo",
+      "weeklyReset": "Friday 11:00 AEDT"
+    },
+    "codex": {
+      "plan": "ChatGPT Plus ($30/mo)",
+      "budget": "~96% remaining"
+    }
+  }
+}

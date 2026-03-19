@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployments — Sites & Services</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .page-header {
+            margin-bottom: 1rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: #f0f0f5;
+        }
+
+        .page-header p {
+            color: #9090a0;
+            font-size: 0.95rem;
+        }
+
+        .table-wrap {
+            background: #1a1a24;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            overflow: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1100px;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            background: #1a1a24;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #9090a0;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        tbody tr:hover {
+            background: #22222e;
+        }
+
+        tbody td {
+            padding: 1rem 0.75rem;
+            vertical-align: top;
+            color: #f0f0f5;
+            font-size: 0.9rem;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .name-cell strong {
+            font-weight: 600;
+        }
+
+        a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .repo-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.4rem;
+            font-size: 1rem;
+        }
+
+        .repo-empty,
+        .muted {
+            color: #9090a0;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: lowercase;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background: #22c55e20;
+            color: #22c55e;
+            border: 1px solid #22c55e40;
+        }
+
+        .status-planning {
+            background: #eab30820;
+            color: #eab308;
+            border: 1px solid #eab30840;
+        }
+
+        .status-planned {
+            background: #37415120;
+            color: #9ca3af;
+            border: 1px solid #37415140;
+        }
+
+        .description-cell {
+            min-width: 240px;
+            color: #9090a0;
+        }
+
+        .loading,
+        .error,
+        .empty {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #9090a0;
+        }
+
+        .error {
+            color: #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.55rem;
+            }
+
+            tbody td {
+                padding: 0.85rem 0.65rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>🚀 Deployments — Sites & Services</h1>
+            <p>Deployment inventory across active and planned sites.</p>
+        </div>
+
+        <div class="table-wrap" role="region" aria-label="Deployments table" tabindex="0">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Hosting</th>
+                        <th>Server</th>
+                        <th>Deploy Method</th>
+                        <th>Repo</th>
+                        <th>Tech Stack</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="deployments-tbody">
+                    <tr>
+                        <td class="loading" colspan="8">Loading deployments...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="shared-footer"></div>
+
+    <script src="shared.js"></script>
+    <script>
+        const statusOrder = {
+            active: 0,
+            planning: 1,
+            planned: 2
+        };
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+        }
+
+        function statusClass(status) {
+            if (status === 'active') return 'status-active';
+            if (status === 'planning') return 'status-planning';
+            return 'status-planned';
+        }
+
+        function sortDeployments(a, b) {
+            const aRank = statusOrder[a.status] ?? 99;
+            const bRank = statusOrder[b.status] ?? 99;
+
+            if (aRank !== bRank) return aRank - bRank;
+            return a.name.localeCompare(b.name);
+        }
+
+        function nameCell(site) {
+            const label = `<strong>${escapeHtml(site.name)}</strong>`;
+            if (!site.url) return label;
+            return `<a href="${escapeHtml(site.url)}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+        }
+
+        function repoCell(site) {
+            if (!site.repo) return '<span class="repo-empty">—</span>';
+            return `<a class="repo-link" href="${escapeHtml(site.repo)}" target="_blank" rel="noopener noreferrer" title="Open repository">↗</a>`;
+        }
+
+        function rowTemplate(site) {
+            const status = escapeHtml(site.status || 'planned');
+            return `
+                <tr>
+                    <td class="name-cell">${nameCell(site)}</td>
+                    <td><span class="status-badge ${statusClass(site.status)}">${status}</span></td>
+                    <td>${escapeHtml(site.hosting || '—')}</td>
+                    <td>${escapeHtml(site.server || '—')}</td>
+                    <td>${escapeHtml(site.deploy || '—')}</td>
+                    <td>${repoCell(site)}</td>
+                    <td>${escapeHtml(site.tech || '—')}</td>
+                    <td class="description-cell">${escapeHtml(site.description || '—')}</td>
+                </tr>
+            `;
+        }
+
+        async function loadDeployments() {
+            const tbody = document.getElementById('deployments-tbody');
+
+            try {
+                const response = await fetch('data/deployments.json', { cache: 'no-store' });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const payload = await response.json();
+                const sites = Array.isArray(payload) ? payload : (Array.isArray(payload.sites) ? payload.sites : []);
+
+                if (!sites.length) {
+                    tbody.innerHTML = '<tr><td class="empty" colspan="8">No deployments found.</td></tr>';
+                    return;
+                }
+
+                const sorted = [...sites].sort(sortDeployments);
+                tbody.innerHTML = sorted.map(rowTemplate).join('');
+            } catch (error) {
+                tbody.innerHTML = '<tr><td class="error" colspan="8">Failed to load deployments data.</td></tr>';
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadDeployments);
+        } else {
+            loadDeployments();
+        }
+    </script>
+</body>
+</html>

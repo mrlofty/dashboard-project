@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locations & Routes | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        :root {
+            --bg-primary: #0f0f14;
+            --bg-card: #1a1a24;
+            --bg-card-hover: #22222e;
+            --bg-input: #14141e;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(212, 175, 55, 0.4);
+            --text-primary: #f0f0f5;
+            --text-secondary: #9090a0;
+            --text-muted: #606070;
+            --accent: #d4af37;
+            --accent-soft: rgba(212, 175, 55, 0.15);
+            --green: #22c55e; --green-soft: rgba(34,197,94,0.15);
+            --blue: #3b82f6; --blue-soft: rgba(59,130,246,0.15);
+            --purple: #a855f7; --purple-soft: rgba(168,85,247,0.15);
+            --amber: #f59e0b; --amber-soft: rgba(245,158,11,0.15);
+            --red: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem 2rem; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .page-header h1 { font-size: 1.5rem; }
+        .page-header p { color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.25rem; }
+
+        .btn { padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); }
+        .btn:hover { background: var(--bg-card-hover); }
+        .btn-accent { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+        .btn-accent:hover { background: #c49f2f; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 0.25rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 0.25rem; margin-bottom: 1.5rem; width: fit-content; }
+        .tab-btn { padding: 0.5rem 1.25rem; border: none; background: transparent; color: var(--text-muted); font-size: 0.85rem; cursor: pointer; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
+        .tab-btn.active { background: var(--accent-soft); color: var(--accent); }
+        .tab-btn:hover { color: var(--text-primary); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Stats */
+        .stats-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { flex: 1; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
+        .stat-value { font-size: 1.75rem; font-weight: 700; }
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+        /* Search */
+        .toolbar { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+        .search-box { flex: 1; min-width: 180px; padding: 0.5rem 0.75rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 0.85rem; }
+        .search-box::placeholder { color: var(--text-muted); }
+        .search-box:focus { outline: none; border-color: var(--border-focus); }
+        .filter-btn { padding: 0.4rem 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-secondary); font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+        .filter-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+        .filter-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+        /* ====== ROUTES ====== */
+        .routes-grid { display: flex; flex-direction: column; gap: 1rem; }
+
+        .route-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        .route-card:hover { border-color: rgba(212,175,55,0.2); }
+
+        .route-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            cursor: pointer;
+        }
+
+        .route-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem; }
+        .route-type { font-size: 0.8rem; color: var(--accent); }
+        .route-desc { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.35rem; line-height: 1.5; }
+
+        .route-meta {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .route-meta-item {
+            text-align: center;
+        }
+        .route-meta-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .route-meta-value { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+
+        .route-stops {
+            display: none;
+            padding: 0 1.5rem 1.25rem;
+            border-top: 1px solid var(--border);
+        }
+        .route-stops.open { display: block; padding-top: 1rem; }
+
+        .stop-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+        .stop-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .stop-number {
+            width: 24px; height: 24px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .stop-name { flex: 1; }
+        .stop-type { font-size: 0.7rem; color: var(--text-muted); }
+        .stop-coords { font-size: 0.7rem; color: var(--blue); }
+        .stop-coords a { color: var(--blue); text-decoration: none; }
+        .stop-coords a:hover { text-decoration: underline; }
+
+        /* ====== LOCATIONS ====== */
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .location-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .location-card:hover { border-color: rgba(212,175,55,0.2); background: var(--bg-card-hover); }
+
+        .location-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.2rem; }
+        .location-area { font-size: 0.8rem; color: var(--accent); margin-bottom: 0.35rem; }
+
+        .location-details {
+            display: flex; gap: 0.5rem; flex-wrap: wrap;
+            margin-bottom: 0.4rem;
+        }
+
+        .loc-tag {
+            font-size: 0.65rem; font-weight: 600;
+            padding: 0.1rem 0.4rem; border-radius: 3px;
+        }
+
+        .type-street { background: var(--blue-soft); color: var(--blue); }
+        .type-nature { background: var(--green-soft); color: var(--green); }
+        .type-river { background: rgba(6,182,212,0.15); color: #06b6d4; }
+        .type-arch { background: var(--purple-soft); color: var(--purple); }
+        .type-urban { background: var(--amber-soft); color: var(--amber); }
+        .type-indoor { background: rgba(255,255,255,0.08); color: var(--text-secondary); }
+
+        .location-light { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
+        .location-light::before { content: '☀️ '; }
+        .location-notes { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+        .location-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 0.5rem; padding-top: 0.4rem; border-top: 1px solid rgba(255,255,255,0.04);
+        }
+        .location-shoots { font-size: 0.75rem; color: var(--text-muted); }
+        .location-map a { font-size: 0.75rem; color: var(--blue); text-decoration: none; }
+        .location-map a:hover { text-decoration: underline; }
+
+        /* Editable fields */
+        .editable { cursor: pointer; padding: 2px 4px; margin: -2px -4px; border-radius: 4px; border: 1px solid transparent; transition: all 0.15s; }
+        .editable:hover { background: rgba(212,175,55,0.06); border-color: rgba(212,175,55,0.15); }
+        .inline-input { background: var(--bg-input); border: 1px solid var(--border-focus); border-radius: 4px; color: var(--text-primary); font-size: inherit; font-family: inherit; padding: 4px 6px; width: 100%; outline: none; }
+        .inline-input:focus { border-color: var(--accent); }
+        .inline-textarea { background: var(--bg-input); border: 1px solid var(--border-focus); border-radius: 4px; color: var(--text-primary); font-size: inherit; font-family: inherit; padding: 6px 8px; width: 100%; min-height: 60px; resize: vertical; outline: none; }
+        .saved-flash { animation: flashGold 0.6s ease; }
+        @keyframes flashGold { 0% { background: rgba(212,175,55,0.2); } 100% { background: transparent; } }
+
+        /* Add modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 200; justify-content: center; align-items: center; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; width: 480px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
+        .modal h2 { font-size: 1.1rem; margin-bottom: 1rem; }
+        .form-group { margin-bottom: 0.75rem; }
+        .form-label { display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+        .form-input { width: 100%; padding: 0.5rem 0.75rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 0.85rem; }
+        .form-input:focus { outline: none; border-color: var(--border-focus); }
+        .form-textarea { width: 100%; padding: 0.5rem 0.75rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-size: 0.85rem; min-height: 60px; resize: vertical; font-family: inherit; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem; }
+
+        @media (max-width: 768px) {
+            .route-header { flex-direction: column; }
+            .route-meta { margin-top: 0.75rem; }
+            .locations-grid { grid-template-columns: 1fr; }
+            .stats-bar { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1>📍 Locations & Routes</h1>
+                <p>Melbourne photography locations and curated shoot routes.</p>
+            </div>
+            <div style="display:flex;gap:0.75rem;">
+                <button class="btn btn-accent" onclick="openAddLocation()">+ Location</button>
+                <button class="btn" onclick="openAddRoute()">+ Route</button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('routes', this)">🗺️ Routes</button>
+            <button class="tab-btn" onclick="switchTab('locations', this)">📍 Locations</button>
+        </div>
+
+        <!-- ROUTES TAB -->
+        <div class="tab-content active" id="tab-routes">
+            <div class="stats-bar">
+                <div class="stat-card"><div class="stat-value" id="stat-routes">-</div><div class="stat-label">Routes</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-locations">-</div><div class="stat-label">Locations</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-areas">-</div><div class="stat-label">Areas</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-used">-</div><div class="stat-label">Times Used</div></div>
+            </div>
+            <div class="routes-grid" id="routesGrid"></div>
+        </div>
+
+        <!-- LOCATIONS TAB -->
+        <div class="tab-content" id="tab-locations">
+            <div class="toolbar">
+                <input class="search-box" id="locSearch" type="text" placeholder="Search locations..." oninput="renderLocations()">
+                <button class="filter-btn active" data-filter="all" onclick="setLocFilter('all', this)">All</button>
+                <button class="filter-btn" data-filter="Street/Laneway" onclick="setLocFilter('Street/Laneway', this)">🏙️ Street</button>
+                <button class="filter-btn" data-filter="Nature/Park" onclick="setLocFilter('Nature/Park', this)">🌿 Nature</button>
+                <button class="filter-btn" data-filter="Riverside/Bridge" onclick="setLocFilter('Riverside/Bridge', this)">🌊 River</button>
+                <button class="filter-btn" data-filter="Architecture/Public" onclick="setLocFilter('Architecture/Public', this)">🏛️ Architecture</button>
+            </div>
+            <div class="locations-grid" id="locationsGrid"></div>
+        </div>
+    </div>
+
+    <!-- Add Location Modal -->
+    <div class="modal-overlay" id="addLocModal">
+        <div class="modal">
+            <h2>Add Location</h2>
+            <div class="form-group"><label class="form-label">Name *</label><input class="form-input" id="fLocName" type="text"></div>
+            <div class="form-group"><label class="form-label">Type</label>
+                <select class="form-input" id="fLocType">
+                    <option value="Street/Laneway">Street/Laneway</option>
+                    <option value="Urban/Mixed">Urban/Mixed</option>
+                    <option value="Nature/Park">Nature/Park</option>
+                    <option value="Riverside/Bridge">Riverside/Bridge</option>
+                    <option value="Architecture/Public">Architecture/Public</option>
+                    <option value="Indoor/Studio">Indoor/Studio</option>
+                </select>
+            </div>
+            <div class="form-group"><label class="form-label">Area</label><input class="form-input" id="fLocArea" type="text" placeholder="CBD, Southbank, etc."></div>
+            <div class="form-group"><label class="form-label">Coordinates</label><input class="form-input" id="fLocCoords" type="text" placeholder="-37.XXXX, 144.XXXX"></div>
+            <div class="form-group"><label class="form-label">Best Light</label><input class="form-input" id="fLocLight" type="text" placeholder="Golden hour, morning, etc."></div>
+            <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="fLocNotes"></textarea></div>
+            <div class="form-group"><label class="form-label">Tags (comma separated)</label><input class="form-input" id="fLocTags" type="text" placeholder="urban, gritty, moody"></div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeModal('addLocModal')">Cancel</button>
+                <button class="btn btn-accent" onclick="saveLocation()">Add Location</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Route Modal -->
+    <div class="modal-overlay" id="addRouteModal">
+        <div class="modal">
+            <h2>Add Route</h2>
+            <div class="form-group"><label class="form-label">Title *</label><input class="form-input" id="fRouteName" type="text"></div>
+            <div class="form-group"><label class="form-label">Type</label><input class="form-input" id="fRouteType" type="text" placeholder="Street Art/Urban Culture"></div>
+            <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="fRouteDesc"></textarea></div>
+            <div class="form-group"><label class="form-label">Area</label><input class="form-input" id="fRouteArea" type="text" placeholder="CBD"></div>
+            <div class="form-group"><label class="form-label">Distance</label><input class="form-input" id="fRouteDist" type="text" placeholder="~2km"></div>
+            <div class="form-group"><label class="form-label">Duration</label><input class="form-input" id="fRouteDur" type="text" placeholder="2-3 hours"></div>
+            <div class="form-group"><label class="form-label">Best Times</label><input class="form-input" id="fRouteTime" type="text" placeholder="Morning golden hour"></div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeModal('addRouteModal')">Cancel</button>
+                <button class="btn btn-accent" onclick="saveRoute()">Add Route</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="shared-footer"></div>
+
+    <script>
+        const API = `http://${window.location.hostname}:8081/api`;
+        let locData = { locations: [], types: [] };
+        let routeData = { routes: [] };
+        let locFilter = 'all';
+        let saveTimeout = null;
+
+        const TYPE_CLASS = {
+            'Street/Laneway': 'type-street',
+            'Urban/Mixed': 'type-urban',
+            'Nature/Park': 'type-nature',
+            'Riverside/Bridge': 'type-river',
+            'Architecture/Public': 'type-arch',
+            'Indoor/Studio': 'type-indoor'
+        };
+
+        let shootsRef = { shoots: [] };
+
+        async function loadData() {
+            try {
+                const [lRes, rRes, sRes] = await Promise.all([
+                    fetch('data/locations.json'),
+                    fetch('data/routes.json'),
+                    fetch('data/shoots.json')
+                ]);
+                locData = await lRes.json();
+                routeData = await rRes.json();
+                shootsRef = await sRes.json();
+
+                // Enrich locations with shoot data
+                for (const loc of (locData.locations || [])) {
+                    loc._shoots = (shootsRef.shoots || []).filter(s =>
+                        (s.locationIds || []).includes(loc.id)
+                    );
+                    loc.shootCount = loc._shoots.length;
+                }
+
+                // Enrich routes with shoot data
+                for (const route of (routeData.routes || [])) {
+                    route._shoots = (shootsRef.shoots || []).filter(s => s.routeId === route.id);
+                    route.shootCount = route._shoots.length;
+                }
+
+                updateStats();
+                renderRoutes();
+                renderLocations();
+            } catch(e) { console.error(e); }
+        }
+
+        function updateStats() {
+            const locs = locData.locations || [];
+            const routes = routeData.routes || [];
+            const areas = [...new Set(locs.map(l => l.area))].length;
+            const totalUsed = routes.reduce((s, r) => s + (r.shootCount || 0), 0);
+            document.getElementById('stat-routes').textContent = routes.length;
+            document.getElementById('stat-locations').textContent = locs.length;
+            document.getElementById('stat-areas').textContent = areas;
+            document.getElementById('stat-used').textContent = totalUsed;
+        }
+
+        // ===== ROUTES =====
+        function renderRoutes() {
+            const grid = document.getElementById('routesGrid');
+            const routes = routeData.routes || [];
+
+            grid.innerHTML = routes.map(r => {
+                const stops = (r.locationIds || []).map(id => locData.locations.find(l => l.id === id)).filter(Boolean);
+                return `
+                <div class="route-card" id="route-${r.id}">
+                    <div class="route-header" onclick="toggleRoute('${r.id}')">
+                        <div>
+                            <div class="route-title">${r.title}</div>
+                            <div class="route-type">${r.type}</div>
+                            <div class="route-desc">${r.description}</div>
+                        </div>
+                        <div class="route-meta">
+                            <div class="route-meta-item">
+                                <div class="route-meta-value">${r.distance}</div>
+                                <div class="route-meta-label">Distance</div>
+                            </div>
+                            <div class="route-meta-item">
+                                <div class="route-meta-value">${r.duration}</div>
+                                <div class="route-meta-label">Duration</div>
+                            </div>
+                            <div class="route-meta-item">
+                                <div class="route-meta-value">${stops.length}</div>
+                                <div class="route-meta-label">Stops</div>
+                            </div>
+                            <div class="route-meta-item">
+                                <div class="route-meta-value">${r.shootCount || 0}</div>
+                                <div class="route-meta-label">Shoots</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="route-stops" id="stops-${r.id}">
+                        <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;">☀️ Best: ${r.bestTimes} · ${r.difficulty || ''}</div>
+                        <div class="stop-list">
+                            ${stops.map((s, i) => {
+                                const mapLink = s.coordinates ? `<span class="stop-coords"><a href="https://maps.google.com/?q=${s.coordinates}" target="_blank">📍 Map</a></span>` : '';
+                                return `
+                                <div class="stop-item">
+                                    <div class="stop-number">${i + 1}</div>
+                                    <span class="stop-name">${s.name}</span>
+                                    <span class="stop-type">${s.type}</span>
+                                    ${mapLink}
+                                </div>`;
+                            }).join('')}
+                        </div>
+                        ${r.notes ? `<div style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.75rem;padding:0.5rem;background:var(--bg-input);border-radius:4px;">${r.notes}</div>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleRoute(id) {
+            document.getElementById(`stops-${id}`).classList.toggle('open');
+        }
+
+        // ===== LOCATIONS =====
+        function renderLocations() {
+            const query = document.getElementById('locSearch').value.toLowerCase().trim();
+            let locs = locData.locations || [];
+
+            if (query) {
+                locs = locs.filter(l =>
+                    l.name.toLowerCase().includes(query) ||
+                    l.area.toLowerCase().includes(query) ||
+                    (l.notes || '').toLowerCase().includes(query) ||
+                    (l.tags || []).some(t => t.includes(query))
+                );
+            }
+
+            if (locFilter !== 'all') {
+                locs = locs.filter(l => l.type === locFilter);
+            }
+
+            const grid = document.getElementById('locationsGrid');
+            grid.innerHTML = locs.map(l => {
+                const typeClass = TYPE_CLASS[l.type] || 'type-urban';
+                const mapLink = l.coordinates ? `<span class="location-map"><a href="https://maps.google.com/?q=${l.coordinates}" target="_blank">📍 Open in Maps</a></span>` : '';
+                return `
+                <div class="location-card">
+                    <div class="location-name">${l.name}</div>
+                    <div class="location-area">${l.area}</div>
+                    <div class="location-details">
+                        <span class="loc-tag ${typeClass}">${l.type}</span>
+                        ${(l.tags || []).slice(0, 3).map(t => `<span class="loc-tag" style="background:rgba(255,255,255,0.06);color:var(--text-secondary)">${t}</span>`).join('')}
+                    </div>
+                    ${l.bestLight ? `<div class="location-light">${l.bestLight}</div>` : ''}
+                    ${l.notes ? `<div class="location-notes">${l.notes}</div>` : ''}
+                    ${(l._shoots && l._shoots.length > 0) ? `
+                    <div style="margin-top:0.4rem;display:flex;flex-wrap:wrap;gap:0.25rem;">
+                        ${l._shoots.map(s => `<a href="shoots.html#${s.id}" style="font-size:0.65rem;padding:0.1rem 0.4rem;background:rgba(59,130,246,0.15);color:#3b82f6;border-radius:3px;text-decoration:none;">${s.title} — ${s.modelName}</a>`).join('')}
+                    </div>` : ''}
+                    <div class="location-footer">
+                        <span class="location-shoots">${l.shootCount || 0} shoot${l.shootCount !== 1 ? 's' : ''}</span>
+                        ${mapLink}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function setLocFilter(filter, btn) {
+            locFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderLocations();
+        }
+
+        // ===== TABS =====
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // ===== MODALS =====
+        function openAddLocation() { document.getElementById('addLocModal').classList.add('open'); }
+        function openAddRoute() { document.getElementById('addRouteModal').classList.add('open'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+        async function saveLocation() {
+            const name = document.getElementById('fLocName').value.trim();
+            if (!name) return alert('Name required');
+            const loc = {
+                id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                name: name,
+                type: document.getElementById('fLocType').value,
+                area: document.getElementById('fLocArea').value.trim() || 'Melbourne',
+                coordinates: document.getElementById('fLocCoords').value.trim(),
+                bestLight: document.getElementById('fLocLight').value.trim(),
+                notes: document.getElementById('fLocNotes').value.trim(),
+                shootCount: 0,
+                tags: document.getElementById('fLocTags').value.split(',').map(t => t.trim().toLowerCase()).filter(Boolean)
+            };
+            locData.locations.push(loc);
+            await persistLocations();
+            closeModal('addLocModal');
+            updateStats();
+            renderLocations();
+            // Clear form
+            ['fLocName','fLocArea','fLocCoords','fLocLight','fLocNotes','fLocTags'].forEach(id => document.getElementById(id).value = '');
+        }
+
+        async function saveRoute() {
+            const title = document.getElementById('fRouteName').value.trim();
+            if (!title) return alert('Title required');
+            const route = {
+                id: title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                title: title,
+                type: document.getElementById('fRouteType').value.trim(),
+                description: document.getElementById('fRouteDesc').value.trim(),
+                area: document.getElementById('fRouteArea').value.trim(),
+                distance: document.getElementById('fRouteDist').value.trim(),
+                duration: document.getElementById('fRouteDur').value.trim(),
+                bestTimes: document.getElementById('fRouteTime').value.trim(),
+                difficulty: 'Easy',
+                locationIds: [],
+                shootCount: 0,
+                tags: [],
+                notes: ''
+            };
+            routeData.routes.push(route);
+            await persistRoutes();
+            closeModal('addRouteModal');
+            updateStats();
+            renderRoutes();
+        }
+
+        async function persistLocations() {
+            try { await fetch(`${API}/locations`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(locData) }); }
+            catch(e) { console.error('Save failed:', e); }
+        }
+
+        async function persistRoutes() {
+            try { await fetch(`${API}/routes`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(routeData) }); }
+            catch(e) { console.error('Save failed:', e); }
+        }
+
+        loadData();
+    </script>
+    <script src="shared.js"></script>
+</body>
+</html>

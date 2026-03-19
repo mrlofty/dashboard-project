@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        .portfolio-shell {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem 2rem;
+        }
+
+        .summary-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.85rem;
+            margin-top: 0.9rem;
+        }
+
+        .summary-metric {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 0.8rem 0.9rem;
+        }
+
+        .summary-label {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.35rem;
+        }
+
+        .summary-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .value-positive { color: var(--accent-green); }
+        .value-negative { color: var(--accent-red); }
+        .value-neutral { color: var(--text-primary); }
+        .value-muted { color: var(--text-secondary); }
+
+        .estimate-note {
+            margin-top: 0.85rem;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .market-card,
+        .grand-total-card,
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1rem;
+        }
+
+        .market-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.7rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .market-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .market-stats {
+            text-align: right;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+
+        .market-stats strong {
+            color: var(--text-primary);
+            font-size: 0.88rem;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 640px;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.65rem;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        td {
+            padding: 0.62rem 0.65rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            font-size: 0.83rem;
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .holding-symbol {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .holding-name {
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+        }
+
+        .tracked-pill {
+            display: inline-block;
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.12);
+            border-radius: 999px;
+            padding: 0.08rem 0.5rem;
+            font-size: 0.72rem;
+        }
+
+        .subtotal-row {
+            background: rgba(168, 85, 247, 0.08);
+        }
+
+        .subtotal-row td {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .grand-total-card {
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.8rem;
+        }
+
+        .grand-metric {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 0.75rem 0.9rem;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .chart-grid {
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .chart-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+        }
+
+        .chart-note {
+            margin-top: 0.5rem;
+            font-size: 0.76rem;
+            color: var(--text-secondary);
+        }
+
+        .chart-canvas-wrap {
+            width: 100%;
+            height: 300px;
+            position: relative;
+        }
+
+        .chart-canvas-wrap canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .donut-legend {
+            margin-top: 0.75rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.76rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-swatch {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .status-line {
+            margin-top: 0.7rem;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 980px) {
+            .summary-card,
+            .grand-total-card,
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-canvas-wrap {
+                height: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+
+    <main class="portfolio-shell">
+        <section class="page-header">
+            <h1>Portfolio</h1>
+            <p id="portfolio-updated">Loading holdings from memory/state/watchlist.json...</p>
+        </section>
+
+        <section class="summary-card" id="header-summary"></section>
+        <p class="estimate-note">Live price data coming soon - values are estimates.</p>
+
+        <section class="market-grid" id="market-grid"></section>
+
+        <section class="grand-total-card" id="grand-total"></section>
+
+        <section class="chart-grid">
+            <article class="chart-card">
+                <h2 class="chart-title">Portfolio Allocation</h2>
+                <div class="chart-canvas-wrap">
+                    <canvas id="allocation-chart" width="720" height="360" aria-label="Portfolio allocation chart" role="img"></canvas>
+                </div>
+                <div class="donut-legend" id="allocation-legend"></div>
+            </article>
+
+            <article class="chart-card">
+                <h2 class="chart-title">Performance Bars</h2>
+                <div class="chart-canvas-wrap">
+                    <canvas id="performance-chart" width="720" height="360" aria-label="Holding performance chart" role="img"></canvas>
+                </div>
+                <p class="chart-note">Estimated from average cost with placeholder +5% current value logic.</p>
+            </article>
+        </section>
+
+        <p class="status-line" id="data-status"></p>
+    </main>
+
+    <div id="shared-footer"></div>
+
+    <script src="shared.js?v=20260305"></script>
+    <script>
+        const marketDefs = [
+            { id: 'asx', key: 'stocks_aud', label: 'ASX', icon: '🇦🇺', color: 'var(--accent-purple)' },
+            { id: 'us', key: 'stocks_usd', label: 'US', icon: '🇺🇸', color: 'var(--accent-blue)' },
+            { id: 'crypto', key: 'crypto', label: 'Crypto', icon: '₿', color: 'var(--accent-green)' }
+        ];
+
+        const fallbackData = {
+            source: 'fallback',
+            lastUpdated: null,
+            stocks_aud: [
+                { symbol: 'EXR', name: 'Elixir Energy', units: 198, avgCost: '/bin/bash.43' },
+                { symbol: 'QAN', name: 'Qantas Airways', units: 2, avgCost: '.56' },
+                { symbol: 'WES', name: 'Wesfarmers', units: 2, avgCost: '1.81' },
+                { symbol: 'TLX', name: 'Telix Pharmaceuticals', tracked: true },
+                { symbol: 'JBH', name: 'JB Hi-Fi', tracked: true }
+            ],
+            stocks_usd: [
+                { symbol: 'ARKX', name: 'ARK Space Exploration ETF', units: '14.57', avgCost: '1.38' },
+                { symbol: 'TEAM', name: 'Atlassian', units: '0.85', avgCost: '05.66' },
+                { symbol: 'PL', name: 'Planet Labs', units: 42, avgCost: '4.71' },
+                { symbol: 'TSLA', name: 'Tesla', units: '0.05', avgCost: '/bin/bash' }
+            ],
+            crypto: [
+                { symbol: 'DOGE', name: 'Dogecoin', target: '', tracked: true }
+            ]
+        };
+
+        const nameLookup = {
+            EXR: 'Elixir Energy',
+            QAN: 'Qantas Airways',
+            WES: 'Wesfarmers',
+            TLX: 'Telix Pharmaceuticals',
+            JBH: 'JB Hi-Fi',
+            ARKX: 'ARK Space Exploration ETF',
+            TEAM: 'Atlassian',
+            PL: 'Planet Labs',
+            TSLA: 'Tesla',
+            DOGE: 'Dogecoin'
+        };
+
+        function readJsonSafely(response) {
+            return response.json().catch(async () => JSON.parse(await response.text()));
+        }
+
+        function formatMoney(value, currency = '$') {
+            if (!Number.isFinite(value)) return '—';
+            const sign = value < 0 ? '-' : '';
+            return `${sign}${currency}${Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        function formatPct(value) {
+            if (!Number.isFinite(value)) return '—';
+            return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
+        }
+
+        function formatUnits(value) {
+            if (!Number.isFinite(value)) return 'Tracked';
+            return value.toLocaleString(undefined, { maximumFractionDigits: 8 });
+        }
+
+        function toNumber(raw) {
+            if (raw === null || raw === undefined || raw === '') return null;
+            if (typeof raw === 'number') return Number.isFinite(raw) ? raw : null;
+            const fromNumber = Number(raw);
+            if (Number.isFinite(fromNumber)) return fromNumber;
+            const str = String(raw);
+            const matches = str.match(/-?\d*\.?\d+/g);
+            if (!matches || matches.length === 0) return null;
+            const candidate = Number(matches[matches.length - 1]);
+            return Number.isFinite(candidate) ? candidate : null;
+        }
+
+        function normalizeHolding(raw, marketId) {
+            if (!raw || typeof raw !== 'object') return null;
+
+            const symbol = String(raw.symbol || raw.ticker || raw.code || '').trim().toUpperCase();
+            const units = toNumber(raw.units ?? raw.quantity ?? raw.qty ?? raw.shares);
+            const avgCost = toNumber(raw.avgCost ?? raw.avg_cost ?? raw.averageCost ?? raw.buyPrice ?? raw.purchasePrice);
+            const tracked = Boolean(raw.tracked) || (!Number.isFinite(units) && !Number.isFinite(avgCost));
+            const target = raw.target ?? raw.targetPrice ?? raw.goal ?? null;
+            const name = raw.name || raw.company || raw.asset || nameLookup[symbol] || symbol || 'Unknown';
+
+            const hasPosition = Number.isFinite(units) && Number.isFinite(avgCost);
+            let invested = null;
+            let currentValue = null;
+            let changeDollar = null;
+            let changePct = null;
+
+            if (hasPosition && marketId !== 'crypto') {
+                invested = units * avgCost;
+                currentValue = invested * 1.05;
+                changeDollar = currentValue - invested;
+                changePct = invested === 0 ? 0 : (changeDollar / invested) * 100;
+            }
+
+            return {
+                symbol: symbol || '—',
+                name,
+                units,
+                avgCost,
+                tracked,
+                target,
+                marketId,
+                invested,
+                currentValue,
+                changeDollar,
+                changePct
+            };
+        }
+
+        function normalizePortfolio(rawData) {
+            const out = {
+                source: 'memory/state/watchlist.json',
+                lastUpdated: rawData.lastUpdated || rawData.updatedAt || null,
+                markets: {}
+            };
+
+            for (const market of marketDefs) {
+                let list = rawData[market.key];
+                if (!Array.isArray(list) && rawData[market.id] && Array.isArray(rawData[market.id].holdings)) {
+                    list = rawData[market.id].holdings;
+                }
+                if (!Array.isArray(list)) list = [];
+
+                const holdings = list.map((item) => normalizeHolding(item, market.id)).filter(Boolean);
+                const totals = computeSectionTotals(holdings);
+
+                out.markets[market.id] = {
+                    ...market,
+                    holdings,
+                    totals
+                };
+            }
+
+            out.grand = computeGrandTotals(Object.values(out.markets).map((m) => m.totals));
+            return out;
+        }
+
+        function computeSectionTotals(holdings) {
+            const invested = holdings.reduce((sum, h) => sum + (Number.isFinite(h.invested) ? h.invested : 0), 0);
+            const currentValue = holdings.reduce((sum, h) => sum + (Number.isFinite(h.currentValue) ? h.currentValue : 0), 0);
+            const changeDollar = currentValue - invested;
+            const changePct = invested > 0 ? (changeDollar / invested) * 100 : 0;
+            return { invested, currentValue, changeDollar, changePct };
+        }
+
+        function computeGrandTotals(sectionTotals) {
+            const invested = sectionTotals.reduce((sum, t) => sum + (Number.isFinite(t.invested) ? t.invested : 0), 0);
+            const currentValue = sectionTotals.reduce((sum, t) => sum + (Number.isFinite(t.currentValue) ? t.currentValue : 0), 0);
+            const changeDollar = currentValue - invested;
+            const changePct = invested > 0 ? (changeDollar / invested) * 100 : 0;
+            return { invested, currentValue, changeDollar, changePct };
+        }
+
+        function valueClass(value) {
+            if (!Number.isFinite(value)) return 'value-muted';
+            if (value > 0) return 'value-positive';
+            if (value < 0) return 'value-negative';
+            return 'value-neutral';
+        }
+
+        function renderHeaderSummary(data) {
+            const wrap = document.getElementById('header-summary');
+            wrap.innerHTML = `
+                <div class="summary-metric">
+                    <div class="summary-label">Total Value</div>
+                    <div class="summary-value">${formatMoney(data.grand.currentValue)}</div>
+                </div>
+                <div class="summary-metric">
+                    <div class="summary-label">Total Invested</div>
+                    <div class="summary-value">${formatMoney(data.grand.invested)}</div>
+                </div>
+                <div class="summary-metric">
+                    <div class="summary-label">Overall Gain/Loss</div>
+                    <div class="summary-value ${valueClass(data.grand.changeDollar)}">${formatMoney(data.grand.changeDollar)} (${formatPct(data.grand.changePct)})</div>
+                </div>
+            `;
+        }
+
+        function renderMarketCards(data) {
+            const grid = document.getElementById('market-grid');
+            grid.innerHTML = Object.values(data.markets).map((market) => {
+                const rows = market.holdings.map((holding) => {
+                    const isTrackedOnly = !Number.isFinite(holding.units) || !Number.isFinite(holding.avgCost) || (holding.marketId === 'crypto');
+                    const unitCell = isTrackedOnly ? '<span class="tracked-pill">Tracked</span>' : formatUnits(holding.units);
+                    const avgCell = isTrackedOnly ? '—' : formatMoney(holding.avgCost);
+                    const currentCell = isTrackedOnly ? '—' : formatMoney(holding.currentValue);
+                    const changeDollarCell = isTrackedOnly ? '—' : formatMoney(holding.changeDollar);
+                    const changePctCell = isTrackedOnly ? '—' : formatPct(holding.changePct);
+
+                    return `
+                        <tr>
+                            <td>
+                                <div class="holding-symbol">${escapeHtml(holding.symbol)}</div>
+                            </td>
+                            <td class="holding-name">${escapeHtml(holding.name)}</td>
+                            <td>${unitCell}</td>
+                            <td>${avgCell}</td>
+                            <td>${currentCell}</td>
+                            <td class="${valueClass(holding.changeDollar)}">${changeDollarCell}</td>
+                            <td class="${valueClass(holding.changePct)}">${changePctCell}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                const totals = market.totals;
+                const subtotalLabel = market.id === 'crypto' ? 'Subtotal (tracked)' : 'Subtotal';
+
+                return `
+                    <article class="market-card">
+                        <header class="market-head">
+                            <div class="market-title">${market.icon} ${market.label}</div>
+                            <div class="market-stats">
+                                Invested: <strong>${formatMoney(totals.invested)}</strong><br>
+                                Value: <strong>${formatMoney(totals.currentValue)}</strong><br>
+                                <span class="${valueClass(totals.changeDollar)}">${formatMoney(totals.changeDollar)} (${formatPct(totals.changePct)})</span>
+                            </div>
+                        </header>
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Name</th>
+                                        <th>Units</th>
+                                        <th>Avg Cost</th>
+                                        <th>Current Value</th>
+                                        <th>Change ($)</th>
+                                        <th>Change (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rows}
+                                    <tr class="subtotal-row">
+                                        <td colspan="3">${subtotalLabel}</td>
+                                        <td>${formatMoney(totals.invested)}</td>
+                                        <td>${formatMoney(totals.currentValue)}</td>
+                                        <td class="${valueClass(totals.changeDollar)}">${formatMoney(totals.changeDollar)}</td>
+                                        <td class="${valueClass(totals.changePct)}">${formatPct(totals.changePct)}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function renderGrandTotal(data) {
+            const el = document.getElementById('grand-total');
+            const g = data.grand;
+            el.innerHTML = `
+                <div class="grand-metric">
+                    <div class="summary-label">Grand Total</div>
+                    <div class="summary-value">${formatMoney(g.currentValue)}</div>
+                </div>
+                <div class="grand-metric">
+                    <div class="summary-label">Total Invested</div>
+                    <div class="summary-value">${formatMoney(g.invested)}</div>
+                </div>
+                <div class="grand-metric">
+                    <div class="summary-label">Total Change ($)</div>
+                    <div class="summary-value ${valueClass(g.changeDollar)}">${formatMoney(g.changeDollar)}</div>
+                </div>
+                <div class="grand-metric">
+                    <div class="summary-label">Total Change (%)</div>
+                    <div class="summary-value ${valueClass(g.changePct)}">${formatPct(g.changePct)}</div>
+                </div>
+            `;
+        }
+
+        function drawAllocationChart(data) {
+            const canvas = document.getElementById('allocation-chart');
+            if (!canvas) return;
+
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+            canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+            const ctx = canvas.getContext('2d');
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            const values = Object.values(data.markets).map((m) => ({
+                label: m.label,
+                value: m.totals.currentValue,
+                color: colorToHex(m.color)
+            })).filter((entry) => entry.value > 0);
+
+            const total = values.reduce((sum, entry) => sum + entry.value, 0);
+            const cx = rect.width / 2;
+            const cy = rect.height / 2;
+            const radius = Math.min(rect.width, rect.height) * 0.34;
+            const innerRadius = radius * 0.58;
+
+            ctx.clearRect(0, 0, rect.width, rect.height);
+
+            if (total <= 0) {
+                ctx.fillStyle = '#9090a0';
+                ctx.font = '13px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No allocation data', cx, cy);
+                return;
+            }
+
+            let start = -Math.PI / 2;
+            for (const entry of values) {
+                const angle = (entry.value / total) * Math.PI * 2;
+                const end = start + angle;
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, radius, start, end);
+                ctx.closePath();
+                ctx.fillStyle = entry.color;
+                ctx.fill();
+
+                start = end;
+            }
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, innerRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#11131b';
+            ctx.fill();
+
+            ctx.fillStyle = '#9090a0';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Total Value', cx, cy - 6);
+
+            ctx.fillStyle = '#f0f0f5';
+            ctx.font = 'bold 15px sans-serif';
+            ctx.fillText(formatMoney(total), cx, cy + 14);
+
+            const legend = document.getElementById('allocation-legend');
+            legend.innerHTML = values.map((entry) => {
+                const pct = total > 0 ? ((entry.value / total) * 100).toFixed(1) : '0.0';
+                return `<span class="legend-item"><span class="legend-swatch" style="background:${entry.color}"></span>${entry.label} ${pct}%</span>`;
+            }).join('');
+        }
+
+        function drawPerformanceChart(data) {
+            const canvas = document.getElementById('performance-chart');
+            if (!canvas) return;
+
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+            canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+            const ctx = canvas.getContext('2d');
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, rect.width, rect.height);
+
+            const holdings = Object.values(data.markets)
+                .flatMap((m) => m.holdings)
+                .filter((h) => Number.isFinite(h.changePct) && Number.isFinite(h.invested))
+                .sort((a, b) => b.changePct - a.changePct);
+
+            if (holdings.length === 0) {
+                ctx.fillStyle = '#9090a0';
+                ctx.font = '13px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No performance data', rect.width / 2, rect.height / 2);
+                return;
+            }
+
+            const leftPad = 70;
+            const rightPad = 20;
+            const topPad = 20;
+            const bottomPad = 24;
+            const width = rect.width - leftPad - rightPad;
+            const height = rect.height - topPad - bottomPad;
+            const zeroX = leftPad + (width * 0.5);
+            const rowHeight = Math.max(20, Math.min(34, height / holdings.length));
+            const barHeight = rowHeight * 0.58;
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(zeroX, topPad - 4);
+            ctx.lineTo(zeroX, rect.height - bottomPad + 2);
+            ctx.stroke();
+
+            const axisVals = [-100, -50, 0, 50, 100];
+            ctx.fillStyle = '#9090a0';
+            ctx.font = '11px sans-serif';
+            ctx.textAlign = 'center';
+            for (const val of axisVals) {
+                const x = leftPad + ((val + 100) / 200) * width;
+                ctx.fillText(`${val}%`, x, rect.height - 6);
+            }
+
+            holdings.forEach((h, index) => {
+                const y = topPad + index * rowHeight + (rowHeight - barHeight) / 2;
+                const pct = Math.max(-100, Math.min(100, h.changePct));
+                const px = Math.abs(pct) / 100 * (width / 2);
+
+                ctx.fillStyle = '#c3c8d4';
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText(h.symbol, leftPad - 8, y + barHeight * 0.8);
+
+                ctx.fillStyle = pct >= 0 ? '#22c55e' : '#ef4444';
+                if (pct >= 0) {
+                    ctx.fillRect(zeroX, y, px, barHeight);
+                } else {
+                    ctx.fillRect(zeroX - px, y, px, barHeight);
+                }
+
+                ctx.fillStyle = '#e2e5ef';
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = pct >= 0 ? 'left' : 'right';
+                ctx.fillText(formatPct(h.changePct), pct >= 0 ? zeroX + px + 5 : zeroX - px - 5, y + barHeight * 0.8);
+            });
+        }
+
+        function colorToHex(cssVar) {
+            if (!cssVar || !cssVar.startsWith('var(')) return cssVar || '#888';
+            const varName = cssVar.replace('var(', '').replace(')', '').trim();
+            const computed = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+            return computed || '#888';
+        }
+
+        function escapeHtml(value) {
+            const div = document.createElement('div');
+            div.textContent = String(value ?? '');
+            return div.innerHTML;
+        }
+
+        async function loadPortfolioData() {
+            const statusEl = document.getElementById('data-status');
+            const updatedEl = document.getElementById('portfolio-updated');
+
+            let raw;
+            let sourceLabel = 'memory/state/watchlist.json';
+
+            try {
+                const path = `path=memory/state/watchlist.json&t=${Date.now()}`;
+                const attempts = [
+                    `/api/file?${path}`,
+                    `http://${window.location.hostname}:8081/api/file?${path}`
+                ];
+
+                let lastError = null;
+                for (const url of attempts) {
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) throw new Error(`Failed with status ${response.status}`);
+                        raw = await readJsonSafely(response);
+                        sourceLabel = 'memory/state/watchlist.json';
+                        lastError = null;
+                        break;
+                    } catch (error) {
+                        lastError = error;
+                    }
+                }
+
+                if (lastError) throw lastError;
+            } catch (error) {
+                raw = fallbackData;
+                sourceLabel = 'Fallback dataset';
+                statusEl.textContent = 'Source unavailable, showing fallback portfolio data.';
+            }
+
+            const normalized = normalizePortfolio(raw || {});
+            renderHeaderSummary(normalized);
+            renderMarketCards(normalized);
+            renderGrandTotal(normalized);
+            drawAllocationChart(normalized);
+            drawPerformanceChart(normalized);
+
+            const updatedValue = normalized.lastUpdated ? new Date(normalized.lastUpdated) : null;
+            if (updatedValue && !Number.isNaN(updatedValue.getTime())) {
+                updatedEl.textContent = `Source: ${sourceLabel} · Updated ${updatedValue.toLocaleString('en-AU')}`;
+            } else {
+                updatedEl.textContent = `Source: ${sourceLabel}`;
+            }
+
+            if (!statusEl.textContent) {
+                statusEl.textContent = 'Portfolio loaded successfully.';
+            }
+
+            window.addEventListener('resize', () => {
+                drawAllocationChart(normalized);
+                drawPerformanceChart(normalized);
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadPortfolioData);
+        } else {
+            loadPortfolioData();
+        }
+    </script>
+</body>
+</html>

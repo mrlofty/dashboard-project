@@ -1,0 +1,448 @@
+{
+  "contacts": [
+    {
+      "id": "adam",
+      "name": "Adam",
+      "role": "Primary \u2022 Partner",
+      "tier": "core",
+      "location": "Carlton, Melbourne",
+      "type": [
+        "core"
+      ],
+      "networks": [],
+      "interests": [
+        "photography",
+        "gaming",
+        "tech",
+        "ai"
+      ],
+      "tags": [
+        "photography",
+        "gaming",
+        "partner"
+      ],
+      "yearMet": 2026,
+      "notes": "My human. \ud83d\udc9c"
+    },
+    {
+      "id": "haydon",
+      "name": "Haydon Ryan",
+      "role": "Core Friend",
+      "tier": "core",
+      "location": "Texas, USA",
+      "type": [
+        "personal"
+      ],
+      "networks": [
+        "Core Childhood Group",
+        "EISA Internet"
+      ],
+      "interests": [
+        "tech",
+        "ai"
+      ],
+      "tags": [
+        "childhood friend",
+        "has Nina"
+      ],
+      "yearMet": 1994,
+      "notes": "Has Nina (his clawdbot). Moved to USA ~10 years ago.\nHas USA greencard.",
+      "context": "Friend since highschool days.",
+      "birthday": null
+    },
+    {
+      "id": "simon",
+      "name": "Simon Hawley",
+      "role": "Core Friend \u2022 Photographer",
+      "tier": "core",
+      "location": "Brunswick, Melbourne",
+      "type": [
+        "personal"
+      ],
+      "networks": [
+        "Core Childhood Group",
+        "Photography Scene"
+      ],
+      "interests": [
+        "photography"
+      ],
+      "tags": [
+        "photography",
+        "landscapes",
+        "street"
+      ],
+      "yearMet": 1990,
+      "notes": "Landscape/street photography. Solo style, avoids social media.",
+      "context": "Went to same highschool.",
+      "birthday": null
+    },
+    {
+      "id": "seamus",
+      "name": "Seamus Spillane",
+      "role": "Core Friend \u2022 Photographer",
+      "tier": "core",
+      "location": "Brunswick, Melbourne",
+      "type": [
+        "personal"
+      ],
+      "networks": [
+        "Core Childhood Group",
+        "Photography Scene",
+        "Brunswick Life"
+      ],
+      "interests": [
+        "photography"
+      ],
+      "tags": [
+        "photography",
+        "portraits",
+        "models"
+      ],
+      "yearMet": 1990,
+      "notes": "Portrait/model work similar to Adam's style. Runs Brunswick Life photo walk group. Irish heritage. Lives on Black St, Brunswick \u2014 same street as Disciple Roasters (Supersede's bean supplier).",
+      "context": "Since childhood.",
+      "birthday": null,
+      "email": "seamus.spillane@gmail.com"
+    },
+    {
+      "id": "david",
+      "name": "David Murray",
+      "role": "Core Friend",
+      "tier": "core",
+      "location": "Melbourne",
+      "type": [
+        "personal"
+      ],
+      "networks": [
+        "Core Childhood Group"
+      ],
+      "interests": [],
+      "tags": [
+        "Childhood Friend",
+        "Gamer",
+        "Mill Park",
+        "Pet Lover"
+      ],
+      "yearMet": 1990,
+      "notes": "Oldest friend.",
+      "context": "Met in kinder!",
+      "birthday": null
+    },
+    {
+      "id": "anthony",
+      "name": "Anthony",
+      "role": "Core Friend",
+      "tier": "core",
+      "location": "Melbourne",
+      "type": [
+        "personal"
+      ],
+      "networks": [
+        "Core Childhood Group",
+        "UCMS"
+      ],
+      "interests": [],
+      "tags": [
+        "uni friend",
+        "gamer",
+        "PAX"
+      ],
+      "yearMet": 1998,
+      "notes": "Added during uni days.  Has not seen Pulp Fiction.",
+      "context": "Met through friends during uni years. Gamer.",
+      "birthday": null
+    },
+    {
+      "id": "jack",
+      "name": "Jack Kelly",
+      "role": "Close Friend",
+      "tier": "close",
+      "location": "Brunswick West, Melbourne",
+      "type": [
+        "close",
+        "work"
+      ],
+      "networks": [
+        "Retail Directions"
+      ],
+      "interests": [
+        "tech"
+      ],
+      "tags": [
+        "former colleague",
+        "has Malcolm"
+      ],
+      "yearMet": 2015,
+      "notes": "Originally from Perth. Has labradoodle Malcolm (inseparable).",
+      "context": "First met while working together at RD."
+    },
+    {
+      "id": "alan",
+      "name": "Alan Chow",
+      "role": "Close Friend",
+      "tier": "close",
+      "location": "Traveling (Barcelona Feb 2026)",
+      "type": [
+        "close",
+        "work"
+      ],
+      "networks": [
+        "EISA Internet"
+      ],
+      "interests": [
+        "tech"
+      ],
+      "tags": [
+        "former colleague",
+        "EISA Internet"
+      ],
+      "yearMet": 1999,
+      "notes": "Friends since 1999 (27 years). Currently traveling."
+    },
+    {
+      "id": "donovan",
+      "name": "Donovan",
+      "tier": "close",
+      "yearMet": 2014,
+      "role": "Close Friend",
+      "location": "Melbourne",
+      "tags": [
+        "gamer",
+        "parent"
+      ],
+      "notes": "Nickname: Don, Don Don, Donnas.",
+      "context": "Met when working at Retail Directions",
+      "networks": [
+        "Retail Directions"
+      ],
+      "birthday": null,
+      "type": [
+        "personal"
+      ],
+      "interests": []
+    },
+    {
+      "id": "ghostgirl-cos",
+      "name": "Ghostgirl Cos",
+      "role": "Model \u2022 Cosplay",
+      "tier": "collaborator",
+      "location": "Melbourne",
+      "type": [
+        "model",
+        "collab"
+      ],
+      "instagram": "ghostgirl_cos",
+      "networks": [
+        "MCC"
+      ],
+      "interests": [
+        "cosplay",
+        "photography"
+      ],
+      "tags": [
+        "cosplay",
+        "model",
+        "mcc"
+      ],
+      "yearMet": 2025,
+      "notes": "Roses are Red shoot. Met through MCC events."
+    },
+    {
+      "id": "aussie-baz",
+      "name": "Baz",
+      "role": "Model \u2022 MCC",
+      "tier": "collaborator",
+      "location": "Melbourne",
+      "type": [
+        "model",
+        "collab"
+      ],
+      "instagram": "aussie.baz",
+      "networks": [
+        "MCC"
+      ],
+      "interests": [
+        "photography",
+        "modeling"
+      ],
+      "tags": [
+        "model",
+        "mcc",
+        "testimonial"
+      ],
+      "yearMet": 2025,
+      "notes": "Great feedback. 'What a privilege to work with Adam... I highly recommend Adam.'"
+    },
+    {
+      "id": "nam",
+      "name": "Nam Le",
+      "role": "Model \u2022 Creative Collaborator",
+      "tier": "inner",
+      "location": "Melbourne",
+      "email": "namle400@gmail.com",
+      "type": [
+        "creative"
+      ],
+      "networks": [],
+      "interests": [
+        "photography",
+        "modeling",
+        "art"
+      ],
+      "tags": [
+        "photography",
+        "model",
+        "collaborator"
+      ],
+      "notes": "Portrait/street model. Wabi-sabi minimalist noir aesthetic (@yldpn_01). Special \ud83d\udc9c"
+    },
+    {
+      "id": "emilio",
+      "name": "Emilio Brett Hall",
+      "role": "Model",
+      "tier": "collaborator",
+      "location": "Melbourne",
+      "type": [
+        "model",
+        "creative"
+      ],
+      "networks": [
+        {
+          "platform": "instagram",
+          "handle": "@emiliobretthall.public"
+        }
+      ],
+      "interests": [
+        "modelling",
+        "fashion"
+      ],
+      "tags": [
+        "model",
+        "MCC",
+        "chapters"
+      ],
+      "yearMet": 2026,
+      "notes": "Met at MCC Valentine's Day Photowalk (Feb 14, 2026). Strong portrait presence \u2014 confident, editorial style. Denim, jewellery, swagger."
+    },
+    {
+      "id": "porscha",
+      "name": "Porscha Ryder",
+      "role": "Model",
+      "tier": "collaborator",
+      "location": "Melbourne",
+      "type": [
+        "model",
+        "creative"
+      ],
+      "networks": [
+        {
+          "platform": "instagram",
+          "handle": "@porscha.ryder"
+        }
+      ],
+      "interests": [
+        "modelling",
+        "fashion",
+        "design"
+      ],
+      "tags": [
+        "model",
+        "collab",
+        "denim-dreams"
+      ],
+      "yearMet": 2026,
+      "notes": "Denim Dreams collab on shoots.adamdunstan.com. Made her own outfit for the shoot \u2014 creative and self-directed. A bit mysterious."
+    }
+  ],
+  "circles": [
+    {
+      "id": "photo-crew",
+      "name": "Photo Crew",
+      "emoji": "\ud83d\udcf8",
+      "members": [
+        "seamus",
+        "simon"
+      ],
+      "notes": "The photography dinner/editing group"
+    },
+    {
+      "id": "friday-drinks",
+      "name": "Friday Drinks",
+      "emoji": "\ud83c\udf7b",
+      "members": [
+        "seamus",
+        "anthony",
+        "simon",
+        "david"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "zero-k",
+      "name": "Zero K",
+      "emoji": "\u2b55",
+      "members": [
+        "anthony",
+        "simon",
+        "donovan"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "birthday",
+      "name": "Birthday",
+      "emoji": "\ud83c\udf82",
+      "members": [
+        "donovan",
+        "simon",
+        "david",
+        "haydon"
+      ],
+      "notes": ""
+    }
+  ],
+  "networks": [
+    {
+      "id": "core-childhood",
+      "name": "Core Childhood Group",
+      "icon": "\ud83d\udc66",
+      "description": "Haydon, Simon, Seamus, David, Anthony"
+    },
+    {
+      "id": "retail-directions",
+      "name": "Retail Directions",
+      "icon": "\ud83d\udcbc",
+      "description": "Former workplace"
+    },
+    {
+      "id": "eisa",
+      "name": "EISA Internet",
+      "icon": "\ud83c\udf10",
+      "description": "1999 workplace"
+    },
+    {
+      "id": "mcc",
+      "name": "Melbourne Camera Club",
+      "icon": "\ud83d\udcf7",
+      "description": "Photography community"
+    },
+    {
+      "id": "photography-scene",
+      "name": "Photography Scene",
+      "icon": "\ud83d\udcf8",
+      "description": "Melbourne photography community"
+    },
+    {
+      "id": "current-work",
+      "name": "Current Workplace",
+      "icon": "\ud83c\udfe2",
+      "description": "Current employer"
+    },
+    {
+      "id": "ucms",
+      "name": "UCMS",
+      "icon": "\ud83c\udf10",
+      "description": ""
+    }
+  ]
+}

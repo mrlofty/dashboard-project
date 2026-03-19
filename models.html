@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Models — Model Registry</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        .container {
+            max-width: 1700px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .page-header {
+            margin-bottom: 1rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: #f0f0f5;
+        }
+
+        .page-header p {
+            color: #9090a0;
+            font-size: 0.95rem;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: transparent;
+            color: #9090a0;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .filter-chip:hover {
+            border-color: #a855f7;
+            color: #f0f0f5;
+        }
+
+        .filter-chip.active {
+            background: rgba(168, 85, 247, 0.2);
+            border-color: #a855f7;
+            color: #f0f0f5;
+        }
+
+        .table-wrap {
+            background: #1a1a24;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            overflow: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1280px;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 4;
+            background: #1a1a24;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #9090a0;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        tbody tr:hover {
+            background: #22222e;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody td {
+            padding: 1rem 0.75rem;
+            vertical-align: top;
+            color: #f0f0f5;
+            font-size: 0.9rem;
+        }
+
+        .model-name {
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background: #22c55e20;
+            color: #22c55e;
+            border: 1px solid #22c55e40;
+        }
+
+        .status-available {
+            background: #eab30820;
+            color: #eab308;
+            border: 1px solid #eab30840;
+        }
+
+        .status-known {
+            background: #37415120;
+            color: #9ca3af;
+            border: 1px solid #37415140;
+        }
+
+        .used-by {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.2rem;
+            max-width: 280px;
+        }
+
+        .tag-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.15rem 0.5rem;
+            margin: 0.15rem;
+            background: rgba(99, 102, 241, 0.15);
+            color: #a78bfa;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+        .cost {
+            white-space: nowrap;
+            line-height: 1.4;
+        }
+
+        .cost .muted,
+        .muted,
+        .empty {
+            color: #9090a0;
+        }
+
+        .benchmark {
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .benchmark-high {
+            color: #22c55e;
+        }
+
+        .benchmark-mid {
+            color: #eab308;
+        }
+
+        .benchmark-low {
+            color: #f97316;
+        }
+
+        .benchmark-empty {
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .loading,
+        .error,
+        .empty {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .error {
+            color: #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.55rem;
+            }
+
+            tbody td {
+                padding: 0.85rem 0.65rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+
+    <div class="container">
+        <header class="page-header">
+            <h1>🤖 AI Models — Model Registry</h1>
+            <p>Single source of truth for all AI models across active, available, and known inventory.</p>
+        </header>
+
+        <div id="filters" class="filters" role="tablist" aria-label="Model status filters">
+            <button class="filter-chip active" type="button" data-filter="all" aria-selected="true">All</button>
+            <button class="filter-chip" type="button" data-filter="active" aria-selected="false">Active</button>
+            <button class="filter-chip" type="button" data-filter="available" aria-selected="false">Available</button>
+            <button class="filter-chip" type="button" data-filter="known" aria-selected="false">Known</button>
+        </div>
+
+        <div class="table-wrap" role="region" aria-label="AI model registry table" tabindex="0">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Provider</th>
+                        <th>Status</th>
+                        <th>Used By</th>
+                        <th>Access Method</th>
+                        <th>Cost (Input/Output)</th>
+                        <th>Rate Limit</th>
+                        <th>Benchmark Score</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody id="models-tbody">
+                    <tr>
+                        <td class="loading" colspan="9">Loading AI model registry...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="shared-footer"></div>
+
+    <script src="shared.js"></script>
+    <script>
+        const statusOrder = {
+            active: 0,
+            available: 1,
+            known: 2
+        };
+
+        const statusLabel = {
+            active: 'Active',
+            available: 'Available',
+            known: 'Known'
+        };
+
+        let allModels = [];
+        let currentFilter = 'all';
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+        }
+
+        function statusClass(status) {
+            if (status === 'active') return 'status-active';
+            if (status === 'available') return 'status-available';
+            return 'status-known';
+        }
+
+        function benchmarkClass(score) {
+            if (score === null || score === undefined || Number.isNaN(Number(score))) return 'benchmark-empty';
+            const numericScore = Number(score);
+            if (numericScore > 1350) return 'benchmark-high';
+            if (numericScore >= 1300) return 'benchmark-mid';
+            return 'benchmark-low';
+        }
+
+        function formatBenchmark(score) {
+            if (score === null || score === undefined || Number.isNaN(Number(score))) {
+                return '<span class="benchmark benchmark-empty">—</span>';
+            }
+
+            const numericScore = Number(score);
+            return `<span class="benchmark ${benchmarkClass(numericScore)}">${escapeHtml(numericScore)}</span>`;
+        }
+
+        function usedByChips(usedBy) {
+            if (!Array.isArray(usedBy) || usedBy.length === 0) {
+                return '<span class="muted">—</span>';
+            }
+
+            return usedBy
+                .map((item) => `<span class="tag-chip">${escapeHtml(item)}</span>`)
+                .join('');
+        }
+
+        function sortModels(models) {
+            return [...models].sort((a, b) => {
+                const statusA = statusOrder[a.status] ?? 99;
+                const statusB = statusOrder[b.status] ?? 99;
+
+                if (statusA !== statusB) return statusA - statusB;
+
+                const benchmarkA = typeof a.benchmarkScore === 'number' ? a.benchmarkScore : -Infinity;
+                const benchmarkB = typeof b.benchmarkScore === 'number' ? b.benchmarkScore : -Infinity;
+
+                if (benchmarkA !== benchmarkB) return benchmarkB - benchmarkA;
+
+                return String(a.name || '').localeCompare(String(b.name || ''));
+            });
+        }
+
+        function filterModels(models, filter) {
+            if (filter === 'all') return models;
+            return models.filter((model) => model.status === filter);
+        }
+
+        function rowTemplate(model) {
+            const status = model.status || 'known';
+            const benchmark = formatBenchmark(model.benchmarkScore);
+            return `
+                <tr>
+                    <td><span class="model-name">${escapeHtml(model.name || '—')}</span></td>
+                    <td>${escapeHtml(model.provider || '—')}</td>
+                    <td><span class="status-badge ${statusClass(status)}">${escapeHtml(statusLabel[status] || 'Known')}</span></td>
+                    <td><div class="used-by">${usedByChips(model.usedBy)}</div></td>
+                    <td>${escapeHtml(model.accessMethod || '—')}</td>
+                    <td class="cost"><span class="muted">In:</span> ${escapeHtml(model.costInput || '—')}<br><span class="muted">Out:</span> ${escapeHtml(model.costOutput || '—')}</td>
+                    <td>${escapeHtml(model.rateLimit || '—')}</td>
+                    <td>${benchmark}</td>
+                    <td>${escapeHtml(model.notes || '—')}</td>
+                </tr>
+            `;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('models-tbody');
+            const filtered = filterModels(allModels, currentFilter);
+            const sorted = sortModels(filtered);
+
+            if (!sorted.length) {
+                tbody.innerHTML = '<tr><td class="empty" colspan="9">No models match this filter.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = sorted.map(rowTemplate).join('');
+        }
+
+        function setActiveFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-chip').forEach((chip) => {
+                const isActive = chip.dataset.filter === filter;
+                chip.classList.toggle('active', isActive);
+                chip.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+            renderTable();
+        }
+
+        function setupFilters() {
+            document.getElementById('filters').addEventListener('click', (event) => {
+                const button = event.target.closest('.filter-chip');
+                if (!button) return;
+                setActiveFilter(button.dataset.filter || 'all');
+            });
+        }
+
+        async function loadModels() {
+            const tbody = document.getElementById('models-tbody');
+
+            try {
+                const response = await fetch(`data/models.json?t=${Date.now()}`, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const data = await response.json();
+                const models = Array.isArray(data.models) ? data.models : [];
+
+                allModels = models;
+                renderTable();
+            } catch (error) {
+                tbody.innerHTML = '<tr><td class="error" colspan="9">Unable to load model registry. Check data/models.json.</td></tr>';
+            }
+        }
+
+        setupFilters();
+        loadModels();
+    </script>
+</body>
+</html>

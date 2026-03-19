@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchlist | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        .watchlist-layout {
+            display: grid;
+            grid-template-columns: minmax(320px, 420px) 1fr;
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.25rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 0.9rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .required {
+            color: var(--accent-purple);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.7rem 0.85rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.92rem;
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .form-textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .btn {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.52rem 0.8rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.15);
+        }
+
+        .btn-primary {
+            background: var(--accent-purple);
+            color: #fff;
+            border-color: transparent;
+            font-weight: 600;
+            padding: 0.72rem 1rem;
+        }
+
+        .btn-primary:hover {
+            color: #fff;
+            border-color: transparent;
+            background: #9333ea;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.85rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .chip-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border-radius: 999px;
+            padding: 0.34rem 0.72rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: capitalize;
+        }
+
+        .chip:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .chip.active {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.16);
+        }
+
+        .sort-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+        }
+
+        .sort-select {
+            min-width: 190px;
+        }
+
+        .items-grid {
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .watch-item {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1rem;
+            display: grid;
+            gap: 0.65rem;
+        }
+
+        .watch-item-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .watch-item-name {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .category-badge {
+            font-size: 0.74rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.2rem 0.5rem;
+            border-radius: 999px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.12);
+            white-space: nowrap;
+        }
+
+        .price-row,
+        .meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+        }
+
+        .price-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .watch-link {
+            color: var(--accent-purple);
+            font-size: 0.84rem;
+            word-break: break-all;
+            text-decoration: none;
+        }
+
+        .watch-link:hover {
+            text-decoration: underline;
+        }
+
+        .watch-notes {
+            color: var(--text-secondary);
+            font-size: 0.87rem;
+            line-height: 1.5;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-delete:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.12);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 2rem 1rem;
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+        }
+
+        .quick-view {
+            margin-top: 1.25rem;
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(180px, 1fr));
+            gap: 0.8rem;
+            margin: 0.9rem 0;
+        }
+
+        .quick-stat {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.75rem;
+        }
+
+        .quick-label {
+            color: var(--text-secondary);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .quick-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-top: 0.2rem;
+        }
+
+        .quick-updated {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .quick-link {
+            color: var(--accent-purple);
+            font-size: 0.88rem;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .quick-link:hover {
+            text-decoration: underline;
+        }
+
+        .toast {
+            position: fixed;
+            right: 1rem;
+            bottom: 1rem;
+            z-index: 200;
+            background: rgba(34, 197, 94, 0.14);
+            border: 1px solid rgba(34, 197, 94, 0.32);
+            color: #4ade80;
+            padding: 0.75rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.86rem;
+            display: none;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 210;
+            background: rgba(0, 0, 0, 0.55);
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-card {
+            width: min(560px, 100%);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1rem;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+
+        @media (max-width: 980px) {
+            .watchlist-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .quick-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sort-wrap {
+                width: 100%;
+            }
+
+            .sort-select {
+                min-width: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Product & Price Watchlist</h1>
+            <p>Track targets for gear, tech, stocks, and crypto in one place.</p>
+        </div>
+
+        <div class="watchlist-layout">
+            <section class="card">
+                <h2 class="card-title">Add Watchlist Item</h2>
+                <form id="watch-form" class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="name">Name <span class="required">*</span></label>
+                        <input id="name" class="form-input" type="text" required placeholder="Item name">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="category">Category <span class="required">*</span></label>
+                        <select id="category" class="form-select" required>
+                            <option value="tech">Tech</option>
+                            <option value="gear">Gear</option>
+                            <option value="stocks">Stocks</option>
+                            <option value="crypto">Crypto</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="target-price">Target Price (AUD)</label>
+                        <input id="target-price" class="form-input" type="number" min="0" step="0.01" placeholder="800">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="current-price">Current Price (optional)</label>
+                        <input id="current-price" class="form-input" type="number" min="0" step="0.01" placeholder="Current price">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="url">URL</label>
+                        <input id="url" class="form-input" type="url" placeholder="https://...">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="notes">Notes</label>
+                        <textarea id="notes" class="form-textarea" placeholder="Context or reminders"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save Item</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <div class="toolbar">
+                    <div class="chip-row" id="category-filters">
+                        <button class="chip active" data-category="all" type="button">all</button>
+                        <button class="chip" data-category="tech" type="button">tech</button>
+                        <button class="chip" data-category="gear" type="button">gear</button>
+                        <button class="chip" data-category="stocks" type="button">stocks</button>
+                        <button class="chip" data-category="crypto" type="button">crypto</button>
+                        <button class="chip" data-category="other" type="button">other</button>
+                    </div>
+
+                    <label class="sort-wrap" for="sort-order">
+                        <span>Sort</span>
+                        <select id="sort-order" class="form-select sort-select">
+                            <option value="newest">Newest</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="alpha">Alphabetical</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div id="watchlist-grid" class="items-grid">
+                    <div class="empty-state">No watchlist items yet.</div>
+                </div>
+            </section>
+        </div>
+
+        <section class="card quick-view">
+            <h2 class="card-title">Portfolio Quick View</h2>
+            <p class="quick-updated" id="quick-summary-status">Loading portfolio summary...</p>
+            <div id="quick-grid" class="quick-grid"></div>
+            <a class="quick-link" href="portfolio.html">Open full portfolio page</a>
+        </section>
+    </div>
+
+    <div id="shared-footer"></div>
+
+    <div id="toast" class="toast"></div>
+
+    <div id="edit-modal" class="modal" aria-hidden="true">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="card-title" style="margin:0;">Edit Watchlist Item</h3>
+                <button type="button" class="btn" id="close-modal">Close</button>
+            </div>
+
+            <form id="edit-form" class="form-grid">
+                <div class="form-group">
+                    <label class="form-label" for="edit-name">Name <span class="required">*</span></label>
+                    <input id="edit-name" class="form-input" type="text" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="edit-category">Category</label>
+                    <select id="edit-category" class="form-select" required>
+                        <option value="tech">Tech</option>
+                        <option value="gear">Gear</option>
+                        <option value="stocks">Stocks</option>
+                        <option value="crypto">Crypto</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="edit-target-price">Target Price (AUD)</label>
+                    <input id="edit-target-price" class="form-input" type="number" min="0" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="edit-current-price">Current Price</label>
+                    <input id="edit-current-price" class="form-input" type="number" min="0" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="edit-url">URL</label>
+                    <input id="edit-url" class="form-input" type="url">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="edit-notes">Notes</label>
+                    <textarea id="edit-notes" class="form-textarea"></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn" id="cancel-edit">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const WATCHLIST_DATA_PATH = 'dashboard-project/data/watchlist-products.json';
+        const WATCHLIST_LOCAL_KEY = 'watchlist-items-local';
+
+        let items = [];
+        let currentCategory = 'all';
+        let currentSort = 'newest';
+        let editId = null;
+        let toastTimer = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupForm();
+            setupFilters();
+            setupSort();
+            setupModal();
+            loadItems();
+            loadPortfolioQuickView();
+        });
+
+        function setupForm() {
+            const form = document.getElementById('watch-form');
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const name = document.getElementById('name').value.trim();
+                if (!name) {
+                    showToast('Name is required.', true);
+                    return;
+                }
+
+                const item = {
+                    id: Date.now().toString(),
+                    name,
+                    category: document.getElementById('category').value,
+                    targetPrice: parseNumber(document.getElementById('target-price').value),
+                    currentPrice: parseNumber(document.getElementById('current-price').value),
+                    url: cleanString(document.getElementById('url').value),
+                    notes: cleanString(document.getElementById('notes').value),
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+
+                items.unshift(item);
+                await persistItems();
+                form.reset();
+                renderItems();
+                showToast('Watchlist item saved.');
+            });
+        }
+
+        function setupFilters() {
+            document.querySelectorAll('#category-filters .chip').forEach((chip) => {
+                chip.addEventListener('click', () => {
+                    document.querySelectorAll('#category-filters .chip').forEach((c) => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    currentCategory = chip.dataset.category;
+                    renderItems();
+                });
+            });
+        }
+
+        function setupSort() {
+            const sortSelect = document.getElementById('sort-order');
+            sortSelect.addEventListener('change', () => {
+                currentSort = sortSelect.value;
+                renderItems();
+            });
+        }
+
+        function setupModal() {
+            const modal = document.getElementById('edit-modal');
+            document.getElementById('close-modal').addEventListener('click', closeEditModal);
+            document.getElementById('cancel-edit').addEventListener('click', closeEditModal);
+
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeEditModal();
+                }
+            });
+
+            document.getElementById('edit-form').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                await saveEdit();
+            });
+        }
+
+        async function loadItems() {
+            try {
+                const response = await fetch(`data/watchlist-products.json?t=${Date.now()}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to load watchlist: ${response.status}`);
+                }
+
+                const payload = await response.json();
+                items = Array.isArray(payload.items) ? payload.items : [];
+            } catch (error) {
+                console.error(error);
+                items = JSON.parse(localStorage.getItem(WATCHLIST_LOCAL_KEY) || '[]');
+            }
+
+            renderItems();
+        }
+
+        async function persistItems() {
+            const payload = {
+                items: items.map((item) => ({
+                    id: item.id,
+                    name: item.name,
+                    category: item.category,
+                    targetPrice: item.targetPrice ?? null,
+                    currentPrice: item.currentPrice ?? null,
+                    url: item.url || null,
+                    notes: item.notes || null,
+                    createdAt: item.createdAt || new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                }))
+            };
+
+            try {
+                const response = await fetch(`http://${window.location.hostname}:8081/api/file`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        path: WATCHLIST_DATA_PATH,
+                        content: JSON.stringify(payload, null, 2)
+                    })
+                });
+                if (!response.ok) {
+                    throw new Error(`Save failed: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Save failed, falling back to localStorage', error);
+                localStorage.setItem(WATCHLIST_LOCAL_KEY, JSON.stringify(items));
+            }
+        }
+
+        function getVisibleItems() {
+            let visible = [...items];
+
+            if (currentCategory !== 'all') {
+                visible = visible.filter((item) => item.category === currentCategory);
+            }
+
+            if (currentSort === 'price-high') {
+                visible.sort((a, b) => compareTargetPrices(a.targetPrice, b.targetPrice, true));
+            } else if (currentSort === 'price-low') {
+                visible.sort((a, b) => compareTargetPrices(a.targetPrice, b.targetPrice, false));
+            } else if (currentSort === 'alpha') {
+                visible.sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')));
+            } else {
+                visible.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            }
+
+            return visible;
+        }
+
+        function renderItems() {
+            const grid = document.getElementById('watchlist-grid');
+            const visible = getVisibleItems();
+
+            if (visible.length === 0) {
+                grid.innerHTML = '<div class="empty-state">No matching items for this filter.</div>';
+                return;
+            }
+
+            grid.innerHTML = visible.map((item) => {
+                const targetPrice = formatPrice(item.targetPrice);
+                const currentPrice = formatPrice(item.currentPrice);
+                const notes = item.notes ? `<div class="watch-notes">${escapeHtml(item.notes)}</div>` : '';
+                const link = item.url ? `<a class="watch-link" href="${escapeAttr(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.url)}</a>` : '';
+
+                return `
+                    <article class="watch-item">
+                        <div class="watch-item-header">
+                            <div class="watch-item-name">${escapeHtml(item.name)}</div>
+                            <span class="category-badge">${escapeHtml(item.category || 'other')}</span>
+                        </div>
+
+                        <div class="price-row">
+                            <span>Target: <span class="price-value">${targetPrice}</span></span>
+                            <span>Current: <span class="price-value">${currentPrice}</span></span>
+                        </div>
+
+                        ${link}
+                        ${notes}
+
+                        <div class="meta-row">
+                            <span>Added: ${formatDate(item.createdAt)}</span>
+                            <span>Updated: ${formatDate(item.updatedAt || item.createdAt)}</span>
+                        </div>
+
+                        <div class="item-actions">
+                            <button type="button" class="btn" onclick="openEdit('${escapeAttr(item.id)}')">Edit</button>
+                            <button type="button" class="btn btn-delete" onclick="deleteItem('${escapeAttr(item.id)}')">Delete</button>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function openEdit(id) {
+            const item = items.find((entry) => entry.id === id);
+            if (!item) return;
+
+            editId = id;
+            document.getElementById('edit-name').value = item.name || '';
+            document.getElementById('edit-category').value = item.category || 'other';
+            document.getElementById('edit-target-price').value = item.targetPrice ?? '';
+            document.getElementById('edit-current-price').value = item.currentPrice ?? '';
+            document.getElementById('edit-url').value = item.url || '';
+            document.getElementById('edit-notes').value = item.notes || '';
+
+            const modal = document.getElementById('edit-modal');
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeEditModal() {
+            editId = null;
+            const modal = document.getElementById('edit-modal');
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            document.getElementById('edit-form').reset();
+        }
+
+        async function saveEdit() {
+            if (!editId) return;
+
+            const name = document.getElementById('edit-name').value.trim();
+            if (!name) {
+                showToast('Name is required.', true);
+                return;
+            }
+
+            items = items.map((item) => {
+                if (item.id !== editId) return item;
+
+                return {
+                    ...item,
+                    name,
+                    category: document.getElementById('edit-category').value,
+                    targetPrice: parseNumber(document.getElementById('edit-target-price').value),
+                    currentPrice: parseNumber(document.getElementById('edit-current-price').value),
+                    url: cleanString(document.getElementById('edit-url').value),
+                    notes: cleanString(document.getElementById('edit-notes').value),
+                    updatedAt: new Date().toISOString()
+                };
+            });
+
+            await persistItems();
+            closeEditModal();
+            renderItems();
+            showToast('Watchlist item updated.');
+        }
+
+        async function deleteItem(id) {
+            const item = items.find((entry) => entry.id === id);
+            if (!item) return;
+
+            const ok = window.confirm(`Delete "${item.name}" from watchlist?`);
+            if (!ok) return;
+
+            items = items.filter((entry) => entry.id !== id);
+            await persistItems();
+            renderItems();
+            showToast('Watchlist item deleted.');
+        }
+
+        async function loadPortfolioQuickView() {
+            const statusEl = document.getElementById('quick-summary-status');
+            const grid = document.getElementById('quick-grid');
+
+            try {
+                const url = `http://${window.location.hostname}:8081/api/file?path=memory/state/watchlist.json&t=${Date.now()}`;
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Portfolio quick view failed: ${response.status}`);
+                }
+
+                const data = await readJsonSafely(response);
+                const asxCount = Array.isArray(data.stocks_aud) ? data.stocks_aud.length : 0;
+                const usCount = Array.isArray(data.stocks_usd) ? data.stocks_usd.length : 0;
+                const cryptoCount = Array.isArray(data.crypto) ? data.crypto.length : 0;
+
+                grid.innerHTML = `
+                    <article class="quick-stat">
+                        <div class="quick-label">ASX Stocks</div>
+                        <div class="quick-value">${asxCount}</div>
+                    </article>
+                    <article class="quick-stat">
+                        <div class="quick-label">US Stocks</div>
+                        <div class="quick-value">${usCount}</div>
+                    </article>
+                    <article class="quick-stat">
+                        <div class="quick-label">Crypto</div>
+                        <div class="quick-value">${cryptoCount}</div>
+                    </article>
+                `;
+
+                if (data.lastUpdated) {
+                    statusEl.textContent = `Source: memory/state/watchlist.json, updated ${formatDateTime(data.lastUpdated)}.`;
+                } else {
+                    statusEl.textContent = 'Source: memory/state/watchlist.json';
+                }
+            } catch (error) {
+                console.error(error);
+                grid.innerHTML = `
+                    <article class="quick-stat">
+                        <div class="quick-label">ASX Stocks</div>
+                        <div class="quick-value">5</div>
+                    </article>
+                    <article class="quick-stat">
+                        <div class="quick-label">US Stocks</div>
+                        <div class="quick-value">4</div>
+                    </article>
+                    <article class="quick-stat">
+                        <div class="quick-label">Crypto</div>
+                        <div class="quick-value">1</div>
+                    </article>
+                `;
+                statusEl.textContent = 'Quick view loaded with fallback counts (memory source unavailable).';
+            }
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            toast.style.color = isError ? '#fca5a5' : '#4ade80';
+            toast.style.borderColor = isError ? 'rgba(239, 68, 68, 0.35)' : 'rgba(34, 197, 94, 0.32)';
+            toast.style.background = isError ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.14)';
+
+            if (toastTimer) {
+                clearTimeout(toastTimer);
+            }
+
+            toastTimer = setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        function parseNumber(value) {
+            if (!value || value.trim() === '') return null;
+            const n = Number(value);
+            return Number.isFinite(n) ? n : null;
+        }
+
+        function cleanString(value) {
+            const trimmed = (value || '').trim();
+            return trimmed.length > 0 ? trimmed : null;
+        }
+
+        function compareTargetPrices(aValue, bValue, descending) {
+            const a = Number(aValue);
+            const b = Number(bValue);
+            const aMissing = !Number.isFinite(a);
+            const bMissing = !Number.isFinite(b);
+
+            if (aMissing && bMissing) return 0;
+            if (aMissing) return 1;
+            if (bMissing) return -1;
+
+            if (descending) return b - a;
+            return a - b;
+        }
+
+        function formatPrice(value) {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            const number = Number(value);
+            if (!Number.isFinite(number)) return 'N/A';
+
+            return new Intl.NumberFormat('en-AU', {
+                style: 'currency',
+                currency: 'AUD',
+                maximumFractionDigits: 2
+            }).format(number);
+        }
+
+        function formatDate(value) {
+            if (!value) return 'N/A';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return 'N/A';
+            return date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        function formatDateTime(value) {
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return 'unknown';
+            return date.toLocaleString('en-AU', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = String(text || '');
+            return div.innerHTML;
+        }
+
+        function escapeAttr(text) {
+            return escapeHtml(text).replace(/"/g, '&quot;');
+        }
+
+        async function readJsonSafely(response) {
+            try {
+                return await response.json();
+            } catch (_) {
+                const raw = await response.text();
+                return JSON.parse(raw);
+            }
+        }
+
+        window.openEdit = openEdit;
+        window.deleteItem = deleteItem;
+    </script>
+    <script src="shared.js?v=20260305"></script>
+</body>
+</html>

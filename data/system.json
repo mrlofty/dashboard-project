@@ -1,0 +1,102 @@
+{
+  "status": "Operational",
+  "lastUpdated": "2026-03-04 00:10 AEDT",
+  "host": {
+    "name": "bluefin",
+    "memUsed": "5.4Gi",
+    "memTotal": "14Gi",
+    "memPercent": 36,
+    "diskUsed": "33G",
+    "diskTotal": "468G",
+    "diskPercent": 8,
+    "load": "0.26",
+    "uptime": "1 week, 6 days, 6 hours, 24 minutes"
+  },
+  "openclaw": {
+    "version": "2026.3.2",
+    "model": "claude-opus-4-6",
+    "context": "--",
+    "session": "agent:main:main",
+    "channel": "telegram"
+  },
+  "integrations": [
+    {
+      "icon": "\ud83d\udcf1",
+      "name": "Telegram",
+      "active": true
+    },
+    {
+      "icon": "\ud83d\udce7",
+      "name": "Gmail (gog)",
+      "active": true
+    },
+    {
+      "icon": "\ud83d\udcc5",
+      "name": "Google Calendar",
+      "active": true
+    },
+    {
+      "icon": "\ud83c\udf10",
+      "name": "Browser Relay",
+      "active": false
+    },
+    {
+      "icon": "\ud83d\udd0a",
+      "name": "Deepgram STT",
+      "active": true
+    },
+    {
+      "icon": "\ud83d\udd0d",
+      "name": "Brave Search",
+      "active": true
+    },
+    {
+      "icon": "\ud83d\udcca",
+      "name": "Google Analytics",
+      "active": true
+    },
+    {
+      "icon": "\ud83d\udcf8",
+      "name": "shoots.adamdunstan.com",
+      "active": true
+    },
+    {
+      "icon": "\ud83d\udd2e",
+      "name": "quinn.adamdunstan.com",
+      "active": true
+    },
+    {
+      "icon": "\ud83d\udef8",
+      "name": "afteraliendisclosure.com",
+      "active": true
+    },
+    {
+      "icon": "\u2692\ufe0f",
+      "name": "soulforge.md",
+      "active": true
+    }
+  ],
+  "brave": {
+    "used": 76,
+    "limit": 2000,
+    "dailyAllowance": 240,
+    "daysRemaining": 8
+  },
+  "backup": {
+    "nasConnected": true,
+    "lastBackup": "2026-02-21 20:15 AEDT",
+    "nasStorage": "13TB (14% used)",
+    "totalSize": "--",
+    "itemCount": "7 folders",
+    "mountPoint": "/mnt/nas-backup",
+    "folders": [
+      "core",
+      "memory",
+      "dashboard",
+      "planning-docs",
+      "immaculatevibes-art-images",
+      "scripts",
+      "skills"
+    ]
+  }
+}

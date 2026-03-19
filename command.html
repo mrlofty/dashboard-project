@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Control — Agent Orchestration</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;500;700&display=swap');
+
+        :root {
+            --bg-room: #080c08;
+            --bg-desk: #1a201a;
+            --bg-screen: #0a0f0a;
+            --border: rgba(34, 197, 94, 0.15);
+            --border-glow: rgba(34, 197, 94, 0.3);
+            --text-primary: #c8e8c8;
+            --text-secondary: #7a9a7a;
+            --text-dim: #3a5a3a;
+            --green: #22c55e;
+            --green-dim: #166534;
+            --green-glow: rgba(34, 197, 94, 0.5);
+            --amber: #f59e0b;
+            --red: #ef4444;
+            --blue: #3b82f6;
+            --cyan: #06b6d4;
+            --purple: #a855f7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: #000;
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* === CRT Effects === */
+        .crt-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                0deg, transparent, transparent 2px,
+                rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px
+            );
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* === HEADER BAR === */
+        .top-bar {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 1.5rem;
+            background: rgba(0,0,0,0.9);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.7rem;
+        }
+        .back-link:hover { color: var(--green); }
+
+        .top-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--green);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            text-shadow: 0 0 15px var(--green-glow);
+        }
+
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .go-pills {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .go-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.6rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .go-pill:hover { border-color: var(--green); }
+
+        .go-pill .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+        }
+
+        .go-pill .dot.on { background: var(--green); box-shadow: 0 0 6px var(--green-glow); }
+        .go-pill .dot.off { background: var(--text-dim); }
+        .go-pill .label { color: var(--text-secondary); }
+        .go-pill .val { font-weight: 700; }
+        .go-pill .val.go { color: var(--green); }
+        .go-pill .val.stby { color: var(--text-dim); }
+
+        .overall-badge {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 3px;
+            letter-spacing: 0.1em;
+        }
+
+        .overall-badge.go {
+            color: var(--green);
+            border: 1px solid var(--green);
+            background: rgba(34, 197, 94, 0.08);
+            text-shadow: 0 0 8px var(--green-glow);
+        }
+
+        .clock {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--green);
+            text-shadow: 0 0 12px var(--green-glow);
+            letter-spacing: 0.08em;
+            font-variant-numeric: tabular-nums;
+            min-width: 8ch;
+            text-align: right;
+        }
+
+        /* === THE ROOM === */
+        .room-wrapper {
+            position: relative;
+            width: 100%;
+            min-height: calc(100vh - 50px);
+            perspective: 1200px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        /* NASA Mission Control background */
+        .room-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('images/mission-control-bg.jpg') center center / cover no-repeat;
+            opacity: 0.55;
+            filter: saturate(0.2) brightness(0.9);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Green ambient glow over the photo */
+        .room-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(ellipse at 50% 20%, rgba(34, 197, 94, 0.06) 0%, transparent 60%),
+                linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .room {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem 2rem;
+        }
+
+        /* === MAIN SCREEN (The Big Display) === */
+        .main-display {
+            position: relative;
+            width: 92%;
+            margin: 0 auto 1.5rem;
+            background: var(--bg-screen);
+            border: 3px solid var(--border-glow);
+            border-radius: 6px;
+            box-shadow: 
+                0 0 60px rgba(34, 197, 94, 0.08),
+                0 0 120px rgba(34, 197, 94, 0.03),
+                inset 0 0 40px rgba(34, 197, 94, 0.02);
+            transform: perspective(800px) rotateX(2deg);
+            transform-origin: bottom center;
+        }
+
+        /* Screen bezel */
+        .screen-bezel {
+            background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+            padding: 3px;
+            border-radius: 6px;
+        }
+
+        .screen-inner {
+            background: var(--bg-screen);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        /* Screen header bar */
+        .screen-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.4rem 0.75rem;
+            background: rgba(34, 197, 94, 0.05);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .screen-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .screen-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.55rem;
+            font-weight: 700;
+            color: var(--green);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            text-shadow: 0 0 8px var(--green-glow);
+        }
+
+        .screen-status-text {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+        }
+
+        .screen-op {
+            font-size: 0.65rem;
+            color: var(--cyan);
+        }
+
+        /* Activity feed ON the big screen */
+        .screen-feed {
+            height: 220px;
+            overflow-y: auto;
+            padding: 0.25rem 0;
+        }
+
+        .feed-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.68rem;
+            border-bottom: 1px solid rgba(34, 197, 94, 0.03);
+            transition: background 0.2s;
+        }
+
+        .feed-row:hover {
+            background: rgba(34, 197, 94, 0.03);
+        }
+
+        .feed-row .time {
+            color: var(--text-dim);
+            min-width: 42px;
+            white-space: nowrap;
+        }
+
+        .feed-row .agent-tag {
+            font-weight: 700;
+            min-width: 50px;
+            font-size: 0.62rem;
+        }
+
+        .tag-quinn { color: var(--purple); }
+        .tag-forge { color: var(--cyan); }
+        .tag-scout { color: var(--amber); }
+        .tag-cron { color: var(--blue); }
+        .tag-sys { color: var(--text-dim); }
+
+        .feed-row .msg {
+            color: var(--text-secondary);
+            flex: 1;
+        }
+
+        /* Reflection/glow under screen */
+        .screen-glow {
+            height: 20px;
+            background: radial-gradient(ellipse at 50% 0%, rgba(34, 197, 94, 0.06) 0%, transparent 70%);
+            margin: 0 5%;
+        }
+
+        /* === DESK TIERS === */
+        .desk-tiers {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Each desk tier */
+        .desk-tier {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            transform-origin: top center;
+        }
+
+        /* Front row - closer to screen, wider perspective */
+        .desk-tier.front {
+            transform: perspective(600px) rotateX(8deg) scale(0.95);
+        }
+
+        /* Back row - flight director, slightly elevated */
+        .desk-tier.back {
+            transform: perspective(600px) rotateX(3deg) scale(1);
+            margin-top: 0.5rem;
+        }
+
+        /* The actual desk surface */
+        .desk-surface {
+            display: flex;
+            align-items: stretch;
+            background: linear-gradient(180deg, #1c241c 0%, #141a14 60%, #0f150f 100%);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.4rem 0.25rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        /* Station seat at the desk */
+        .seat {
+            position: relative;
+            width: 180px;
+            padding: 0.5rem 0.6rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-right: 1px solid rgba(34, 197, 94, 0.06);
+        }
+
+        .seat:last-child { border-right: none; }
+
+        .seat:hover {
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .seat.selected {
+            background: rgba(6, 182, 212, 0.08);
+            box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.05);
+        }
+
+        .seat.empty {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        .seat.empty:hover {
+            background: transparent;
+        }
+
+        /* Flight director seat - wider */
+        .seat.director {
+            width: 240px;
+        }
+
+        /* Mini monitor on desk */
+        .mini-monitor {
+            background: var(--bg-screen);
+            border: 1px solid rgba(34, 197, 94, 0.12);
+            border-radius: 3px;
+            padding: 0.35rem 0.5rem;
+            margin-bottom: 0.4rem;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.03) inset;
+        }
+
+        .monitor-task {
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .monitor-task.idle {
+            color: var(--text-dim);
+            font-style: italic;
+        }
+
+        /* Health bar on monitor */
+        .monitor-health {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin-top: 0.25rem;
+        }
+
+        .hbar {
+            flex: 1;
+            height: 3px;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .hbar-fill {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        .hbar-fill.g { background: var(--green); }
+        .hbar-fill.a { background: var(--amber); }
+        .hbar-fill.r { background: var(--red); }
+
+        .hbar-pct {
+            font-size: 0.5rem;
+            color: var(--text-dim);
+            min-width: 22px;
+            text-align: right;
+        }
+
+        /* Agent avatar at seat */
+        .seat-agent {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .agent-avatar {
+            position: relative;
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+        }
+
+        .director .agent-avatar {
+            width: 40px;
+            height: 40px;
+        }
+
+        .avatar-face {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--bg-room);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .director .avatar-face {
+            font-size: 1.3rem;
+            border-color: var(--green);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.15);
+        }
+
+        .seat.active .avatar-face {
+            border-color: var(--green);
+        }
+
+        /* Status badge on avatar */
+        .status-badge {
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-desk);
+        }
+
+        .status-badge.go {
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green-glow);
+        }
+
+        .status-badge.stby {
+            background: var(--text-dim);
+        }
+
+        .status-badge.run {
+            background: var(--blue);
+            animation: pulse-badge 1.5s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .agent-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .agent-callsign {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 0.08em;
+        }
+
+        .director .agent-callsign {
+            color: var(--green);
+            font-size: 0.7rem;
+            text-shadow: 0 0 8px var(--green-glow);
+        }
+
+        .agent-name {
+            font-size: 0.55rem;
+            color: var(--text-dim);
+        }
+
+        .agent-go-tag {
+            font-size: 0.5rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-top: 0.1rem;
+        }
+
+        .agent-go-tag.go { color: var(--green); }
+        .agent-go-tag.stby { color: var(--text-dim); }
+
+        /* === NEW PANELS BELOW DESKS === */
+        .info-panels {
+            margin-top: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1rem;
+        }
+
+        .panel {
+            background: var(--bg-screen);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.03);
+        }
+
+        .panel-header {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--green);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            text-shadow: 0 0 8px var(--green-glow);
+        }
+
+        .learning-entry {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(34, 197, 94, 0.05);
+        }
+
+        .learning-entry:last-child {
+            border-bottom: none;
+        }
+
+        .learning-title {
+            font-size: 0.7rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .learning-body {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .learning-meta {
+            font-size: 0.55rem;
+            color: var(--text-dim);
+            margin-top: 0.25rem;
+        }
+
+        .budget-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .budget-item {
+            background: rgba(34, 197, 94, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.75rem;
+        }
+
+        .budget-label {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.4rem;
+        }
+
+        .budget-value {
+            font-size: 0.8rem;
+            color: var(--green);
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .budget-meta {
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            font-style: italic;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        /* === DETAIL PANEL === */
+        .detail-panel {
+            display: none;
+            position: fixed;
+            top: 50px;
+            right: 0;
+            width: 340px;
+            height: calc(100vh - 50px);
+            background: rgba(8, 12, 8, 0.97);
+            border-left: 1px solid var(--border-glow);
+            z-index: 50;
+            overflow-y: auto;
+            padding: 1.25rem;
+            box-shadow: -10px 0 40px rgba(0,0,0,0.7);
+        }
+
+        .detail-panel.open {
+            display: block;
+            animation: slideRight 0.2s ease-out;
+        }
+
+        @keyframes slideRight {
+            from { transform: translateX(30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .detail-close {
+            position: absolute;
+            top: 1rem; right: 1rem;
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            width: 26px; height: 26px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .detail-close:hover { border-color: var(--green); color: var(--green); }
+
+        .detail-head {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .detail-face {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            background: var(--bg-screen);
+            border: 2px solid var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+        }
+
+        .detail-title h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            color: var(--green);
+        }
+
+        .detail-title .sub {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .detail-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .detail-sect {
+            margin-bottom: 1rem;
+        }
+
+        .detail-sect-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.55rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 0.4rem;
+        }
+
+        .detail-kv {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            font-size: 0.72rem;
+            border-bottom: 1px solid rgba(34, 197, 94, 0.05);
+        }
+
+        .detail-kv .k { color: var(--text-dim); }
+        .detail-kv .v { color: var(--text-primary); }
+        .detail-kv .v.green { color: var(--green); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        @media (max-width: 800px) {
+            .seat { width: 140px; }
+            .seat.director { width: 180px; }
+            .main-display { width: 98%; }
+            .detail-panel { width: 100%; }
+            .info-panels { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="crt-overlay"></div>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-left">
+            <a href="index.html" class="back-link">← DASH</a>
+            <span class="top-title">⚡ Mission Control</span>
+        </div>
+        <div class="top-right">
+            <div class="go-pills" id="goPills"></div>
+            <span class="overall-badge go" id="overallBadge">▲ GO</span>
+            <span class="clock" id="clock">--:--:--</span>
+        </div>
+    </div>
+
+    <!-- The Room -->
+    <div class="room-wrapper">
+        <div class="room">
+            <!-- Main Display Screen -->
+            <div class="main-display">
+                <div class="screen-bezel">
+                    <div class="screen-inner">
+                        <div class="screen-header">
+                            <div class="screen-header-left">
+                                <span class="screen-label">📡 Comms Feed</span>
+                                <span class="screen-status-text">LIVE TELEMETRY</span>
+                            </div>
+                            <span class="screen-op" id="screenOp">--</span>
+                        </div>
+                        <div class="screen-feed" id="screenFeed">
+                            <div class="feed-row">
+                                <span class="time">--:--</span>
+                                <span class="agent-tag tag-sys">SYS</span>
+                                <span class="msg" style="color: var(--text-dim);">Loading telemetry...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="screen-glow"></div>
+
+            <!-- Desk Tiers -->
+            <div class="desk-tiers">
+                <!-- Front Row -->
+                <div class="desk-tier front">
+                    <div class="desk-surface" id="frontDesk"></div>
+                </div>
+
+                <!-- Back Row (Flight Director) -->
+                <div class="desk-tier back">
+                    <div class="desk-surface" id="backDesk"></div>
+                </div>
+            </div>
+
+            <!-- Primary Panels — Task Queues + Comms side by side -->
+            <div class="info-panels" style="grid-template-columns: 1fr 1fr; margin-bottom: 0;">
+                <!-- Task Queues — LIVE from TASK-QUEUE.md -->
+                <div class="panel" style="min-height: 300px;">
+                    <div class="panel-header">📋 Task Queues <span style="margin-left: auto; font-size: 0.6rem; color: var(--text-dim);">LIVE FROM AGENT FILES</span></div>
+                    <div id="taskQueues" style="max-height: 400px; overflow-y: auto;">
+                        <div class="empty-state">Loading task queues...</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity — mirror of comms feed in panel form -->
+                <div class="panel" style="min-height: 300px;">
+                    <div class="panel-header">📡 Recent Activity <span style="margin-left: auto; font-size: 0.6rem; color: var(--text-dim);">FROM AGENT FEED</span></div>
+                    <div id="activityPanel" style="max-height: 400px; overflow-y: auto;">
+                        <div class="empty-state">Loading activity...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secondary Panels -->
+            <div class="info-panels">
+                <!-- Agent Learnings -->
+                <div class="panel">
+                    <div class="panel-header">🧠 Agent Learnings</div>
+                    <div id="agentLearnings">
+                        <div class="empty-state">No learnings recorded yet</div>
+                    </div>
+                </div>
+
+                <!-- Team Learnings -->
+                <div class="panel">
+                    <div class="panel-header">📚 Team Knowledge</div>
+                    <div id="teamLearnings">
+                        <div class="empty-state">Loading team learnings...</div>
+                    </div>
+                </div>
+
+                <!-- Token Budget -->
+                <div class="panel">
+                    <div class="panel-header">💰 Token Budget</div>
+                    <div id="tokenBudget" class="budget-grid">
+                        <div class="empty-state">Loading budget data...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Panel -->
+    <div class="detail-panel" id="detailPanel">
+        <button class="detail-close" onclick="closeDetail()">✕</button>
+        <div id="detailContent"></div>
+    </div>
+
+    <script>
+        const AGENTS = {
+            'quinn': {
+                callsign: 'FLIGHT', name: 'Quinn', icon: '🔮',
+                role: 'Flight Director', row: 'back', director: true,
+                tagClass: 'tag-quinn', feedTag: 'Quinn',
+                desc: 'Opus model. Primary orchestrator and flight director. All strategic and creative decisions flow through FLIGHT. Manages agent fleet, maintains full context with Adam.'
+            },
+            'forge': {
+                callsign: 'FORGE', name: 'Forge', icon: '⚒️',
+                role: 'Builder', row: 'front', director: false,
+                tagClass: 'tag-forge', feedTag: 'Forge',
+                desc: 'Sonnet model. Developer and builder. Takes designs and specs, turns them into working code. First agent to join the team.'
+            },
+            'standby-1': {
+                callsign: 'STANDBY', name: 'Scout', icon: '🔍',
+                role: 'Research', row: 'front', director: false,
+                empty: true,
+                tagClass: 'tag-scout', feedTag: 'Scout',
+                desc: 'Future agent station. Reserved for Scout — research and analysis specialist.'
+            },
+            'standby-2': {
+                callsign: 'STANDBY', name: 'Reserve', icon: '◌',
+                role: 'Unassigned', row: 'front', director: false,
+                empty: true,
+                tagClass: 'tag-sys', feedTag: 'SYS',
+                desc: 'Future agent station. Awaiting assignment.'
+            }
+        };
+
+        let data = {};
+        let selected = null;
+        let activityFeed = [];
+
+        // Clock
+        function tick() {
+            const n = new Date();
+            document.getElementById('clock').textContent = n.toLocaleTimeString('en-AU', {hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+        }
+        setInterval(tick, 1000); tick();
+
+        // Load data
+        async function loadData() {
+            try {
+                const [agentsRes, activityRes] = await Promise.all([
+                    fetch('data/agents.json'),
+                    fetch('data/agent-activity.json')
+                ]);
+                
+                const agentsData = await agentsRes.json();
+                const activityData = await activityRes.json();
+
+                // Map agent data
+                agentsData.agents.forEach(ag => {
+                    const agentConfig = AGENTS[ag.id];
+                    if (agentConfig) {
+                        data[ag.id] = { ...agentConfig, ...ag };
+                    }
+                });
+
+                // Add standby seats
+                data['standby-1'] = AGENTS['standby-1'];
+                data['standby-2'] = AGENTS['standby-2'];
+
+                // Load activity feed
+                activityFeed = activityData.events || [];
+
+                // Update screen op status
+                const quinnTask = data.quinn?.currentTask || 'Nominal operations';
+                const quinnModel = (data.quinn?.model || 'opus').split('/').pop();
+                document.getElementById('screenOp').textContent = 
+                    `OP: ${quinnTask} | ${quinnModel}`;
+
+                renderPills();
+                renderDesks();
+                renderFeed();
+                renderAgentLearnings();
+                renderTeamLearnings();
+                renderTokenBudget();
+                
+                if (selected) showDetail(selected);
+            } catch (e) { 
+                console.error('Load error:', e); 
+            }
+        }
+
+        // GO pills
+        function renderPills() {
+            const el = document.getElementById('goPills');
+            const activeAgents = Object.entries(data).filter(([id, ag]) => !ag.empty);
+            
+            el.innerHTML = activeAgents.map(([id, ag]) => {
+                const on = ag.status === 'available' || ag.status === 'active' || ag.status === 'running';
+                return `<div class="go-pill" onclick="selectSeat('${id}')">
+                    <span class="dot ${on?'on':'off'}"></span>
+                    <span class="label">${ag.callsign}</span>
+                    <span class="val ${on?'go':'stby'}">${on?'GO':'STBY'}</span>
+                </div>`;
+            }).join('');
+
+            const active = activeAgents.filter(([_,a]) => a.status==='available'||a.status==='active'||a.status==='running').length;
+            const badge = document.getElementById('overallBadge');
+            badge.textContent = active > 0 ? '▲ GO FOR LAUNCH' : '◼ HOLD';
+            badge.className = 'overall-badge ' + (active > 0 ? 'go' : '');
+        }
+
+        // Render desk seats
+        function renderDesks() {
+            const front = Object.entries(data).filter(([_,a]) => a.row === 'front');
+            const back = Object.entries(data).filter(([_,a]) => a.row === 'back');
+
+            document.getElementById('frontDesk').innerHTML = front.map(([id,a]) => seatHTML(id,a)).join('');
+            document.getElementById('backDesk').innerHTML = back.map(([id,a]) => seatHTML(id,a)).join('');
+        }
+
+        function seatHTML(id, ag) {
+            if (ag.empty) {
+                return `<div class="seat empty ${ag.director?'director':''}">
+                    <div class="mini-monitor">
+                        <div class="monitor-task idle">Awaiting assignment</div>
+                    </div>
+                    <div class="seat-agent">
+                        <div class="agent-avatar">
+                            <div class="avatar-face" style="opacity: 0.3">${ag.icon}</div>
+                        </div>
+                        <div class="agent-info">
+                            <div class="agent-callsign" style="opacity: 0.5">${ag.callsign}</div>
+                            <div class="agent-name">${ag.name} · ${ag.role}</div>
+                            <div class="agent-go-tag stby">○ STANDBY</div>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            const on = ag.status === 'available' || ag.status === 'active' || ag.status === 'running';
+            const dir = ag.director ? 'director' : '';
+            const sel = selected === id ? 'selected' : '';
+            const act = on ? 'active' : '';
+            const badge = on ? 'go' : 'stby';
+            const task = ag.currentTask || (on ? 'Nominal' : 'Offline');
+            const taskCls = on && !ag.currentTask ? 'idle' : '';
+
+            return `<div class="seat ${dir} ${sel} ${act}" onclick="selectSeat('${id}')">
+                <div class="mini-monitor">
+                    <div class="monitor-task ${taskCls}">${task}</div>
+                </div>
+                <div class="seat-agent">
+                    <div class="agent-avatar">
+                        <div class="avatar-face">${ag.icon}</div>
+                        <div class="status-badge ${badge}"></div>
+                    </div>
+                    <div class="agent-info">
+                        <div class="agent-callsign">${ag.callsign}</div>
+                        <div class="agent-name">${ag.name} · ${ag.role}</div>
+                        <div class="agent-go-tag ${on?'go':'stby'}">${on?'● GO':'○ STANDBY'}</div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // Selection
+        function selectSeat(id) {
+            if (data[id]?.empty) return;
+            if (selected === id) { closeDetail(); return; }
+            selected = id;
+            renderDesks();
+            showDetail(id);
+        }
+
+        function showDetail(id) {
+            const ag = data[id];
+            if (!ag || ag.empty) return;
+            
+            const on = ag.status === 'available' || ag.status === 'active' || ag.status === 'running';
+
+            document.getElementById('detailContent').innerHTML = `
+                <div class="detail-head">
+                    <div class="detail-face">${ag.icon}</div>
+                    <div class="detail-title">
+                        <h3>${ag.name}</h3>
+                        <div class="sub">${ag.callsign} — ${ag.role}</div>
+                    </div>
+                </div>
+                <p class="detail-desc">${ag.desc}</p>
+                <div class="detail-sect">
+                    <div class="detail-sect-title">Status</div>
+                    <div class="detail-kv"><span class="k">State</span><span class="v ${on?'green':''}">${(ag.status||'standby').toUpperCase()}</span></div>
+                    ${ag.model?`<div class="detail-kv"><span class="k">Model</span><span class="v">${ag.model}</span></div>`:''}
+                    ${ag.currentTask?`<div class="detail-kv"><span class="k">Task</span><span class="v">${ag.currentTask}</span></div>`:''}
+                    ${ag.lastTask?`<div class="detail-kv"><span class="k">Last Task</span><span class="v">${ag.lastTask}</span></div>`:''}
+                    ${ag.lastActive?`<div class="detail-kv"><span class="k">Last Active</span><span class="v">${new Date(ag.lastActive).toLocaleString('en-AU',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</span></div>`:''}
+                    ${ag.tasksCompleted !== undefined?`<div class="detail-kv"><span class="k">Tasks Done</span><span class="v green">${ag.tasksCompleted}</span></div>`:''}
+                </div>
+                ${ag.notes?`<div class="detail-sect">
+                    <div class="detail-sect-title">Notes</div>
+                    <p style="font-size:0.7rem; color:var(--text-secondary); line-height:1.6">${ag.notes}</p>
+                </div>`:''}`;
+            
+            document.getElementById('detailPanel').classList.add('open');
+        }
+
+        function closeDetail() {
+            selected = null;
+            document.getElementById('detailPanel').classList.remove('open');
+            renderDesks();
+        }
+
+        // Activity Feed
+        function renderFeed() {
+            const el = document.getElementById('screenFeed');
+            if (!activityFeed || activityFeed.length === 0) {
+                el.innerHTML = '<div class="feed-row"><span class="time">--:--</span><span class="agent-tag tag-sys">SYS</span><span class="msg" style="color: var(--text-dim);">No activity recorded</span></div>';
+                return;
+            }
+
+            const recent = activityFeed.slice(0, 30);
+            el.innerHTML = recent.map(evt => {
+                const t = new Date(evt.timestamp);
+                const time = t.toLocaleTimeString('en-AU', {hour:'2-digit', minute:'2-digit', hour12:false});
+                const agentConfig = Object.values(AGENTS).find(a => a.feedTag === evt.agent) || AGENTS['quinn'];
+                
+                return `<div class="feed-row">
+                    <span class="time">${time}</span>
+                    <span class="agent-tag ${agentConfig.tagClass}">${evt.agent}</span>
+                    <span class="msg">${evt.headline}</span>
+                </div>`;
+            }).join('');
+        }
+
+        // Agent Learnings
+        function renderAgentLearnings() {
+            const el = document.getElementById('agentLearnings');
+            const learnings = [];
+            
+            Object.values(data).forEach(ag => {
+                if (ag.learnings && ag.learnings.length > 0) {
+                    ag.learnings.forEach(l => {
+                        learnings.push({ ...l, agent: ag.name, emoji: ag.icon });
+                    });
+                }
+            });
+
+            if (learnings.length === 0) {
+                el.innerHTML = '<div class="empty-state">No learnings recorded yet</div>';
+                return;
+            }
+
+            el.innerHTML = learnings.map(l => `
+                <div class="learning-entry">
+                    <div class="learning-title">${l.title || l.lesson}</div>
+                    ${l.description ? `<div class="learning-body">${l.description}</div>` : ''}
+                    <div class="learning-meta">${l.emoji} ${l.agent}</div>
+                </div>
+            `).join('');
+        }
+
+        // Team Learnings (from TEAM-LEARNING.md parsed as JSON)
+        async function renderTeamLearnings() {
+            const el = document.getElementById('teamLearnings');
+            
+            const teamLearnings = [
+                {
+                    category: '🔴 Critical',
+                    title: 'NAS Backup Mount Goes Stale',
+                    body: 'SMB mount gets stale handles. Fix: sudo umount -l /mnt/nas-backup then remount.'
+                },
+                {
+                    category: '🔴 Critical',
+                    title: 'Never Hardcode IPs in Frontend',
+                    body: 'LAN IPs break on Tailscale/external networks. Use window.location.hostname or relative paths.'
+                },
+                {
+                    category: '🟡 Design',
+                    title: 'CSS object-position: top',
+                    body: 'Portrait photos crop badly at center. Default to top for photo grids.'
+                },
+                {
+                    category: '🟢 Token',
+                    title: 'Heartbeats NEVER Use Opus',
+                    body: 'Routine checks use Sonnet at 1/15th the cost. Opus is for conversation and complex reasoning only.'
+                }
+            ];
+
+            el.innerHTML = teamLearnings.map(l => `
+                <div class="learning-entry">
+                    <div class="learning-meta">${l.category}</div>
+                    <div class="learning-title">${l.title}</div>
+                    <div class="learning-body">${l.body}</div>
+                </div>
+            `).join('');
+        }
+
+        // Token Budget
+        function renderTokenBudget() {
+            const el = document.getElementById('tokenBudget');
+            
+            const budget = {
+                anthropic: {
+                    plan: '$300/mo',
+                    weeklyReset: 'Friday 11:00 AEDT'
+                },
+                codex: {
+                    plan: 'ChatGPT Plus ($30/mo)',
+                    budget: '~96% remaining'
+                }
+            };
+
+            el.innerHTML = `
+                <div class="budget-item">
+                    <div class="budget-label">Anthropic (Opus + Sonnet)</div>
+                    <div class="budget-value">${budget.anthropic.plan}</div>
+                    <div class="budget-meta">Weekly reset: ${budget.anthropic.weeklyReset}</div>
+                </div>
+                <div class="budget-item">
+                    <div class="budget-label">Codex (Codex + Spark)</div>
+                    <div class="budget-value">${budget.codex.budget}</div>
+                    <div class="budget-meta">${budget.codex.plan}</div>
+                </div>
+            `;
+        }
+
+        // Task Queues — parse TASK-QUEUE.md live
+        async function renderTaskQueues() {
+            const el = document.getElementById('taskQueues');
+            const priorityColors = {
+                high: 'var(--red)',
+                medium: 'var(--amber)',
+                low: 'var(--text-dim)'
+            };
+            const statusColors = {
+                pending: { bg: 'var(--amber)', color: '#000', label: 'PENDING' },
+                'in-progress': { bg: 'var(--blue)', color: '#fff', label: 'ACTIVE' },
+                done: { bg: 'var(--green-dim)', color: 'var(--green)', label: 'DONE' }
+            };
+
+            // Parse tasks from markdown
+            function parseTasks(md) {
+                const tasks = [];
+                const taskBlocks = md.split(/^### /m).filter(b => b.trim().startsWith('TASK-') && !b.trim().startsWith('TASK-XXX'));
+                taskBlocks.forEach(block => {
+                    const lines = block.split('\n');
+                    const titleMatch = lines[0].match(/TASK-(\w+):\s*(.+)/);
+                    if (!titleMatch) return;
+                    const id = titleMatch[1];
+                    const title = titleMatch[2].trim();
+                    const fromMatch = block.match(/\*\*From:\*\*\s*(.+)/);
+                    const priorityMatch = block.match(/\*\*Priority:\*\*\s*(.+)/);
+                    const statusMatch = block.match(/\*\*Status:\*\*\s*(\S+)/);
+                    tasks.push({
+                        id, title,
+                        from: fromMatch ? fromMatch[1].trim() : '?',
+                        priority: priorityMatch ? priorityMatch[1].trim() : 'medium',
+                        status: statusMatch ? statusMatch[1].trim() : 'pending'
+                    });
+                });
+                return tasks;
+            }
+
+            let forgeTasks = [];
+            try {
+                const res = await fetch(`http://${window.location.hostname}:8081/api/file?path=agents/builder/TASK-QUEUE.md&t=${Date.now()}`);
+                if (res.ok) {
+                    const md = await res.text();
+                    forgeTasks = parseTasks(md);
+                }
+            } catch(e) {
+                // Fallback: try direct fetch
+                try {
+                    const res = await fetch(`/api/file?path=agents/builder/TASK-QUEUE.md&t=${Date.now()}`);
+                    if (res.ok) forgeTasks = parseTasks(await res.text());
+                } catch(e2) {}
+            }
+
+            const pending = forgeTasks.filter(t => t.status === 'pending');
+            const inProgress = forgeTasks.filter(t => t.status === 'in-progress');
+            const done = forgeTasks.filter(t => t.status === 'done');
+
+            let html = '';
+
+            // Quinn — orchestrator
+            html += `
+                <div style="margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                        <span style="font-size: 0.9rem;">🔮</span>
+                        <span style="font-weight: 500; color: var(--cyan);">Quinn</span>
+                        <span style="margin-left: auto; font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em;">Orchestrator</span>
+                    </div>
+                    <div style="font-size: 0.7rem; color: var(--text-secondary); margin-left: 1.4rem;">Assigns & reviews — no task queue</div>
+                </div>
+            `;
+
+            // Forge
+            html += `
+                <div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <span style="font-size: 0.9rem;">⚒️</span>
+                        <span style="font-weight: 500; color: var(--green);">Forge</span>
+                        <div style="display: flex; gap: 0.4rem; margin-left: auto; font-size: 0.65rem;">
+                            ${pending.length > 0 ? `<span style="background: var(--amber); color: #000; padding: 0.1rem 0.4rem; border-radius: 3px;">${pending.length} pending</span>` : ''}
+                            ${inProgress.length > 0 ? `<span style="background: var(--blue); color: #fff; padding: 0.1rem 0.4rem; border-radius: 3px;">${inProgress.length} active</span>` : ''}
+                            ${done.length > 0 ? `<span style="background: var(--green-dim); color: var(--green); padding: 0.1rem 0.4rem; border-radius: 3px;">${done.length} done</span>` : ''}
+                            ${pending.length === 0 && inProgress.length === 0 ? '<span style="color: var(--green);">✓ Queue clear</span>' : ''}
+                        </div>
+                    </div>
+            `;
+
+            // In-progress first, then pending
+            [...inProgress, ...pending].forEach(task => {
+                const isActive = task.status === 'in-progress';
+                const pColor = priorityColors[task.priority] || 'var(--text-dim)';
+                html += `
+                    <div style="margin: 0.4rem 0 0 1.4rem; padding: 0.5rem 0.6rem; background: ${isActive ? 'rgba(59,130,246,0.08)' : 'rgba(255,255,255,0.02)'}; border-left: 2px solid ${isActive ? 'var(--blue)' : pColor}; border-radius: 2px;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 0.6rem; font-weight: 700; padding: 0.1rem 0.3rem; border-radius: 2px; background: ${(statusColors[task.status]||statusColors.pending).bg}; color: ${(statusColors[task.status]||statusColors.pending).color};">${(statusColors[task.status]||statusColors.pending).label}</span>
+                            <span style="font-size: 0.7rem; font-weight: 600; color: ${pColor}; text-transform: uppercase;">TASK-${task.id}</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-primary); line-height: 1.4; margin-top: 0.25rem;">${task.title}</div>
+                        <div style="font-size: 0.6rem; color: var(--text-dim); margin-top: 0.2rem;">
+                            <span style="color: ${pColor}; text-transform: uppercase;">${task.priority}</span>
+                            <span style="margin: 0 0.3rem;">•</span>
+                            From ${task.from}
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Completed tasks — collapsed summary
+            if (done.length > 0) {
+                html += `
+                    <div style="margin: 0.75rem 0 0 1.4rem; font-size: 0.65rem; color: var(--text-dim);">
+                        ✓ Completed: ${done.map(t => `TASK-${t.id}`).join(', ')}
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            el.innerHTML = html;
+        }
+
+        // Activity Panel — recent events in panel form
+        function renderActivityPanel() {
+            const el = document.getElementById('activityPanel');
+            if (!activityFeed || activityFeed.length === 0) {
+                el.innerHTML = '<div class="empty-state">No activity recorded</div>';
+                return;
+            }
+
+            const recent = activityFeed.slice(-15).reverse();
+            el.innerHTML = recent.map(evt => {
+                const t = new Date(evt.timestamp);
+                const time = t.toLocaleString('en-AU', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:false});
+                const agentConfig = Object.values(AGENTS).find(a => a.feedTag === evt.agent) || AGENTS['quinn'];
+                return `
+                    <div style="display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.4rem 0.3rem; border-bottom: 1px solid var(--border); font-size: 0.7rem;">
+                        <span style="flex-shrink: 0;">${agentConfig.icon}</span>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="color: var(--text-primary); line-height: 1.3;">${evt.headline}</div>
+                            <div style="color: var(--text-dim); font-size: 0.6rem; margin-top: 0.15rem;">${time} • ${evt.category || ''}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Init
+        async function init() {
+            await loadData();
+            renderTaskQueues();
+            renderActivityPanel();
+            // SSE removed polling for agent data - real-time updates via sse-init-command.js
+            // Task queues still poll (file-based, not in data/*.json)
+            setInterval(renderTaskQueues, 30000);
+        }
+        init();
+    </script>
+    <script type="module" src="js/sse-init-command.js"></script>
+</body>
+</html>

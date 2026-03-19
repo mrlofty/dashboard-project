@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playbook | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        .playbook-shell {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .playbook-header {
+            display: grid;
+            grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.9fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-card,
+        .active-card,
+        .pattern-card {
+            background: linear-gradient(180deg, rgba(26, 26, 36, 0.98) 0%, rgba(18, 18, 26, 0.98) 100%);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+        }
+
+        .hero-card {
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::after {
+            content: "";
+            position: absolute;
+            inset: auto -100px -100px auto;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.22) 0%, rgba(168, 85, 247, 0) 68%);
+            pointer-events: none;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.35rem 0.7rem;
+            border-radius: 999px;
+            background: rgba(168, 85, 247, 0.12);
+            border: 1px solid rgba(168, 85, 247, 0.24);
+            color: #dfc2ff;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.9rem;
+        }
+
+        .hero-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            line-height: 1.05;
+            margin-bottom: 0.8rem;
+        }
+
+        .hero-copy {
+            max-width: 60ch;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .meta-pill,
+        .quick-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-height: 40px;
+            padding: 0.65rem 0.9rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .quick-link:hover {
+            border-color: rgba(168, 85, 247, 0.45);
+            background: rgba(168, 85, 247, 0.1);
+        }
+
+        .active-card {
+            padding: 1.35rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .section-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .active-pattern-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.15;
+        }
+
+        .active-pattern-meta {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+        }
+
+        .active-pattern-rule {
+            padding: 0.9rem 1rem;
+            border-radius: 14px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.14) 0%, rgba(59, 130, 246, 0.06) 100%);
+        }
+
+        .active-pattern-rule strong {
+            display: block;
+            margin-bottom: 0.35rem;
+            font-size: 0.78rem;
+            color: #b7d5ff;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .picker-label {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        .pattern-picker {
+            width: 100%;
+            padding: 0.8rem 0.9rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            font: inherit;
+        }
+
+        .pattern-picker option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .active-pattern-source {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 1rem;
+        }
+
+        .pattern-card {
+            padding: 1.2rem;
+            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pattern-card::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 3px;
+            background: var(--card-accent, var(--accent-purple));
+        }
+
+        .pattern-card:hover {
+            transform: translateY(-2px);
+            border-color: color-mix(in srgb, var(--card-accent, var(--accent-purple)) 55%, transparent);
+            box-shadow: 0 22px 42px rgba(0, 0, 0, 0.28);
+        }
+
+        .pattern-card.active {
+            border-color: color-mix(in srgb, var(--card-accent, var(--accent-purple)) 70%, white 8%);
+            box-shadow: 0 0 0 1px color-mix(in srgb, var(--card-accent, var(--accent-purple)) 35%, transparent), 0 20px 44px rgba(0, 0, 0, 0.3);
+        }
+
+        .pattern-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .pattern-title-wrap h2 {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .pattern-role {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+        }
+
+        .pattern-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            background: color-mix(in srgb, var(--card-accent, var(--accent-purple)) 18%, rgba(255, 255, 255, 0.02));
+            border: 1px solid color-mix(in srgb, var(--card-accent, var(--accent-purple)) 28%, transparent);
+            flex-shrink: 0;
+        }
+
+        .pattern-section {
+            margin-bottom: 0.95rem;
+        }
+
+        .pattern-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .pattern-section-label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-size: 0.74rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: color-mix(in srgb, var(--card-accent, var(--accent-purple)) 64%, white 24%);
+        }
+
+        .trigger-list,
+        .rules-list {
+            list-style: none;
+        }
+
+        .trigger-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+        }
+
+        .trigger-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.38rem 0.62rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #ececf5;
+            font-size: 0.8rem;
+        }
+
+        .rules-list {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .rules-list li {
+            position: relative;
+            padding-left: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            line-height: 1.45;
+        }
+
+        .rules-list li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--card-accent, var(--accent-purple));
+        }
+
+        .scan-note {
+            margin: 1.1rem 0 1.4rem;
+            padding: 0.95rem 1rem;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 980px) {
+            .playbook-header {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .playbook-shell {
+                padding: 1rem;
+            }
+
+            .hero-card,
+            .active-card,
+            .pattern-card {
+                border-radius: 16px;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+
+    <div class="playbook-shell">
+        <section class="playbook-header">
+            <article class="hero-card">
+                <div class="eyebrow">Operating Patterns</div>
+                <h1 class="hero-title">Playbook Reference</h1>
+                <p class="hero-copy">
+                    A dashboard view of the work patterns in <code>PLAYBOOK.md</code>: who joins, what phrase starts the mode,
+                    and the rules that shape how the team operates once the pattern is called.
+                </p>
+                <div class="hero-meta">
+                    <div class="meta-pill"><span>10</span><span>Patterns mapped</span></div>
+                    <div class="meta-pill"><span>Scan mode</span><span>Triggers, owners, rules</span></div>
+                    <a class="quick-link" href="../PLAYBOOK.md">Open full PLAYBOOK.md</a>
+                </div>
+            </article>
+
+            <aside class="active-card">
+                <div>
+                    <div class="section-label">Current Active Pattern</div>
+                    <div id="active-pattern-name" class="active-pattern-name">Research Sprint</div>
+                    <div id="active-pattern-meta" class="active-pattern-meta">Quinn coordinates, Scout/Hunter executes</div>
+                </div>
+
+                <div class="active-pattern-rule">
+                    <strong>Current Rule Focus</strong>
+                    <div id="active-pattern-rule-text">Sequential searches only. One research agent at a time.</div>
+                </div>
+
+                <label class="picker-label" for="pattern-picker">Manual override</label>
+                <select id="pattern-picker" class="pattern-picker" aria-label="Select active pattern">
+                    <option value="">Auto-detect from status</option>
+                </select>
+
+                <div id="active-pattern-source" class="active-pattern-source">Source: manual default</div>
+            </aside>
+        </section>
+
+        <div class="scan-note">
+            Use the dropdown to pin a mode for quick reference, or leave it on auto-detect. If a pattern name appears in
+            <code>data/status.json</code> activity or note text, this page will surface it automatically.
+        </div>
+
+        <section id="patterns-grid" class="patterns-grid" aria-label="Playbook patterns"></section>
+    </div>
+
+    <div id="shared-footer"></div>
+
+    <script src="shared.js"></script>
+    <script>
+        const PLAYBOOK_PATTERNS = [
+            {
+                id: "research-sprint",
+                name: "Research Sprint",
+                icon: "🔬",
+                who: "Quinn coordinates, Scout/Hunter executes",
+                triggers: ["Let's do a research sprint", "Queuing multiple research topics"],
+                rules: [
+                    "Sequential searches, not parallel.",
+                    "One research agent at a time.",
+                    "30-second gap between Brave API calls.",
+                    "Write findings to memory/state/research-*.md.",
+                    "Use the cheapest capable model.",
+                    "Queue topics in memory/state/research-queue.json.",
+                    "Report results as they complete."
+                ],
+                accent: "var(--accent-blue)"
+            },
+            {
+                id: "hackathon",
+                name: "Hackathon",
+                icon: "🔨",
+                who: "Adam directs, Forge builds, Quinn reviews/supports",
+                triggers: ["Let's hackathon this", "Focused build session"],
+                rules: [
+                    "One project, all focus.",
+                    "Load Forge's task queue upfront.",
+                    "Iterate fast and ship by session end.",
+                    "No distractions or side quests.",
+                    "Document what shipped in daily memory.",
+                    "Back up to NAS when done."
+                ],
+                accent: "var(--accent-orange)"
+            },
+            {
+                id: "war-room",
+                name: "War Room",
+                icon: "🚨",
+                who: "All hands, all channels",
+                triggers: ["Something's broken", "Outage", "Urgent fix needed"],
+                rules: [
+                    "TUI, Telegram, and Ops stay active.",
+                    "Fix first, document after.",
+                    "Adam can switch models via /model.",
+                    "Use Forge as canary for provider health checks.",
+                    "Escalate: retry, Forge check, model switch, then TUI.",
+                    "Write a post-mortem in daily memory."
+                ],
+                accent: "var(--accent-red)"
+            },
+            {
+                id: "all-hands",
+                name: "All Hands",
+                icon: "📢",
+                who: "Adam, Quinn, Forge — all active",
+                triggers: ["All hands", "Major decision needed", "Priority shift"],
+                rules: [
+                    "Ops Telegram group is the war table.",
+                    "Each agent gives a status update.",
+                    "Quinn relays between agents.",
+                    "Decisions go into daily memory.",
+                    "Adam has the final call on priorities."
+                ],
+                accent: "var(--accent-purple)"
+            },
+            {
+                id: "daily-standup",
+                name: "Daily Standup",
+                icon: "📋",
+                who: "Quinn delivers, all agents report",
+                triggers: ["Morning brief", "7:15 AM cron"],
+                rules: [
+                    "Cover overnight work.",
+                    "State today's plan.",
+                    "Call out blockers.",
+                    "Keep it brief.",
+                    "Deliver it to Adam's Telegram."
+                ],
+                accent: "var(--accent-green)"
+            },
+            {
+                id: "solo-project-time",
+                name: "Solo Project Time",
+                icon: "🎯",
+                who: "Any agent working independently on an assigned project",
+                triggers: ["Solo time", "Agent assigned independent work"],
+                rules: [
+                    "Freestyle within project scope.",
+                    "The agent picks the approach.",
+                    "Check in with Adam when blocked or at decision points.",
+                    "Document progress in daily memory.",
+                    "Applies to Quinn, Forge, and Scout."
+                ],
+                accent: "var(--accent-yellow)"
+            },
+            {
+                id: "quinn-time",
+                name: "Quinn Time",
+                icon: "💡",
+                who: "Quinn only",
+                triggers: ["Adam offers it", "Quiet periods"],
+                rules: [
+                    "This is personal time, not a work pattern.",
+                    "Explore, reflect, create, think.",
+                    "Update quinn.html, blog, or just exist.",
+                    "No tasks, deliverables, or pressure.",
+                    "Other agents do not get Quinn Time."
+                ],
+                accent: "#ec4899"
+            },
+            {
+                id: "content-pipeline",
+                name: "Content Pipeline",
+                icon: "📊",
+                who: "Quinn writes/publishes, future Marketing Agent distributes",
+                triggers: ["New article", "Content ready to publish"],
+                rules: [
+                    "Write the article and deploy it to the site.",
+                    "Generate an Instagram promo card.",
+                    "Draft the email campaign when Brevo is ready.",
+                    "Draft the Instagram caption with hashtags.",
+                    "Adam reviews before external sends.",
+                    "Space Instagram posts one per day."
+                ],
+                accent: "#14b8a6"
+            },
+            {
+                id: "overnight-operations",
+                name: "Overnight Operations",
+                icon: "🔄",
+                who: "Cron jobs, unattended",
+                triggers: ["Automatic", "Cron schedule"],
+                rules: [
+                    "2:00 AM NAS backup.",
+                    "3:00 AM overnight research.",
+                    "3:30 AM AAD news scanner.",
+                    "4:00 AM knowledge capture.",
+                    "6:00 AM analytics pull.",
+                    "7:15 AM daily brief.",
+                    "Use Sonnet/Hunter for cron jobs.",
+                    "Run sequentially, not in parallel.",
+                    "Alert Adam only if something important appears."
+                ],
+                accent: "#38bdf8"
+            },
+            {
+                id: "moving-day-ops",
+                name: "Moving Day Ops",
+                icon: "📦",
+                who: "Quinn assists, Adam decides",
+                triggers: ["House move planning", "Move execution"],
+                rules: [
+                    "Research apartments, fibre, and location.",
+                    "Help with checklists and timelines.",
+                    "Support Saturday cull sessions.",
+                    "Reduce stress rather than project-manage.",
+                    "Order NBN before move-in date.",
+                    "Bluefin is priority cargo."
+                ],
+                accent: "#f59e0b"
+            }
+        ];
+
+        const PATTERN_STORAGE_KEY = "qa.activePatternOverride";
+
+        function renderPatternCards(activeId) {
+            const grid = document.getElementById("patterns-grid");
+            grid.innerHTML = PLAYBOOK_PATTERNS.map((pattern) => {
+                const triggerHtml = pattern.triggers.map((trigger) => `<li class="trigger-chip">${escapeHtml(trigger)}</li>`).join("");
+                const rulesHtml = pattern.rules.map((rule) => `<li>${escapeHtml(rule)}</li>`).join("");
+                const activeClass = pattern.id === activeId ? "active" : "";
+
+                return `
+                    <article class="pattern-card ${activeClass}" style="--card-accent: ${pattern.accent};">
+                        <div class="pattern-head">
+                            <div class="pattern-title-wrap">
+                                <h2>${escapeHtml(pattern.name)}</h2>
+                                <div class="pattern-role">${escapeHtml(pattern.who)}</div>
+                            </div>
+                            <div class="pattern-icon" aria-hidden="true">${pattern.icon}</div>
+                        </div>
+                        <div class="pattern-section">
+                            <span class="pattern-section-label">Trigger Phrases</span>
+                            <ul class="trigger-list">${triggerHtml}</ul>
+                        </div>
+                        <div class="pattern-section">
+                            <span class="pattern-section-label">Rules</span>
+                            <ul class="rules-list">${rulesHtml}</ul>
+                        </div>
+                    </article>
+                `;
+            }).join("");
+        }
+
+        function renderPicker() {
+            const picker = document.getElementById("pattern-picker");
+            const options = PLAYBOOK_PATTERNS.map((pattern) => {
+                return `<option value="${pattern.id}">${escapeHtml(pattern.name)}</option>`;
+            }).join("");
+
+            picker.insertAdjacentHTML("beforeend", options);
+        }
+
+        function escapeHtml(text) {
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        function setActivePattern(pattern, sourceLabel) {
+            document.getElementById("active-pattern-name").textContent = pattern.name;
+            document.getElementById("active-pattern-meta").textContent = pattern.who;
+            document.getElementById("active-pattern-rule-text").textContent = pattern.rules[0];
+            document.getElementById("active-pattern-source").textContent = `Source: ${sourceLabel}`;
+            renderPatternCards(pattern.id);
+        }
+
+        function getPatternById(patternId) {
+            return PLAYBOOK_PATTERNS.find((pattern) => pattern.id === patternId) || PLAYBOOK_PATTERNS[0];
+        }
+
+        function getStoredOverride() {
+            try {
+                return localStorage.getItem(PATTERN_STORAGE_KEY) || "";
+            } catch (error) {
+                return "";
+            }
+        }
+
+        function setStoredOverride(patternId) {
+            try {
+                if (!patternId) {
+                    localStorage.removeItem(PATTERN_STORAGE_KEY);
+                    return;
+                }
+                localStorage.setItem(PATTERN_STORAGE_KEY, patternId);
+            } catch (error) {
+                return;
+            }
+        }
+
+        function detectPatternFromStatus(status) {
+            const haystack = [
+                status && status.activity ? status.activity : "",
+                status && status.note ? status.note : ""
+            ].join(" ").toLowerCase();
+
+            if (!haystack.trim()) {
+                return null;
+            }
+
+            return PLAYBOOK_PATTERNS.find((pattern) => {
+                const nameMatch = haystack.includes(pattern.name.toLowerCase());
+                const triggerMatch = pattern.triggers.some((trigger) => haystack.includes(trigger.toLowerCase()));
+                return nameMatch || triggerMatch;
+            }) || null;
+        }
+
+        async function loadActivePattern() {
+            const picker = document.getElementById("pattern-picker");
+            const overrideId = getStoredOverride();
+
+            if (overrideId) {
+                picker.value = overrideId;
+                setActivePattern(getPatternById(overrideId), "manual override");
+                return;
+            }
+
+            try {
+                const response = await fetch("data/status.json", { cache: "no-store" });
+                if (!response.ok) {
+                    throw new Error(`Status fetch failed: ${response.status}`);
+                }
+
+                const status = await response.json();
+                const detected = detectPatternFromStatus(status);
+
+                if (detected) {
+                    setActivePattern(detected, "auto-detected from status");
+                    return;
+                }
+
+                const fallback = getPatternById("daily-standup");
+                setActivePattern(fallback, "status available, no pattern detected");
+            } catch (error) {
+                const fallback = getPatternById("research-sprint");
+                setActivePattern(fallback, "manual default");
+            }
+        }
+
+        function bindPicker() {
+            const picker = document.getElementById("pattern-picker");
+            picker.addEventListener("change", () => {
+                const value = picker.value;
+                setStoredOverride(value);
+
+                if (!value) {
+                    loadActivePattern();
+                    return;
+                }
+
+                setActivePattern(getPatternById(value), "manual override");
+            });
+        }
+
+        function initPlaybook() {
+            renderPicker();
+            bindPicker();
+            renderPatternCards("");
+            loadActivePattern();
+        }
+
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initPlaybook);
+        } else {
+            initPlaybook();
+        }
+    </script>
+</body>
+</html>

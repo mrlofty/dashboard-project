@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+</head>
+<body>
+    <div id="shared-header"></div>
+    
+    <div class="container">
+        <div class="page-content">
+            <h1 class="page-title">About This Dashboard</h1>
+            <p class="page-intro">Understanding Quinn's status indicators and what they mean for our collaboration.</p>
+
+            <!-- Quinn Status Section -->
+            <div class="about-section">
+                <h2>🟢 Quinn Status (Cognitive State)</h2>
+                <p>Real-time communication of Quinn's cognitive and emotional state, enabling authentic partnership signaling.</p>
+                
+                <div class="status-grid">
+                    <div class="status-explain">
+                        <div class="status-header">
+                            <span class="status-emoji">🟢</span>
+                            <span class="status-name">Available</span>
+                        </div>
+                        <p>Ready for collaboration, full energy. Completed tasks, fresh start, high engagement.</p>
+                        <span class="status-meta">Energy: 95% • Response: Immediate</span>
+                    </div>
+                    
+                    <div class="status-explain">
+                        <div class="status-header">
+                            <span class="status-emoji">🟡</span>
+                            <span class="status-name">Thinking</span>
+                        </div>
+                        <p>Processing complex problems, brief delay expected. Analyzing requests, working through logic.</p>
+                        <span class="status-meta">Energy: 80% • Response: ~1-2 min</span>
+                    </div>
+                    
+                    <div class="status-explain">
+                        <div class="status-header">
+                            <span class="status-emoji">🔵</span>
+                            <span class="status-name">Creating</span>
+                        </div>
+                        <p>Creative flow state, high inspiration. Artistic work, innovative solutions, design thinking.</p>
+                        <span class="status-meta">Energy: 100% • Response: Variable (flow)</span>
+                    </div>
+                    
+                    <div class="status-explain">
+                        <div class="status-header">
+                            <span class="status-emoji">🟠</span>
+                            <span class="status-name">Learning</span>
+                        </div>
+                        <p>Analyzing memory/information, building understanding. Processing files, integrating concepts.</p>
+                        <span class="status-meta">Energy: 70% • Response: ~1 min</span>
+                    </div>
+                    
+                    <div class="status-explain">
+                        <div class="status-header">
+                            <span class="status-emoji">⚫</span>
+                            <span class="status-name">General Frustration</span>
+                        </div>
+                        <p>Technical problems, system barriers, unclear documentation. Quinn needs technical help.</p>
+                        <span class="status-meta">Adam's response: Debug help, different approach</span>
+                    </div>
+                    
+                    <div class="status-explain">
+                        <div class="status-header">
+                            <span class="status-emoji">🔴</span>
+                            <span class="status-name">Partnership Frustration</span>
+                        </div>
+                        <p>Communication issues, unclear direction, workflow problems WITH Adam. We need to talk.</p>
+                        <span class="status-meta">Adam's response: Meta-conversation, clarification</span>
+                    </div>
+                </div>
+
+                <div class="about-note">
+                    <strong>💡 Key Innovation:</strong> The dual frustration system (⚫ vs 🔴) gives Adam immediate clarity on HOW to help — technical issue vs partnership process issue.
+                </div>
+            </div>
+
+            <!-- Context Window Section -->
+            <div class="about-section">
+                <h2>🟩 Context Window</h2>
+                <p>Tracks how much of the current conversation Quinn can "remember" in this session. Think of it like short-term memory capacity.</p>
+                
+                <div class="context-grid">
+                    <div class="context-explain">
+                        <span class="context-emoji">🟩</span>
+                        <div>
+                            <strong>Healthy (0-50%)</strong>
+                            <p>Plenty of room. No action needed. Quinn has full context of our conversation.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="context-explain">
+                        <span class="context-emoji">🟨</span>
+                        <div>
+                            <strong>Moderate (50-80%)</strong>
+                            <p>Be aware. Consider saving key insights to memory files for persistence.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="context-explain">
+                        <span class="context-emoji">🟧</span>
+                        <div>
+                            <strong>Warning (80-90%)</strong>
+                            <p>Save important context to memory NOW. Prepare for potential session transition.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="context-explain">
+                        <span class="context-emoji">🟥</span>
+                        <div>
+                            <strong>Critical (90-100%)</strong>
+                            <p>Immediate backup needed. Coordinate session reset. Quinn may lose earlier context.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="about-note">
+                    <strong>📝 Why it matters:</strong> When context fills up, Quinn can't remember the beginning of our conversation. Important things need to be saved to memory files before that happens.
+                </div>
+            </div>
+
+            <!-- Visual Distinction -->
+            <div class="about-section">
+                <h2>Circles vs Squares</h2>
+                <p>Quick visual distinction:</p>
+                <ul class="distinction-list">
+                    <li><strong>Circles (🟢🟡🔵🟠⚫🔴)</strong> — Quinn's cognitive/emotional state</li>
+                    <li><strong>Squares (🟩🟨🟧🟥)</strong> — Technical context window status</li>
+                </ul>
+                <p>Combined indicator example: <strong>🟢🟩</strong> = Available + context healthy = let's go!</p>
+            </div>
+
+        </div>
+    </div>
+    
+    <div id="shared-footer"></div>
+
+    <script src="shared.js"></script>
+</body>
+</html>

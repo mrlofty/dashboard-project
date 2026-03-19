@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding AI Model Benchmarks | Quinn & Adam</title>
+    <link rel="stylesheet" href="../shared.css">
+    <style>
+        .guide-container { max-width: 800px; margin: 0 auto; padding: 2rem; }
+        
+        .guide-header { margin-bottom: 2rem; }
+        .guide-header h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+        .guide-header p { color: var(--text-secondary); line-height: 1.6; }
+
+        .section { margin-bottom: 2.5rem; }
+        .section h2 { font-size: 1.2rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .section h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--accent-purple); }
+
+        .bench-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+        .bench-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.25rem; }
+        .bench-full { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .bench-desc { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5; }
+        .bench-example { font-size: 0.8rem; color: var(--accent-purple); margin-top: 0.4rem; font-style: italic; }
+        .bench-who { font-size: 0.75rem; margin-top: 0.4rem; padding: 0.2rem 0.5rem; background: rgba(168,85,247,0.1); border-radius: 4px; display: inline-block; }
+
+        .tip-box {
+            background: rgba(34, 197, 94, 0.08);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .tip-box h3 { color: #22c55e; margin-bottom: 0.5rem; }
+        .tip-box p, .tip-box li { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+
+        .warn-box {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .warn-box h3 { color: #ef4444; margin-bottom: 0.5rem; }
+        .warn-box p, .warn-box li { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            margin: 1rem 0;
+        }
+        .compare-table th {
+            text-align: left;
+            padding: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        .compare-table td {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .score-high { color: #22c55e; font-weight: 600; }
+        .score-mid { color: #eab308; }
+        .score-low { color: #ef4444; }
+
+        .tldr {
+            background: var(--bg-card);
+            border: 2px solid var(--accent-purple);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .tldr h2 { color: var(--accent-purple); margin-bottom: 0.75rem; font-size: 1.1rem; }
+        .tldr li { font-size: 0.875rem; line-height: 1.8; color: var(--text-secondary); }
+        .tldr strong { color: var(--text-primary); }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+        .back-link:hover { color: var(--accent-purple); }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+
+    <div class="guide-container">
+        <a href="../system.html" class="back-link">← Back to System</a>
+        
+        <div class="guide-header">
+            <h1>🧠 Understanding AI Model Benchmarks</h1>
+            <p>A plain-language guide to how AI models are compared, what the scores mean, and why you shouldn't trust any single number.</p>
+        </div>
+
+        <div class="tldr">
+            <h2>🎯 TL;DR</h2>
+            <ul>
+                <li><strong>No single number</strong> tells you which model is "best"</li>
+                <li><strong>Arena ELO</strong> (human preference) is the closest to "real world good"</li>
+                <li><strong>Companies cherry-pick</strong> the benchmarks they win on</li>
+                <li><strong>For us</strong>, tool-call reliability matters more than any benchmark</li>
+                <li><strong>Cost per quality</strong> is the real metric — 90% as good at 5% the cost wins</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📊 The Major Benchmarks</h2>
+
+            <div class="bench-card">
+                <div class="bench-name">MMLU</div>
+                <div class="bench-full">Massive Multitask Language Understanding</div>
+                <div class="bench-desc">Tests general knowledge across 57 subjects — history, maths, law, medicine, computer science. Like giving a model a university-level exam across every faculty.</div>
+                <div class="bench-example">Example: "What is the capital of Burkina Faso?" or "Explain the Krebs cycle"</div>
+                <div class="bench-who">Who cares: Everyone. It's the SAT score of AI models.</div>
+            </div>
+
+            <div class="bench-card">
+                <div class="bench-name">SWE-Bench (Verified)</div>
+                <div class="bench-full">Software Engineering Benchmark</div>
+                <div class="bench-desc">Can the model actually fix real bugs from real GitHub repos? Not toy problems — actual production issues from projects like Django, Flask, and scikit-learn. The "verified" variant means humans confirmed the test cases are fair.</div>
+                <div class="bench-example">Example: "Here's a failing test in Django. Fix the bug that causes it."</div>
+                <div class="bench-who">Who cares: Anyone using AI for coding (us with Forge/Codex).</div>
+            </div>
+
+            <div class="bench-card">
+                <div class="bench-name">HumanEval</div>
+                <div class="bench-full">Code Generation from Descriptions</div>
+                <div class="bench-desc">Given a function description and signature, can the model write correct code? 164 problems ranging from simple to tricky. Older benchmark — most top models score 90%+ now, so it's less useful for differentiating.</div>
+                <div class="bench-example">Example: "Write a function that returns the nth Fibonacci number"</div>
+                <div class="bench-who">Who cares: Coding use cases, but SWE-Bench is more meaningful now.</div>
+            </div>
+
+            <div class="bench-card">
+                <div class="bench-name">GPQA (Diamond)</div>
+                <div class="bench-full">Graduate-Level Google-Proof Q&A</div>
+                <div class="bench-desc">Questions written by PhD students that are so hard you can't Google the answer. Tests deep scientific reasoning — physics, chemistry, biology. "Diamond" is the hardest subset.</div>
+                <div class="bench-example">Example: A quantum mechanics problem that would stump most physics grads</div>
+                <div class="bench-who">Who cares: Research/science applications. Less relevant for us.</div>
+            </div>
+
+            <div class="bench-card">
+                <div class="bench-name">MATH (500)</div>
+                <div class="bench-full">Mathematical Problem Solving</div>
+                <div class="bench-desc">500 competition-level maths problems. Tests reasoning chains, not just pattern matching. A model needs to show its working, not just guess the answer.</div>
+                <div class="bench-example">Example: "Prove that for all integers n > 2, nⁿ > (n+1)!"</div>
+                <div class="bench-who">Who cares: Reasoning-heavy tasks, data analysis.</div>
+            </div>
+
+            <div class="bench-card">
+                <div class="bench-name">Arena ELO (LMSys Chatbot Arena)</div>
+                <div class="bench-full">Human Preference Rating</div>
+                <div class="bench-desc">Real humans chat with two anonymous models side by side and pick which response they prefer. Over millions of votes, this produces an ELO rating (like chess). The closest benchmark to "which model do people actually like using?"</div>
+                <div class="bench-example">Example: You ask both models the same question and pick the better answer, not knowing which is which</div>
+                <div class="bench-who">Who cares: Everyone. This is the real-world test. But it skews toward conversation quality — doesn't test tool use or coding well.</div>
+            </div>
+
+            <div class="bench-card">
+                <div class="bench-name">MT-Bench</div>
+                <div class="bench-full">Multi-Turn Conversation Benchmark</div>
+                <div class="bench-desc">Tests how well a model handles multi-turn conversations — follow-up questions, context retention, instruction following across several exchanges. Scored by a judge model (usually GPT-4).</div>
+                <div class="bench-example">Example: Ask a question, then ask a follow-up that requires remembering the first answer</div>
+                <div class="bench-who">Who cares: Chat/assistant use cases (directly relevant to us).</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📏 Quick Comparison — Current Models (2026)</h2>
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>MMLU</th>
+                        <th>SWE-Bench</th>
+                        <th>Arena ELO</th>
+                        <th>Cost (in/out per M)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Claude Opus 4.6</strong></td>
+                        <td class="score-high">~92%</td>
+                        <td class="score-high">~72%</td>
+                        <td class="score-high">Top 3</td>
+                        <td>$15 / $75</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Claude Sonnet 4.5</strong></td>
+                        <td class="score-high">~90%</td>
+                        <td class="score-high">~70%</td>
+                        <td class="score-high">Top 5</td>
+                        <td>$3 / $15</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GPT-5</strong></td>
+                        <td class="score-high">~93%</td>
+                        <td class="score-high">~75%</td>
+                        <td class="score-high">Top 3</td>
+                        <td>API restricted</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DeepSeek R1</strong></td>
+                        <td class="score-high">~91%</td>
+                        <td class="score-mid">~65%</td>
+                        <td class="score-high">Top 5</td>
+                        <td>$0.55 / $2.19</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Kimi K2.5</strong></td>
+                        <td class="score-mid">~88%</td>
+                        <td class="score-high">~77%</td>
+                        <td class="score-mid">Top 10</td>
+                        <td>$0.60 / $3.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gemini 2.5 Pro</strong></td>
+                        <td class="score-high">~92%</td>
+                        <td class="score-mid">~63%</td>
+                        <td class="score-high">Top 5</td>
+                        <td>Free tier</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Llama 3.3 70B</strong></td>
+                        <td class="score-mid">~86%</td>
+                        <td class="score-mid">~55%</td>
+                        <td class="score-mid">Top 15</td>
+                        <td>$0.60 / $0.80</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                ⚠️ Scores are approximate and may vary by benchmark version. Companies self-report — take with a grain of salt. Arena ELO rankings shift frequently.
+            </p>
+        </div>
+
+        <div class="warn-box">
+            <h3>⚠️ Why Benchmarks Lie</h3>
+            <ul>
+                <li><strong>Cherry-picking:</strong> Companies highlight benchmarks they win. You won't see Kimi advertising their MMLU score.</li>
+                <li><strong>Training on the test:</strong> Some models may have seen benchmark questions during training — inflating scores.</li>
+                <li><strong>Benchmark ≠ real use:</strong> A model that aces MATH might be terrible at writing a friendly email.</li>
+                <li><strong>No tool-call benchmark:</strong> There's no standard benchmark for "can it use tools reliably" — which is our #1 need.</li>
+                <li><strong>Vibes matter:</strong> Two models with identical scores can feel completely different to use.</li>
+            </ul>
+        </div>
+
+        <div class="tip-box">
+            <h3>✅ What Actually Matters For Us</h3>
+            <ul>
+                <li><strong>Tool call reliability:</strong> Does it correctly invoke our tools without hallucinating parameters?</li>
+                <li><strong>Instruction following:</strong> Does it do what we ask, or go off on tangents?</li>
+                <li><strong>Arena ELO:</strong> Closest to "real humans think it's good"</li>
+                <li><strong>Cost per quality:</strong> 90% of Opus quality at 5% of the cost = Forge's sweet spot</li>
+                <li><strong>Context window:</strong> How much conversation history can it hold?</li>
+                <li><strong>The vibe test:</strong> Run it in our setup and see if it feels right</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🔗 Useful Resources</h2>
+            <ul style="font-size: 0.875rem; line-height: 2; color: var(--text-secondary);">
+                <li><a href="https://lmarena.ai/" target="_blank" style="color: var(--accent-purple);">LMSys Chatbot Arena</a> — Live human preference rankings</li>
+                <li><a href="https://artificialanalysis.ai/" target="_blank" style="color: var(--accent-purple);">Artificial Analysis</a> — Speed, price, and quality comparisons</li>
+                <li><a href="https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard" target="_blank" style="color: var(--accent-purple);">Open LLM Leaderboard</a> — Open source model rankings</li>
+                <li><a href="https://openrouter.ai/rankings" target="_blank" style="color: var(--accent-purple);">OpenRouter Rankings</a> — Usage and pricing across models</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--text-secondary);">
+            Last updated: March 2, 2026 · Quinn & Adam
+        </div>
+    </div>
+
+    <div id="shared-footer"></div>
+    <script src="../shared.js?v=20260302"></script>
+</body>
+</html>

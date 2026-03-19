@@ -1,0 +1,160 @@
+{
+  "models": [
+    {
+      "id": "alex-foster",
+      "name": "Alex Foster",
+      "instagram": "alex_foster_unofficial",
+      "location": "Melbourne",
+      "style": [
+        "fitness"
+      ],
+      "permission": "pending",
+      "permission_date": null,
+      "permission_notes": "",
+      "notes": "",
+      "added": "2026-02-15"
+    },
+    {
+      "id": "nam",
+      "name": "Nam",
+      "instagram": "yldpn_01",
+      "location": "Melbourne",
+      "style": [
+        "street",
+        "casual",
+        "editorial"
+      ],
+      "permission": "pending",
+      "permission_date": null,
+      "permission_notes": "",
+      "notes": "Special \ud83d\udc9c",
+      "added": "2026-02-15"
+    },
+    {
+      "id": "alex-stone",
+      "name": "Alex Stone",
+      "instagram": "alexstonescenes",
+      "location": "Melbourne",
+      "style": [
+        "street",
+        "urban",
+        "editorial"
+      ],
+      "permission": "pending",
+      "permission_date": null,
+      "permission_notes": "",
+      "notes": "Need hi-res version of Cruel Intentions image (current is Instagram export ~500KB)",
+      "added": "2026-02-15"
+    },
+    {
+      "id": "sam-brown",
+      "name": "Sam Brown",
+      "instagram": "sambrownmodelling",
+      "location": "Melbourne",
+      "style": [
+        "editorial",
+        "natural light"
+      ],
+      "permission": "pending",
+      "permission_date": null,
+      "permission_notes": "",
+      "notes": "",
+      "added": "2026-02-15"
+    },
+    {
+      "id": "ghostgirl-cos",
+      "name": "Ghostgirl Cos",
+      "instagram": "ghostgirl_cos",
+      "location": "Melbourne",
+      "style": [
+        "vintage",
+        "romantic",
+        "cosplay",
+        "editorial"
+      ],
+      "permission": "pending",
+      "permission_date": null,
+      "permission_notes": "Posted to Instagram - good engagement",
+      "notes": "Great shot getting community attention",
+      "added": "2026-02-15"
+    },
+    {
+      "id": "dana",
+      "name": "Dana",
+      "instagram": "dana_xo_ox",
+      "location": "Melbourne",
+      "style": [
+        "vintage",
+        "romantic",
+        "editorial"
+      ],
+      "permission": "pending",
+      "permission_date": null,
+      "permission_notes": "",
+      "notes": "",
+      "added": "2026-02-15"
+    },
+    {
+      "id": "jay-lam",
+      "name": "Jay Lam",
+      "instagram": "jay_lam89",
+      "location": "Melbourne",
+      "style": [
+        "tattoos",
+        "fitness",
+        "editorial"
+      ],
+      "permission": "pending",
+      "permission_date": null,
+      "permission_notes": "",
+      "notes": "Great to work with. Impressive ink.",
+      "added": "2026-02-15"
+    },
+    {
+      "id": "elliot",
+      "name": "Elliot (Emilio Brett Hall)",
+      "instagram": "emiliobretthall.public",
+      "location": "Melbourne",
+      "style": [
+        "fashion",
+        "moody",
+        "editorial"
+      ],
+      "permission": "pending",
+      "permission_date": null,
+      "permission_notes": "Established commercial model",
+      "notes": "Good rapport - long conversations during shoots.",
+      "added": "2026-02-15"
+    },
+    {
+      "id": "anmol",
+      "name": "Anmol",
+      "instagram": "anmol_moudgil",
+      "location": "Melbourne",
+      "style": [
+        "fashion",
+        "editorial",
+        "night"
+      ],
+      "permission": "pending",
+      "permission_date": null,
+      "permission_notes": "",
+      "notes": "",
+      "created": "2026-02-16"
+    },
+    {
+      "id": "dusty",
+      "name": "Dusty",
+      "instagram": "dusty_brownboy",
+      "location": "Melbourne",
+      "style": [
+        "fashion"
+      ],
+      "permission": "pending",
+      "permission_date": null,
+      "permission_notes": "",
+      "notes": "Brunswick Life",
+      "added": "2026-02-21"
+    }
+  ]
+}

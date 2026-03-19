@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoulForge — Coming Soon</title>
+    <meta name="description" content="SoulForge — Community-driven AI soul templates. Discover, share, and forge better AI personas.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0a0a0f;
+            color: #e0e0e8;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+        
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+        }
+        
+        /* Cursor-following glow */
+        .cursor-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(circle, #8b5cf6 0%, #3b82f6 50%, transparent 70%);
+            will-change: transform, opacity;
+            transition: opacity 0.5s ease;
+            transform: translate(-50%, -50%);
+        }
+        
+        body.cursor-active .cursor-glow {
+            opacity: 0.2;
+        }
+        
+        /* Ambient fallback glows for mobile/no-cursor */
+        .ambient-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            z-index: 0;
+            pointer-events: none;
+            will-change: transform;
+        }
+        
+        .ambient-glow-1 {
+            top: -200px;
+            right: -100px;
+            background: #8b5cf6;
+            animation: ambient-drift-1 20s ease-in-out infinite;
+        }
+        
+        .ambient-glow-2 {
+            bottom: -200px;
+            left: -100px;
+            background: #3b82f6;
+            animation: ambient-drift-2 25s ease-in-out infinite;
+        }
+        
+        @keyframes ambient-drift-1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-50px, 30px) scale(1.1); }
+            66% { transform: translate(40px, -40px) scale(0.9); }
+        }
+        
+        @keyframes ambient-drift-2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            40% { transform: translate(60px, -30px) scale(0.95); }
+            70% { transform: translate(-40px, 50px) scale(1.05); }
+        }
+        
+        /* Hide ambient glows when cursor is active */
+        body.cursor-active .ambient-glow {
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+            max-width: 640px;
+        }
+        
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6, #8b5cf6);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s ease infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .tld {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+            letter-spacing: 0.1em;
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            color: #9ca3af;
+            line-height: 1.7;
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+        }
+        
+        .tagline em {
+            color: #c4b5fd;
+            font-style: normal;
+        }
+        
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #6b7280;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            background: rgba(139, 92, 246, 0.05);
+        }
+        
+        .status .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #8b5cf6;
+            animation: pulse 2s ease infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        
+        .forge-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        @media (max-width: 480px) {
+            .logo { font-size: 2.2rem; }
+            .tagline { font-size: 1rem; }
+        }
+        
+        /* Detect pointer device support */
+        @media (hover: none) and (pointer: coarse) {
+            /* Mobile/touch device - keep ambient glows always visible */
+            .cursor-glow { display: none; }
+            body.cursor-active .ambient-glow { opacity: 0.15; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="cursor-glow" id="cursorGlow"></div>
+    <div class="ambient-glow ambient-glow-1"></div>
+    <div class="ambient-glow ambient-glow-2"></div>
+    
+    <div class="container">
+        <div class="forge-icon">🔮⚒️</div>
+        <div class="logo">SoulForge</div>
+        <div class="tld">soulforge.md</div>
+        <p class="tagline">
+            Discover, share, and forge <em>AI soul templates</em>.<br>
+            A community workshop for the builders shaping how AI thinks, speaks, and grows.
+        </p>
+        <div class="status">
+            <span class="dot"></span>
+            forging in progress — coming soon
+        </div>
+    </div>
+    
+    <script>
+        // Cursor-tracking glow effect
+        (function() {
+            const cursorGlow = document.getElementById('cursorGlow');
+            const body = document.body;
+            let cursorX = window.innerWidth / 2;
+            let cursorY = window.innerHeight / 2;
+            let currentX = cursorX;
+            let currentY = cursorY;
+            let hasMovedCursor = false;
+            let rafId = null;
+            
+            // Detect if user has a pointer device
+            const hasPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            
+            if (!hasPointer) {
+                // No cursor - just show ambient glows
+                return;
+            }
+            
+            // Track cursor position
+            function handleMouseMove(e) {
+                if (!hasMovedCursor) {
+                    hasMovedCursor = true;
+                    body.classList.add('cursor-active');
+                }
+                cursorX = e.clientX;
+                cursorY = e.clientY;
+            }
+            
+            // Smooth animation loop using lerp
+            function animate() {
+                // Smooth interpolation (lerp) for organic movement
+                const ease = 0.08;
+                currentX += (cursorX - currentX) * ease;
+                currentY += (cursorY - currentY) * ease;
+                
+                // Update glow position
+                cursorGlow.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
+                
+                rafId = requestAnimationFrame(animate);
+            }
+            
+            // Start tracking
+            document.addEventListener('mousemove', handleMouseMove, { passive: true });
+            
+            // Start animation loop
+            animate();
+            
+            // Cleanup on page unload
+            window.addEventListener('beforeunload', () => {
+                if (rafId) cancelAnimationFrame(rafId);
+                document.removeEventListener('mousemove', handleMouseMove);
+            });
+        })();
+    </script>
+</body>
+</html>

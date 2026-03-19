@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .memory-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: calc(100vh - 140px);
+        }
+
+        @media (max-width: 900px) {
+            .memory-layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar { display: none; }
+            .sidebar.mobile-open { display: block; position: fixed; left: 0; top: 60px; bottom: 0; width: 280px; z-index: 100; background: var(--bg-primary); padding: 1rem; overflow-y: auto; }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1rem;
+            height: fit-content;
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .file-item {
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .file-item:hover {
+            background: rgba(168, 85, 247, 0.1);
+            color: var(--text-primary);
+        }
+
+        .file-item.active {
+            background: var(--accent-purple);
+            color: white;
+        }
+
+        .file-date {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-left: auto;
+        }
+
+        .file-item.active .file-date {
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Main content */
+        .memory-main {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            min-height: 400px;
+        }
+
+        .memory-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .memory-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .memory-title h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .memory-type {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .memory-type.daily { background: var(--accent-purple); color: white; }
+        .memory-type.core { background: #f59e0b; color: white; }
+        .memory-type.topic { background: #22c55e; color: white; }
+
+        .memory-path {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-family: monospace;
+        }
+
+        /* Markdown content styling */
+        .memory-content {
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .memory-content h1 {
+            font-size: 1.75rem;
+            margin: 1.5rem 0 1rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .memory-content h2 {
+            font-size: 1.4rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .memory-content h3 {
+            font-size: 1.15rem;
+            margin: 1.25rem 0 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .memory-content h4, .memory-content h5, .memory-content h6 {
+            font-size: 1rem;
+            margin: 1rem 0 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .memory-content p {
+            margin: 0.75rem 0;
+        }
+
+        .memory-content ul, .memory-content ol {
+            margin: 0.75rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .memory-content li {
+            margin: 0.25rem 0;
+        }
+
+        .memory-content strong {
+            color: var(--text-primary);
+        }
+
+        .memory-content em {
+            color: var(--accent-purple);
+        }
+
+        .memory-content code {
+            background: rgba(168, 85, 247, 0.15);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85em;
+            color: var(--accent-purple);
+        }
+
+        .memory-content pre {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .memory-content pre code {
+            background: none;
+            padding: 0;
+            color: var(--text-secondary);
+        }
+
+        .memory-content blockquote {
+            border-left: 3px solid var(--accent-purple);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .memory-content hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .memory-content a {
+            color: var(--accent-purple);
+            text-decoration: none;
+        }
+
+        .memory-content a:hover {
+            text-decoration: underline;
+        }
+
+        .memory-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .memory-content th, .memory-content td {
+            border: 1px solid var(--border);
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+        }
+
+        .memory-content th {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        /* Welcome state */
+        .welcome-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .welcome-state .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-state h2 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Search */
+        .search-box {
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+    
+    <div class="memory-layout">
+        <div class="sidebar" id="sidebar">
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Search files..." id="file-search">
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">📚 Core Files</div>
+                <ul class="file-list" id="core-files"></ul>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">📅 Daily Memory</div>
+                <ul class="file-list" id="daily-files"></ul>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">🏷️ Topics</div>
+                <ul class="file-list" id="topic-files"></ul>
+            </div>
+        </div>
+
+        <div class="memory-main" id="memory-main">
+            <div class="welcome-state" id="welcome-state">
+                <div class="icon">🧠</div>
+                <h2>Quinn's Memory</h2>
+                <p>Select a file from the sidebar to view its contents.</p>
+                <p style="margin-top: 1rem; font-size: 0.85rem;">Daily memories, topics, and core identity files — all rendered in markdown.</p>
+            </div>
+            <div id="memory-content" style="display: none;">
+                <div class="memory-header">
+                    <div class="memory-title">
+                        <h1 id="file-title">Loading...</h1>
+                        <span class="memory-type" id="file-type">daily</span>
+                    </div>
+                    <div class="memory-path" id="file-path"></div>
+                </div>
+                <div class="memory-content" id="markdown-content"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="shared-footer"></div>
+
+    <script>
+        const API_BASE = `http://${window.location.hostname}:8081`;
+        let allFiles = [];
+        let currentFile = null;
+
+        // Load file list
+        async function loadFileList() {
+            try {
+                const response = await fetch(`${API_BASE}/api/memory`);
+                const data = await response.json();
+                allFiles = data.files;
+                renderFileList(allFiles);
+            } catch (err) {
+                console.error('Failed to load files:', err);
+            }
+        }
+
+        // Render file list in sidebar
+        function renderFileList(files) {
+            const coreList = document.getElementById('core-files');
+            const dailyList = document.getElementById('daily-files');
+            const topicList = document.getElementById('topic-files');
+
+            coreList.innerHTML = '';
+            dailyList.innerHTML = '';
+            topicList.innerHTML = '';
+
+            files.forEach(file => {
+                const li = document.createElement('li');
+                li.className = 'file-item';
+                li.dataset.id = file.id;
+
+                const icon = file.type === 'core' ? '📄' : file.type === 'daily' ? '📅' : '🏷️';
+                const displayName = file.name.replace('.md', '');
+                
+                if (file.type === 'daily') {
+                    const date = new Date(file.date + 'T00:00:00');
+                    const formatted = date.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+                    li.innerHTML = `${icon} ${formatted}`;
+                } else {
+                    li.innerHTML = `${icon} ${displayName}`;
+                }
+
+                li.onclick = () => loadFile(file.id);
+
+                if (file.type === 'core') coreList.appendChild(li);
+                else if (file.type === 'daily') dailyList.appendChild(li);
+                else topicList.appendChild(li);
+            });
+        }
+
+        // Load and render a file
+        async function loadFile(fileId) {
+            // Update active state
+            document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
+            document.querySelector(`[data-id="${fileId}"]`)?.classList.add('active');
+
+            try {
+                const response = await fetch(`${API_BASE}/api/memory/read?id=${encodeURIComponent(fileId)}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+
+                currentFile = data;
+
+                // Show content, hide welcome
+                document.getElementById('welcome-state').style.display = 'none';
+                document.getElementById('memory-content').style.display = 'block';
+
+                // Update header
+                document.getElementById('file-title').textContent = data.name.replace('.md', '');
+                document.getElementById('file-type').textContent = data.type;
+                document.getElementById('file-type').className = `memory-type ${data.type}`;
+                document.getElementById('file-path').textContent = fileId;
+
+                // Render markdown
+                const html = marked.parse(data.content);
+                document.getElementById('markdown-content').innerHTML = html;
+
+                // Update URL
+                history.replaceState(null, '', `memory.html#${fileId}`);
+
+            } catch (err) {
+                console.error('Failed to load file:', err);
+            }
+        }
+
+        // Search files
+        document.getElementById('file-search').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            if (!query) {
+                renderFileList(allFiles);
+                return;
+            }
+            const filtered = allFiles.filter(f => 
+                f.name.toLowerCase().includes(query) || 
+                f.id.toLowerCase().includes(query)
+            );
+            renderFileList(filtered);
+        });
+
+        // Handle deep linking
+        function handleHash() {
+            const hash = window.location.hash.slice(1);
+            if (hash) {
+                loadFile(hash);
+            }
+        }
+
+        // Initialize
+        loadFileList().then(() => {
+            handleHash();
+        });
+
+        window.addEventListener('hashchange', handleHash);
+    </script>
+    <script src="shared.js"></script>
+</body>
+</html>

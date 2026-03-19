@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DJ Quinn | Quinn & Adam Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/shared.css" />
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #141414;
+      --surface-soft: #191920;
+      --border: #2a2a2a;
+      --text: #f5f5f5;
+      --muted: #aaaaaa;
+      --spotify: #1db954;
+      --spotify-soft: rgba(29, 185, 84, 0.2);
+      --danger: #ef4444;
+      --radius: 14px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 90% -10%, rgba(29, 185, 84, 0.08), transparent 35%), var(--bg);
+      color: var(--text);
+    }
+
+    .page-wrap {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .content {
+      flex: 1;
+      padding: 28px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .page-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: end;
+      margin-bottom: 22px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(1.6rem, 2.5vw, 2.4rem);
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .live-pill {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--spotify);
+      box-shadow: 0 0 0 0 rgba(29, 185, 84, 0.7);
+      animation: pulse 1.8s infinite;
+    }
+
+    .section {
+      margin-top: 24px;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 1.08rem;
+      letter-spacing: 0.01em;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--surface-soft), var(--surface));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .now-playing {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .now-playing::after {
+      content: "";
+      position: absolute;
+      inset: auto -30px -40px auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(29, 185, 84, 0.15), transparent 68%);
+      pointer-events: none;
+    }
+
+    .cover-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 300px;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #101015;
+    }
+
+    .cover-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .equalizer {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      display: none;
+      align-items: flex-end;
+      gap: 4px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(3px);
+    }
+
+    .equalizer.playing {
+      display: inline-flex;
+    }
+
+    .eq-bar {
+      width: 4px;
+      height: 14px;
+      border-radius: 6px;
+      background: var(--spotify);
+      transform-origin: bottom;
+      animation: bounce 0.8s ease-in-out infinite alternate;
+    }
+
+    .eq-bar:nth-child(2) { animation-duration: 0.65s; }
+    .eq-bar:nth-child(3) { animation-duration: 0.95s; }
+    .eq-bar:nth-child(4) { animation-duration: 0.72s; }
+    .eq-bar:nth-child(5) { animation-duration: 0.87s; }
+
+    .np-title {
+      margin: 0;
+      font-size: clamp(1.25rem, 2vw, 1.8rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .np-artist,
+    .np-album,
+    .status,
+    .meta-line,
+    .small {
+      margin-top: 6px;
+      color: var(--muted);
+    }
+
+    .np-artist {
+      font-size: 1.02rem;
+      color: #d5d5d5;
+      font-weight: 500;
+    }
+
+    .np-album {
+      font-size: 0.95rem;
+    }
+
+    .progress-wrap {
+      margin-top: 14px;
+    }
+
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #23232a;
+      border: 1px solid #333;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #17a84b, var(--spotify));
+      transition: width 0.9s linear;
+    }
+
+    .np-links {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-link {
+      text-decoration: none;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: #15151b;
+      color: #ededed;
+      padding: 9px 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .btn-link.spotify {
+      border-color: rgba(29, 185, 84, 0.55);
+      background: var(--spotify-soft);
+      color: #d9ffe8;
+    }
+
+    .list-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .pick-card {
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .pick-track {
+      margin: 0;
+      font-size: 1.02rem;
+    }
+
+    .pick-artist,
+    .pick-note,
+    .pick-date {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .pick-note {
+      color: #d8d8d8;
+    }
+
+    .profile-wrap {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .profile-summary {
+      margin: 0;
+      color: #dadada;
+      line-height: 1.6;
+    }
+
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .pillar-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      background: #121219;
+    }
+
+    .pillar-title {
+      margin: 0;
+      font-size: 0.98rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .artists-line {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .recent-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .recent-item {
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #111117;
+    }
+
+    .recent-item img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #2f2f2f;
+    }
+
+    .recent-track {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .recent-artist {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .recent-time {
+      color: var(--muted);
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .artists-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+    }
+
+    .artist-card {
+      padding: 12px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .artist-image {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      background: #0f0f15;
+    }
+
+    .artist-name {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .genres {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      border: 1px solid #2f3b33;
+      color: #bde8cb;
+      background: rgba(29, 185, 84, 0.15);
+    }
+
+    .error {
+      color: #ffb7b7;
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      background: rgba(239, 68, 68, 0.09);
+      padding: 10px 12px;
+      border-radius: 9px;
+      font-size: 0.88rem;
+    }
+
+    .empty {
+      color: var(--muted);
+      padding: 14px;
+      border: 1px dashed #2c2c35;
+      border-radius: 10px;
+      background: #101017;
+      font-size: 0.9rem;
+    }
+
+    @keyframes bounce {
+      from { transform: scaleY(0.4); opacity: 0.85; }
+      to { transform: scaleY(1.55); opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(29, 185, 84, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(29, 185, 84, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(29, 185, 84, 0); }
+    }
+
+    @media (max-width: 1024px) {
+      .now-playing {
+        grid-template-columns: 1fr;
+      }
+
+      .cover-wrap {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .content {
+        padding: 20px 14px 28px;
+      }
+
+      .pillars-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .recent-item {
+        grid-template-columns: 56px minmax(0, 1fr);
+      }
+
+      .recent-item img {
+        width: 56px;
+        height: 56px;
+      }
+
+      .recent-time {
+        grid-column: 2;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <main class="content">
+      <header class="page-header">
+        <div>
+          <h1 class="title">DJ Quinn Music Dashboard</h1>
+          <p class="subtitle">Live Spotify activity, Quinn's curation, and Adam's music profile.</p>
+        </div>
+        <div id="livePill" class="live-pill"><span class="live-dot"></span><span id="liveText">Syncing live playback...</span></div>
+      </header>
+
+      <section class="section">
+        <h2 class="section-title">Now Playing</h2>
+        <article class="card now-playing" id="nowPlayingCard">
+          <div class="cover-wrap">
+            <img id="nowAlbumArt" src="" alt="Current track album art" />
+            <div class="equalizer" id="equalizer" aria-hidden="true">
+              <span class="eq-bar"></span>
+              <span class="eq-bar"></span>
+              <span class="eq-bar"></span>
+              <span class="eq-bar"></span>
+              <span class="eq-bar"></span>
+            </div>
+          </div>
+          <div>
+            <h3 class="np-title" id="nowTrack">Not playing</h3>
+            <p class="np-artist" id="nowArtist">Open Spotify to start listening.</p>
+            <p class="np-album" id="nowAlbum"></p>
+
+            <div class="progress-wrap">
+              <div class="progress-head">
+                <span id="progressCurrent">0:00</span>
+                <span id="progressDuration">0:00</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar" id="progressBar"></div>
+              </div>
+            </div>
+
+            <p class="status" id="nowStatus">Waiting for playback data...</p>
+            <p class="meta-line small" id="nowUpdated"></p>
+
+            <div class="np-links" id="nowLinks"></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">Quinn's Picks</h2>
+        <div class="list-grid" id="picksGrid"></div>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">Quinn's Favourites</h2>
+        <div class="list-grid" id="favouritesGrid"></div>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">Adam's Music Profile</h2>
+        <article class="card profile-wrap">
+          <p class="profile-summary" id="profileSummary"></p>
+          <div class="pillars-grid" id="pillarsGrid"></div>
+        </article>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">Recently Played</h2>
+        <div class="recent-list" id="recentList"></div>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">Top Artists</h2>
+        <div class="artists-grid" id="topArtistsGrid"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/shared.js"></script>
+  <script>
+    // Sidebar update (in shared.js):
+    // Add nav item under dashboard sections:
+    // { label: 'Music', icon: '🎧', href: '/dj.html' }
+
+    const DEFAULT_COVER =
+      'data:image/svg+xml;charset=utf-8,' +
+      encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300"><rect width="300" height="300" fill="#121219"/><circle cx="150" cy="150" r="92" fill="#1d1d25"/><circle cx="150" cy="150" r="20" fill="#1db954"/><text x="50%" y="88%" text-anchor="middle" fill="#8f8f98" font-family="Inter, sans-serif" font-size="16">DJ Quinn</text></svg>');
+
+    const els = {
+      liveText: document.getElementById('liveText'),
+      nowAlbumArt: document.getElementById('nowAlbumArt'),
+      nowTrack: document.getElementById('nowTrack'),
+      nowArtist: document.getElementById('nowArtist'),
+      nowAlbum: document.getElementById('nowAlbum'),
+      nowStatus: document.getElementById('nowStatus'),
+      nowUpdated: document.getElementById('nowUpdated'),
+      progressCurrent: document.getElementById('progressCurrent'),
+      progressDuration: document.getElementById('progressDuration'),
+      progressBar: document.getElementById('progressBar'),
+      equalizer: document.getElementById('equalizer'),
+      nowLinks: document.getElementById('nowLinks'),
+      picksGrid: document.getElementById('picksGrid'),
+      favouritesGrid: document.getElementById('favouritesGrid'),
+      profileSummary: document.getElementById('profileSummary'),
+      pillarsGrid: document.getElementById('pillarsGrid'),
+      recentList: document.getElementById('recentList'),
+      topArtistsGrid: document.getElementById('topArtistsGrid')
+    };
+
+    const state = {
+      now: null,
+      progressMs: 0,
+      durationMs: 0,
+      isPlaying: false,
+      lastSyncMs: 0,
+      progressTimer: null,
+      nowTimer: null,
+      eqTimer: null
+    };
+
+    function formatMs(ms) {
+      const safe = Math.max(0, Number(ms) || 0);
+      const minutes = Math.floor(safe / 60000);
+      const seconds = Math.floor((safe % 60000) / 1000);
+      return `${minutes}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function relativeTime(value) {
+      if (!value) return 'Just now';
+      const ts = new Date(value).getTime();
+      if (Number.isNaN(ts)) return 'Recently';
+      const diffSec = Math.max(1, Math.floor((Date.now() - ts) / 1000));
+      if (diffSec < 60) return `${diffSec}s ago`;
+      const diffMin = Math.floor(diffSec / 60);
+      if (diffMin < 60) return `${diffMin} min ago`;
+      const diffH = Math.floor(diffMin / 60);
+      if (diffH < 24) return `${diffH} hr ago`;
+      const diffD = Math.floor(diffH / 24);
+      return `${diffD} day${diffD > 1 ? 's' : ''} ago`;
+    }
+
+    function safeText(value, fallback = 'Unknown') {
+      return value && String(value).trim() ? String(value).trim() : fallback;
+    }
+
+    async function fetchJson(url) {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status} for ${url}`);
+      }
+      return res.json();
+    }
+
+    function setNowLinks(track) {
+      els.nowLinks.innerHTML = '';
+      if (!track) return;
+
+      const links = [];
+      if (track.url) links.push({ href: track.url, text: 'Open in Spotify', spotify: true });
+      if (track.uri) {
+        links.push({ href: track.uri, text: 'Spotify URI', spotify: false });
+      }
+
+      links.forEach((link) => {
+        const a = document.createElement('a');
+        a.className = `btn-link${link.spotify ? ' spotify' : ''}`;
+        a.href = link.href;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = link.text;
+        els.nowLinks.appendChild(a);
+      });
+    }
+
+    function stopEqualizer() {
+      if (state.eqTimer) {
+        clearInterval(state.eqTimer);
+        state.eqTimer = null;
+      }
+      const bars = els.equalizer.querySelectorAll('.eq-bar');
+      bars.forEach((bar) => {
+        bar.style.height = '14px';
+      });
+    }
+
+    function startEqualizer() {
+      stopEqualizer();
+      const bars = Array.from(els.equalizer.querySelectorAll('.eq-bar'));
+      state.eqTimer = setInterval(() => {
+        bars.forEach((bar) => {
+          const nextHeight = 8 + Math.floor(Math.random() * 20);
+          bar.style.height = `${nextHeight}px`;
+        });
+      }, 480);
+    }
+
+    function renderNowPlaying(payload, isError = false) {
+      const playing = !!payload?.playing;
+      const track = payload?.track || null;
+
+      if (isError) {
+        els.liveText.textContent = 'Live sync unavailable';
+        els.nowTrack.textContent = 'Playback unavailable';
+        els.nowArtist.textContent = 'Spotify API error';
+        els.nowAlbum.textContent = 'Please check backend connectivity.';
+        els.nowStatus.textContent = 'Unable to fetch /api/spotify/now';
+        els.nowUpdated.textContent = `Last attempt: ${new Date().toLocaleTimeString()}`;
+        els.nowAlbumArt.src = DEFAULT_COVER;
+        els.progressBar.style.width = '0%';
+        els.progressCurrent.textContent = '0:00';
+        els.progressDuration.textContent = '0:00';
+        els.equalizer.classList.remove('playing');
+        stopEqualizer();
+        setNowLinks(null);
+        state.isPlaying = false;
+        state.durationMs = 0;
+        state.progressMs = 0;
+        return;
+      }
+
+      if (!playing || !track) {
+        els.liveText.textContent = 'Waiting for playback';
+        els.nowTrack.textContent = 'Not playing';
+        els.nowArtist.textContent = 'No active Spotify session';
+        els.nowAlbum.textContent = 'Hit play in Spotify and this widget will update automatically.';
+        els.nowStatus.textContent = 'Player idle';
+        els.nowUpdated.textContent = `Updated ${new Date().toLocaleTimeString()}`;
+        els.nowAlbumArt.src = DEFAULT_COVER;
+        els.equalizer.classList.remove('playing');
+        els.progressBar.style.width = '0%';
+        els.progressCurrent.textContent = '0:00';
+        els.progressDuration.textContent = '0:00';
+        setNowLinks(null);
+        stopEqualizer();
+        state.isPlaying = false;
+        state.durationMs = 0;
+        state.progressMs = 0;
+        return;
+      }
+
+      els.liveText.textContent = 'Live playback active';
+      els.nowAlbumArt.src = track.album_art || DEFAULT_COVER;
+      els.nowTrack.textContent = safeText(track.name, 'Unknown Track');
+      els.nowArtist.textContent = safeText(track.artist, 'Unknown Artist');
+      els.nowAlbum.textContent = `Album: ${safeText(track.album, 'Unknown Album')}`;
+      els.nowStatus.textContent = 'Now spinning';
+      els.nowUpdated.textContent = `Synced ${new Date().toLocaleTimeString()}`;
+      els.equalizer.classList.add('playing');
+      startEqualizer();
+      setNowLinks(track);
+
+      state.isPlaying = true;
+      state.progressMs = Number(track.progress_ms) || 0;
+      state.durationMs = Number(track.duration_ms) || 0;
+      state.lastSyncMs = Date.now();
+      updateProgressUI();
+    }
+
+    function updateProgressUI() {
+      const duration = Math.max(1, state.durationMs || 0);
+      const clamped = Math.max(0, Math.min(state.progressMs, duration));
+      const pct = duration ? (clamped / duration) * 100 : 0;
+      els.progressCurrent.textContent = formatMs(clamped);
+      els.progressDuration.textContent = formatMs(duration);
+      els.progressBar.style.width = `${pct}%`;
+    }
+
+    function startProgressTicker() {
+      if (state.progressTimer) clearInterval(state.progressTimer);
+      state.progressTimer = setInterval(() => {
+        if (!state.isPlaying || state.durationMs <= 0) return;
+        const elapsed = Date.now() - state.lastSyncMs;
+        state.progressMs = Math.min((state.now?.track?.progress_ms || 0) + elapsed, state.durationMs);
+        updateProgressUI();
+      }, 1000);
+    }
+
+    function renderTrackList(target, items, emptyMsg) {
+      target.innerHTML = '';
+      if (!Array.isArray(items) || items.length === 0) {
+        target.innerHTML = `<div class="empty">${emptyMsg}</div>`;
+        return;
+      }
+
+      items.forEach((item) => {
+        const track = safeText(item.track || item.name, 'Unknown Track');
+        const artist = safeText(item.artist, 'Unknown Artist');
+        const note = item.note ? `<p class="pick-note">${item.note}</p>` : '';
+        const date = item.date ? `<p class="pick-date">${item.date}</p>` : '';
+        const link = item.spotify_url || item.url || item.external_urls?.spotify;
+
+        const card = document.createElement('article');
+        card.className = 'card pick-card';
+        card.innerHTML = `
+          <h3 class="pick-track">${track}</h3>
+          <p class="pick-artist">${artist}</p>
+          ${note}
+          ${date}
+          ${link ? `<a class="btn-link spotify" target="_blank" rel="noopener noreferrer" href="${link}">Open in Spotify</a>` : ''}
+        `;
+        target.appendChild(card);
+      });
+    }
+
+    function renderProfile(profile) {
+      els.profileSummary.textContent = safeText(profile?.summary, 'Profile summary unavailable right now.');
+      els.pillarsGrid.innerHTML = '';
+
+      const pillars = profile?.pillars;
+      if (!Array.isArray(pillars) || pillars.length === 0) {
+        els.pillarsGrid.innerHTML = '<div class="empty">No music pillars found in profile data.</div>';
+        return;
+      }
+
+      pillars.forEach((pillar) => {
+        const card = document.createElement('article');
+        card.className = 'pillar-card';
+        const artists = Array.isArray(pillar.artists) ? pillar.artists.join(', ') : '';
+        card.innerHTML = `
+          <h3 class="pillar-title"><span>${safeText(pillar.emoji, '🎵')}</span><span>${safeText(pillar.label, 'Untitled Pillar')}</span></h3>
+          <p class="artists-line">${artists || 'No artists listed'}</p>
+        `;
+        els.pillarsGrid.appendChild(card);
+      });
+    }
+
+    function renderRecent(tracks) {
+      els.recentList.innerHTML = '';
+      if (!Array.isArray(tracks) || tracks.length === 0) {
+        els.recentList.innerHTML = '<div class="empty">No recent tracks found.</div>';
+        return;
+      }
+
+      tracks.slice(0, 10).forEach((track) => {
+        const row = document.createElement('article');
+        row.className = 'recent-item';
+
+        const art = track.album_art || track.image || DEFAULT_COVER;
+        const playedAt = track.played_at || track.timestamp || track.playedAt;
+
+        row.innerHTML = `
+          <img src="${art}" alt="${safeText(track.name, 'Track')} artwork" />
+          <div>
+            <p class="recent-track">${safeText(track.name, 'Unknown Track')}</p>
+            <p class="recent-artist">${safeText(track.artist, 'Unknown Artist')}</p>
+          </div>
+          <p class="recent-time">${relativeTime(playedAt)}</p>
+        `;
+        els.recentList.appendChild(row);
+      });
+    }
+
+    function renderTopArtists(artists) {
+      els.topArtistsGrid.innerHTML = '';
+      if (!Array.isArray(artists) || artists.length === 0) {
+        els.topArtistsGrid.innerHTML = '<div class="empty">Top artists unavailable.</div>';
+        return;
+      }
+
+      artists.forEach((artist) => {
+        const card = document.createElement('article');
+        card.className = 'card artist-card';
+
+        const genres = Array.isArray(artist.genres) ? artist.genres.slice(0, 3) : [];
+        const tags = genres.length
+          ? genres.map((g) => `<span class="tag">${g}</span>`).join('')
+          : '<span class="tag">No genres</span>';
+
+        const image = artist.image || DEFAULT_COVER;
+        const spotifyUrl = artist.url || '#';
+
+        card.innerHTML = `
+          <img class="artist-image" src="${image}" alt="${safeText(artist.name, 'Artist')} image" />
+          <h3 class="artist-name">${safeText(artist.name, 'Unknown Artist')}</h3>
+          <div class="genres">${tags}</div>
+          ${artist.url ? `<a class="btn-link spotify" target="_blank" rel="noopener noreferrer" href="${spotifyUrl}">View on Spotify</a>` : ''}
+        `;
+        els.topArtistsGrid.appendChild(card);
+      });
+    }
+
+    async function loadNowPlaying() {
+      try {
+        const now = await fetchJson('/api/spotify/now');
+        state.now = now;
+        renderNowPlaying(now, false);
+      } catch (err) {
+        console.error(err);
+        renderNowPlaying(null, true);
+      }
+    }
+
+    async function loadStaticAndLists() {
+      try {
+        const [djData, recent, topArtists] = await Promise.all([
+          fetchJson('/data/dj-quinn.json'),
+          fetchJson('/api/spotify/recent?limit=10'),
+          fetchJson('/api/spotify/top-artists?time_range=medium_term&limit=10')
+        ]);
+
+        renderTrackList(els.picksGrid, djData.picks || [], 'No Quinn picks yet.');
+        renderTrackList(els.favouritesGrid, djData.favourites || [], 'No favourites added yet.');
+        renderProfile(djData.profile || {});
+        renderRecent(recent.tracks || []);
+        renderTopArtists(topArtists.artists || []);
+      } catch (err) {
+        console.error(err);
+
+        const fail = '<div class="error">Could not load one or more music datasets. Please verify API/data availability.</div>';
+        if (!els.picksGrid.children.length) els.picksGrid.innerHTML = fail;
+        if (!els.favouritesGrid.children.length) els.favouritesGrid.innerHTML = fail;
+        if (!els.recentList.children.length) els.recentList.innerHTML = fail;
+        if (!els.topArtistsGrid.children.length) els.topArtistsGrid.innerHTML = fail;
+        if (!els.profileSummary.textContent) {
+          els.profileSummary.textContent = 'Profile data unavailable right now.';
+          els.pillarsGrid.innerHTML = fail;
+        }
+      }
+    }
+
+    async function init() {
+      els.nowAlbumArt.src = DEFAULT_COVER;
+      await Promise.all([loadNowPlaying(), loadStaticAndLists()]);
+
+      startProgressTicker();
+      if (state.nowTimer) clearInterval(state.nowTimer);
+      state.nowTimer = setInterval(loadNowPlaying, 10000);
+    }
+
+    init();
+  </script>
+</body>
+</html>

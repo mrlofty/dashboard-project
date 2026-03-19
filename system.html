@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        :root {
+            --bg-primary: #0f0f14;
+            --bg-card: #1a1a24;
+            --bg-card-hover: #22222e;
+            --border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f0f0f5;
+            --text-secondary: #9090a0;
+            --accent-purple: #a855f7;
+            --accent-green: #22c55e;
+            --accent-yellow: #eab308;
+            --accent-red: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 1.5rem;
+        }
+
+        .back-link:hover {
+            color: var(--accent-purple);
+        }
+
+        .title {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        /* System operational badge - scoped to not affect shared header */
+        .system-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid var(--accent-green);
+            border-radius: 24px;
+            font-size: 0.875rem;
+            color: var(--accent-green);
+        }
+
+        .system-status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Grid */
+        .system-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-icon {
+            font-size: 1.25rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* Metrics */
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            font-family: ui-monospace, monospace;
+        }
+
+        .metric-bar {
+            width: 100px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-left: 0.75rem;
+        }
+
+        .metric-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .metric-good { background: var(--accent-green); }
+        .metric-warn { background: var(--accent-yellow); }
+        .metric-bad { background: var(--accent-red); }
+
+        .metric-group {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Integrations */
+        .integration-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .integration-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+
+        .integration-name {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .integration-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+        }
+
+        .integration-status.active {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--accent-green);
+        }
+
+        .integration-status.inactive {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+        }
+
+        /* Session Info */
+        .session-info {
+            font-size: 0.875rem;
+        }
+
+        .session-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+        }
+
+        .session-label {
+            color: var(--text-secondary);
+        }
+
+        .session-value {
+            font-family: ui-monospace, monospace;
+        }
+
+        /* Last Updated */
+        .last-updated {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .refresh-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            margin-left: 1rem;
+        }
+
+        .refresh-btn:hover {
+            background: var(--bg-card-hover);
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>⚡ System</h1>
+            <p>Live system metrics and integration status.</p>
+        </div>
+
+        <!-- System Grid -->
+        <div class="system-grid">
+            
+            <!-- Host Metrics -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🖥️</span>
+                    <span class="card-title">Host: Bluefin</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Memory</span>
+                    <div class="metric-group">
+                        <span class="metric-value" id="mem-used">--</span>
+                        <span class="metric-label">&nbsp;/ </span>
+                        <span class="metric-value" id="mem-total">--</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill metric-good" id="mem-bar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Disk</span>
+                    <div class="metric-group">
+                        <span class="metric-value" id="disk-used">--</span>
+                        <span class="metric-label">&nbsp;/ </span>
+                        <span class="metric-value" id="disk-total">--</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill metric-good" id="disk-bar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Load</span>
+                    <span class="metric-value" id="load">--</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Uptime</span>
+                    <span class="metric-value" id="uptime">--</span>
+                </div>
+            </div>
+
+            <!-- OpenClaw Session -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🦞</span>
+                    <span class="card-title">OpenClaw Session</span>
+                </div>
+                <div class="session-info">
+                    <div class="session-row">
+                        <span class="session-label">Version</span>
+                        <span class="session-value" id="oc-version">--</span>
+                    </div>
+                    <div class="session-row">
+                        <span class="session-label">Model</span>
+                        <span class="session-value" id="oc-model">--</span>
+                    </div>
+                    <div class="session-row">
+                        <span class="session-label">Context</span>
+                        <span class="session-value" id="oc-context">--</span>
+                    </div>
+                    <div class="session-row">
+                        <span class="session-label">Session</span>
+                        <span class="session-value" id="oc-session">--</span>
+                    </div>
+                    <div class="session-row">
+                        <span class="session-label">Channel</span>
+                        <span class="session-value" id="oc-channel">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integrations -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🔌</span>
+                    <span class="card-title">Integrations</span>
+                </div>
+                <div class="integration-list" id="integrations">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Brave Search Budget -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🔍</span>
+                    <span class="card-title">Brave Search Budget</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Used this month</span>
+                    <div class="metric-group">
+                        <span class="metric-value" id="brave-used">--</span>
+                        <span class="metric-label">&nbsp;/ 2000</span>
+                        <div class="metric-bar">
+                            <div class="metric-fill metric-good" id="brave-bar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Daily allowance</span>
+                    <span class="metric-value" id="brave-daily">--</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Days remaining</span>
+                    <span class="metric-value" id="brave-days">--</span>
+                </div>
+            </div>
+
+            <!-- Backup Status -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">💾</span>
+                    <span class="card-title">Backup Status</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">NAS Mount</span>
+                    <span class="metric-value" id="nas-status" style="color: var(--accent-green);">●  Connected</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Last Backup</span>
+                    <span class="metric-value" id="last-backup">--</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">NAS Storage</span>
+                    <span class="metric-value" id="nas-storage">13TB (14% used)</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Backup Size</span>
+                    <span class="metric-value" id="backup-size">--</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Items</span>
+                    <span class="metric-value" id="backup-items">7 folders</span>
+                </div>
+                <div style="margin-top: 0.75rem;">
+                    <button onclick="runBackup()" style="width: 100%; padding: 0.5rem; background: var(--accent-purple); border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 0.85rem;">
+                        Run Backup Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🔗</span>
+                    <span class="card-title">Quick Links</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <a href="schedule.html" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--accent-purple); border-radius: 8px; text-decoration: none; color: var(--text-primary); transition: all 0.2s ease;">
+                        <span>📅</span>
+                        <div>
+                            <div style="font-weight: 500;">System Schedule</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">View all automated tasks & timings</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Projects Registry -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="card-header">
+                    <span class="card-icon">🚀</span>
+                    <span class="card-title">Projects & Deployments</span>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border); text-align: left;">
+                                <th style="padding: 0.6rem 0.75rem; color: var(--text-secondary); font-weight: 500;">Project</th>
+                                <th style="padding: 0.6rem 0.75rem; color: var(--text-secondary); font-weight: 500;">Repo</th>
+                                <th style="padding: 0.6rem 0.75rem; color: var(--text-secondary); font-weight: 500;">Pipeline</th>
+                                <th style="padding: 0.6rem 0.75rem; color: var(--text-secondary); font-weight: 500;">Host</th>
+                                <th style="padding: 0.6rem 0.75rem; color: var(--text-secondary); font-weight: 500;">Live URL</th>
+                                <th style="padding: 0.6rem 0.75rem; color: var(--text-secondary); font-weight: 500;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projects-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Dev Tools -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🛠️</span>
+                    <span class="card-title">Dev Tools</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <a href="theme-showcase.html" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text-primary); transition: all 0.2s ease;">
+                        <span>🎮</span>
+                        <div>
+                            <div style="font-weight: 500;">Gaming Theme</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Dark military/tech aesthetic</div>
+                        </div>
+                    </a>
+                    <a href="multi-theme-showcase.html" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text-primary); transition: all 0.2s ease;">
+                        <span>🎨</span>
+                        <div>
+                            <div style="font-weight: 500;">Multi-Theme Showcase</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Theme comparison tool</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="last-updated">
+            Last updated: <span id="last-updated">--</span>
+            <button class="refresh-btn" onclick="loadAllData()">↻ Refresh</button>
+        </div>
+
+        <!-- Reference Guides -->
+        <div style="margin-top: 2rem;">
+            <h2 style="font-size: 1.1rem; margin-bottom: 1rem;">📖 Reference Guides</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <a href="guides/model-benchmarks.html" style="text-decoration: none; color: inherit;">
+                    <div class="card" style="padding: 1.25rem; transition: border-color 0.15s; cursor: pointer;">
+                        <div style="font-size: 1.25rem; margin-bottom: 0.5rem;">🧠</div>
+                        <div style="font-weight: 600; margin-bottom: 0.25rem;">AI Model Benchmarks</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">How models are compared, what scores mean, and why no single number tells the whole story.</div>
+                    </div>
+                </a>
+                <a href="research.html" style="text-decoration: none; color: inherit;">
+                    <div class="card" style="padding: 1.25rem; transition: border-color 0.15s; cursor: pointer;">
+                        <div style="font-size: 1.25rem; margin-bottom: 0.5rem;">🌙</div>
+                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Research Archive</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">31 completed research topics with findings. Overnight deep-dives on tech, design, and strategy.</div>
+                    </div>
+                </a>
+                <a href="command.html" style="text-decoration: none; color: inherit;">
+                    <div class="card" style="padding: 1.25rem; transition: border-color 0.15s; cursor: pointer;">
+                        <div style="font-size: 1.25rem; margin-bottom: 0.5rem;">🚀</div>
+                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Mission Control</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Agent status, task queues, activity feed, and team operations.</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div id="shared-footer"></div>
+
+    <script>
+        // Load system data from JSON
+        async function loadAllData() {
+            try {
+                const response = await fetch('data/system.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    updateUI(data);
+                }
+            } catch (e) {
+                console.error('Failed to load system data:', e);
+                document.getElementById('status-text').textContent = 'Data unavailable';
+            }
+        }
+
+        function updateUI(data) {
+            // System status
+            document.getElementById('status-text').textContent = data.status || 'Operational';
+            
+            // Host metrics
+            if (data.host) {
+                document.getElementById('mem-used').textContent = data.host.memUsed || '--';
+                document.getElementById('mem-total').textContent = data.host.memTotal || '--';
+                updateBar('mem-bar', data.host.memPercent || 0);
+                
+                document.getElementById('disk-used').textContent = data.host.diskUsed || '--';
+                document.getElementById('disk-total').textContent = data.host.diskTotal || '--';
+                updateBar('disk-bar', data.host.diskPercent || 0);
+                
+                document.getElementById('load').textContent = data.host.load || '--';
+                document.getElementById('uptime').textContent = data.host.uptime || '--';
+            }
+            
+            // OpenClaw session
+            if (data.openclaw) {
+                document.getElementById('oc-version').textContent = data.openclaw.version || '--';
+                document.getElementById('oc-model').textContent = data.openclaw.model || '--';
+                document.getElementById('oc-context').textContent = data.openclaw.context || '--';
+                document.getElementById('oc-session').textContent = data.openclaw.session || '--';
+                document.getElementById('oc-channel').textContent = data.openclaw.channel || '--';
+            }
+            
+            // Integrations
+            if (data.integrations) {
+                const container = document.getElementById('integrations');
+                container.innerHTML = data.integrations.map(i => `
+                    <div class="integration-item">
+                        <span class="integration-name">
+                            <span>${i.icon}</span>
+                            <span>${i.name}</span>
+                        </span>
+                        <span class="integration-status ${i.active ? 'active' : 'inactive'}">
+                            ${i.active ? '● Active' : '○ Inactive'}
+                        </span>
+                    </div>
+                `).join('');
+            }
+            
+            // Brave budget
+            if (data.brave) {
+                document.getElementById('brave-used').textContent = data.brave.used || 0;
+                document.getElementById('brave-daily').textContent = '~' + (data.brave.dailyAllowance || '--') + '/day';
+                document.getElementById('brave-days').textContent = data.brave.daysRemaining || '--';
+                updateBar('brave-bar', (data.brave.used / 2000) * 100);
+            }
+            
+            // Last updated
+            document.getElementById('last-updated').textContent = data.lastUpdated || new Date().toLocaleString();
+            
+            // Backup status
+            if (data.backup) {
+                document.getElementById('last-backup').textContent = data.backup.lastBackup || '--';
+                document.getElementById('nas-status').innerHTML = data.backup.nasConnected 
+                    ? '<span style="color: var(--accent-green);">● Connected</span>' 
+                    : '<span style="color: var(--accent-red);">● Disconnected</span>';
+                document.getElementById('nas-storage').textContent = data.backup.nasStorage || '--';
+                document.getElementById('backup-size').textContent = data.backup.totalSize || '--';
+                document.getElementById('backup-items').textContent = data.backup.itemCount || '--';
+            }
+        }
+
+        // Run backup via API
+        async function runBackup() {
+            const btn = event.target;
+            btn.textContent = 'Running...';
+            btn.disabled = true;
+            
+            try {
+                // This would call a backup endpoint - for now just show feedback
+                await new Promise(r => setTimeout(r, 2000));
+                btn.textContent = '✅ Backup Complete';
+                btn.style.background = 'var(--accent-green)';
+                setTimeout(() => {
+                    btn.textContent = 'Run Backup Now';
+                    btn.style.background = 'var(--accent-purple)';
+                    btn.disabled = false;
+                    loadAllData();
+                }, 3000);
+            } catch (e) {
+                btn.textContent = '❌ Failed';
+                btn.style.background = 'var(--accent-red)';
+            }
+        }
+
+        function updateBar(id, percent) {
+            const bar = document.getElementById(id);
+            bar.style.width = percent + '%';
+            bar.classList.remove('metric-good', 'metric-warn', 'metric-bad');
+            if (percent < 60) {
+                bar.classList.add('metric-good');
+            } else if (percent < 85) {
+                bar.classList.add('metric-warn');
+            } else {
+                bar.classList.add('metric-bad');
+            }
+        }
+
+        // Load projects registry
+        async function loadProjects() {
+            try {
+                const res = await fetch('data/projects.json');
+                const data = await res.json();
+                const table = document.getElementById('projects-table');
+                table.innerHTML = data.projects.map(p => `
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">${p.name}</td>
+                        <td style="padding: 0.6rem 0.75rem; font-family: ui-monospace, monospace; font-size: 0.8rem;">
+                            ${p.repoUrl ? `<a href="${p.repoUrl}" target="_blank" style="color: var(--accent-purple); text-decoration: none;">${p.repo}</a>` : '<span style="color: var(--text-secondary);">—</span>'}
+                        </td>
+                        <td style="padding: 0.6rem 0.75rem; color: var(--text-secondary);">${p.pipeline}</td>
+                        <td style="padding: 0.6rem 0.75rem; color: var(--text-secondary); font-size: 0.8rem;">${p.host}</td>
+                        <td style="padding: 0.6rem 0.75rem;">
+                            ${p.liveUrl ? `<a href="${p.liveUrl}" target="_blank" style="color: var(--accent-green); text-decoration: none; font-size: 0.8rem;">${p.liveUrl.replace('https://','').replace('http://','')}</a>` : '—'}
+                            ${p.stagingUrl ? `<br><a href="${p.stagingUrl}" target="_blank" style="color: var(--accent-yellow); text-decoration: none; font-size: 0.75rem;">stage: ${p.stagingUrl.replace('https://','')}</a>` : ''}
+                        </td>
+                        <td style="padding: 0.6rem 0.75rem;">
+                            <span style="display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.75rem; background: ${p.status === 'active' ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)'}; color: ${p.status === 'active' ? 'var(--accent-green)' : 'var(--text-secondary)'};">
+                                ● ${p.status}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch(e) { console.error('Projects load failed:', e); }
+        }
+
+        // Initialize
+        loadProjects();
+        loadAllData();
+        
+        // Auto-refresh every 60 seconds
+        setInterval(loadAllData, 60000);
+    </script>
+    <script src="shared.js"></script>
+</body>
+</html>

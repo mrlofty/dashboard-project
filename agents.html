@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agents | Quinn & Adam</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="agents.css">
+</head>
+<body>
+    <div id="shared-header"></div>
+
+    <main class="page-shell">
+        <div class="container">
+            <section class="hero">
+                <div>
+                    <div class="eyebrow">Builder Meta Task</div>
+                    <h1>Agents Monitoring</h1>
+                    <p>Live operational view for Quinn, Builder, and Scout across status, active tasks, recent activity, learnings, and token burn.</p>
+                </div>
+                <div class="hero-meta">
+                    <div class="meta-card">
+                        <div class="meta-label">Team Status</div>
+                        <div class="meta-value" id="hero-status">Loading</div>
+                    </div>
+                    <div class="meta-card">
+                        <div class="meta-label">Last Refresh</div>
+                        <div class="meta-value" id="hero-refresh">Loading</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="dashboard-grid">
+                <div class="stack">
+                    <article class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <div class="panel-title">Team Overview</div>
+                                <div class="panel-subtitle">Expandable agent rows with current state and recent work.</div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="agent-list" id="agent-list"></div>
+                        </div>
+                    </article>
+
+                    <article class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <div class="panel-title">Active Tasks</div>
+                                <div class="panel-subtitle">Current work across the multi-agent team.</div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="task-list" id="task-list"></div>
+                        </div>
+                    </article>
+
+                    <article class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <div class="panel-title">Recent Activity Feed</div>
+                                <div class="panel-subtitle">Last 20 actions across all agents. Auto-refreshes from the data file.</div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="activity-list" id="activity-list"></div>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="stack">
+                    <article class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <div class="panel-title">Agent Learnings Summary</div>
+                                <div class="panel-subtitle">Last 5 lessons from recent LEARNING.md additions.</div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="learning-list" id="learning-list"></div>
+                        </div>
+                    </article>
+
+                    <article class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <div class="panel-title">Token Budget</div>
+                                <div class="panel-subtitle">Daily and weekly burn rate for Opus, Sonnet, and Codex.</div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="budget-list" id="budget-list"></div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="shared-footer"></div>
+
+    <script src="shared.js"></script>
+    <script>
+        const DATA_PATH = "data/agents.json";
+        // Stub for updateSyncTime (Codex build calls it, our shared.js doesn't have it)
+        if (typeof updateSyncTime === 'undefined') { window.updateSyncTime = function() {}; }
+        const AGENT_CLASS = {
+            quinn: "agent-quinn",
+            builder: "agent-builder",
+            scout: "agent-scout"
+        };
+
+        function formatTime(value) {
+            if (!value) return "Idle";
+            return new Date(value).toLocaleString("en-AU", {
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit"
+            });
+        }
+
+        function formatRelative(value) {
+            if (!value) return "Idle";
+            const now = new Date();
+            const target = new Date(value);
+            const diffMinutes = Math.max(0, Math.round((now - target) / 60000));
+            if (diffMinutes < 1) return "Just now";
+            if (diffMinutes < 60) return `${diffMinutes} min ago`;
+            const diffHours = Math.round(diffMinutes / 60);
+            if (diffHours < 24) return `${diffHours} hr ago`;
+            const diffDays = Math.round(diffHours / 24);
+            return `${diffDays} day ago`;
+        }
+
+        function formatNumber(value) {
+            return new Intl.NumberFormat("en-US").format(value);
+        }
+
+        function percent(used, budget) {
+            if (!budget) return 0;
+            return Math.min(100, Math.round((used / budget) * 100));
+        }
+
+        function renderAgents(agents) {
+            const container = document.getElementById("agent-list");
+            if (!agents.length) {
+                container.innerHTML = '<div class="empty-state">No agents available.</div>';
+                return;
+            }
+
+            container.innerHTML = agents.map((agent, index) => `
+                <div class="agent-card ${index === 0 ? "expanded" : ""}" data-agent-card>
+                    <button class="agent-summary" type="button" aria-expanded="${index === 0 ? "true" : "false"}">
+                        <div class="agent-primary">
+                            <div class="agent-name-row">
+                                <span class="agent-emoji">${agent.emoji}</span>
+                                <div>
+                                    <div class="agent-name">${agent.name}</div>
+                                    <div class="agent-model">${agent.model === "opus" ? "Opus" : "Sonnet"}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="agent-meta-block">
+                            <div class="agent-label">Status</div>
+                            <div class="agent-inline-status">
+                                <span class="status-dot status-${agent.status}"></span>
+                                <span>${agent.status}</span>
+                            </div>
+                        </div>
+                        <div class="agent-meta-block">
+                            <div class="agent-label">${agent.id === "quinn" ? "Current Task" : "Last Task"}</div>
+                            <div class="agent-value">${agent.id === "quinn" ? (agent.currentTask || "Monitoring team") : (agent.lastTask || "None recorded")}</div>
+                        </div>
+                        <span class="expand-icon">›</span>
+                    </button>
+                    <div class="agent-details">
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <div class="agent-label">Last Active</div>
+                                <div class="mono">${formatTime(agent.lastActive)}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="agent-label">${agent.id === "scout" ? "Items Found" : "Tasks Completed"}</div>
+                                <div class="mono">${agent.id === "scout" ? formatNumber(agent.itemsFound || 0) : formatNumber(agent.tasksCompleted || 0)}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="agent-label">Notes</div>
+                                <div class="agent-value">${agent.notes || "No notes recorded."}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join("");
+
+            container.querySelectorAll("[data-agent-card]").forEach((card) => {
+                const button = card.querySelector(".agent-summary");
+                button.addEventListener("click", () => {
+                    const expanded = card.classList.toggle("expanded");
+                    button.setAttribute("aria-expanded", expanded ? "true" : "false");
+                });
+            });
+        }
+
+        function renderTasks(tasks, agentMap) {
+            const container = document.getElementById("task-list");
+            if (!tasks.length) {
+                container.innerHTML = '<div class="empty-state">No active tasks.</div>';
+                return;
+            }
+
+            container.innerHTML = tasks.map((task) => {
+                const agent = agentMap.get(task.assignedAgent);
+                return `
+                    <div class="task-card">
+                        <div class="task-top">
+                            <div class="task-title">${task.name}</div>
+                            <div class="agent-chip">${agent ? `${agent.emoji} ${agent.name}` : task.assignedAgent}</div>
+                        </div>
+                        <div class="task-meta">
+                            <div>Started: <span class="mono">${formatTime(task.startedAt)}</span></div>
+                            <div>ETA: <span class="mono">${formatTime(task.estimatedCompletion)}</span></div>
+                        </div>
+                        ${typeof task.progress === "number" ? `
+                            <div class="progress-wrap">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${task.progress}%;"></div>
+                                </div>
+                                <div class="progress-labels">
+                                    <span>Progress</span>
+                                    <span>${task.progress}%</span>
+                                </div>
+                            </div>
+                        ` : ""}
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderActivity(activity, agentMap) {
+            const container = document.getElementById("activity-list");
+            if (!activity.length) {
+                container.innerHTML = '<div class="empty-state">No recent activity.</div>';
+                return;
+            }
+
+            container.innerHTML = activity.slice(0, 20).map((item) => {
+                const agent = agentMap.get(item.agentId);
+                return `
+                    <div class="activity-item ${AGENT_CLASS[item.agentId] || ""}">
+                        <div class="activity-top">
+                            <div class="agent-chip">${agent ? `${agent.emoji} ${agent.name}` : item.agentId}</div>
+                            <div class="time-stamp">${formatTime(item.timestamp)} • ${formatRelative(item.timestamp)}</div>
+                        </div>
+                        <div class="activity-description">${item.description}</div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderLearnings(learnings, agentMap) {
+            const container = document.getElementById("learning-list");
+            if (!learnings.length) {
+                container.innerHTML = '<div class="empty-state">No learning updates yet.</div>';
+                return;
+            }
+
+            container.innerHTML = learnings.slice(0, 5).map((learning) => {
+                const agent = agentMap.get(learning.agentId);
+                return `
+                    <div class="learning-item">
+                        <div class="learning-top">
+                            <div class="learning-title">${learning.title}</div>
+                            <div class="agent-chip">${agent ? `${agent.emoji} ${agent.name}` : learning.agentId}</div>
+                        </div>
+                        <div class="learning-meta">${learning.summary}</div>
+                        <div class="learning-meta">
+                            <span>${formatTime(learning.timestamp)}</span>
+                            <a href="${learning.file}" target="_blank" rel="noreferrer">Open LEARNING.md</a>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderBudget(tokenUsage) {
+            const container = document.getElementById("budget-list");
+            const models = ["opus", "sonnet", "codex"];
+            container.innerHTML = models.map((model) => {
+                const daily = tokenUsage.daily[model] || { used: 0, budget: 0 };
+                const weekly = tokenUsage.weekly[model] || { used: 0, budget: 0 };
+                const dailyPercent = percent(daily.used, daily.budget);
+                const weeklyPercent = percent(weekly.used, weekly.budget);
+
+                return `
+                    <div class="budget-card">
+                        <div class="budget-top">
+                            <div>
+                                <div class="budget-name">${model.charAt(0).toUpperCase() + model.slice(1)}</div>
+                                <div class="budget-subtitle">Daily and weekly token burn</div>
+                            </div>
+                        </div>
+                        <div class="budget-stats">
+                            <span>Daily</span>
+                            <span>${formatNumber(daily.used)} / ${formatNumber(daily.budget)}</span>
+                        </div>
+                        <div class="budget-bar">
+                            <div class="budget-fill" style="width: ${dailyPercent}%;"></div>
+                        </div>
+                        <div class="budget-stats">
+                            <span>${dailyPercent}% burn</span>
+                            <span>Remaining ${formatNumber(Math.max(daily.budget - daily.used, 0))}</span>
+                        </div>
+                        <div class="budget-stats" style="margin-top: 0.9rem;">
+                            <span>Weekly</span>
+                            <span>${formatNumber(weekly.used)} / ${formatNumber(weekly.budget)}</span>
+                        </div>
+                        <div class="budget-bar">
+                            <div class="budget-fill" style="width: ${weeklyPercent}%;"></div>
+                        </div>
+                        <div class="budget-stats">
+                            <span>${weeklyPercent}% burn</span>
+                            <span>Remaining ${formatNumber(Math.max(weekly.budget - weekly.used, 0))}</span>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function updateHero(agents, updatedAt) {
+            const statusNode = document.getElementById("hero-status");
+            const refreshNode = document.getElementById("hero-refresh");
+            const available = agents.filter((agent) => agent.status === "available").length;
+            statusNode.textContent = `${available}/${agents.length} available`;
+            const displayValue = updatedAt ? formatTime(updatedAt) : "Just now";
+            refreshNode.textContent = displayValue;
+            updateSyncTime(displayValue);
+        }
+
+        async function loadDashboardData() {
+            try {
+                const response = await fetch(`${DATA_PATH}?t=${Date.now()}`, { cache: "no-store" });
+                if (!response.ok) {
+                    throw new Error(`Failed to load ${DATA_PATH}`);
+                }
+
+                const data = await response.json();
+                const agents = Array.isArray(data.agents) ? data.agents : [];
+                const activity = Array.isArray(data.activity) ? data.activity : [];
+                const tasks = Array.isArray(data.tasks) ? data.tasks : [];
+                const learnings = Array.isArray(data.learnings) ? data.learnings : [];
+                const tokenUsage = data.tokenUsage || { daily: {}, weekly: {} };
+                const agentMap = new Map(agents.map((agent) => [agent.id, agent]));
+
+                renderAgents(agents);
+                renderTasks(tasks, agentMap);
+                renderActivity(activity, agentMap);
+                renderLearnings(learnings, agentMap);
+                renderBudget(tokenUsage);
+                updateHero(agents, activity[0] ? activity[0].timestamp : null);
+            } catch (error) {
+                document.getElementById("agent-list").innerHTML = `<div class="empty-state">${error.message}</div>`;
+                document.getElementById("task-list").innerHTML = '<div class="empty-state">Task data unavailable.</div>';
+                document.getElementById("activity-list").innerHTML = '<div class="empty-state">Activity feed unavailable.</div>';
+                document.getElementById("learning-list").innerHTML = '<div class="empty-state">Learning summary unavailable.</div>';
+                document.getElementById("budget-list").innerHTML = '<div class="empty-state">Token budget unavailable.</div>';
+            }
+        }
+
+        loadDashboardData();
+        // SSE removed polling - real-time updates via sse-init-agents.js
+    </script>
+    <script type="module" src="js/sse-init-agents.js"></script>
+</body>
+</html>

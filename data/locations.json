@@ -1,0 +1,307 @@
+{
+  "locations": [
+    {
+      "id": "hosier-lane",
+      "name": "Hosier Lane",
+      "type": "Street/Laneway",
+      "area": "CBD",
+      "coordinates": "-37.8170, 144.9685",
+      "bestLight": "Mid-morning to early afternoon",
+      "notes": "Iconic street art. Changes constantly. Best with wider lens for murals + model.",
+      "shootCount": 0,
+      "tags": [
+        "street-art",
+        "urban",
+        "iconic"
+      ]
+    },
+    {
+      "id": "centre-place",
+      "name": "Centre Place",
+      "type": "Urban/Mixed",
+      "area": "CBD",
+      "coordinates": "",
+      "bestLight": "Mid-morning",
+      "notes": "Narrow laneway, cafe culture backdrop.",
+      "shootCount": 0,
+      "tags": [
+        "cafe",
+        "laneway"
+      ]
+    },
+    {
+      "id": "block-arcade",
+      "name": "Block Arcade",
+      "type": "Street/Laneway",
+      "area": "CBD",
+      "coordinates": "",
+      "bestLight": "Indoor \u2014 any time",
+      "notes": "Heritage architecture, mosaic floor, natural light from glass roof.",
+      "shootCount": 0,
+      "tags": [
+        "heritage",
+        "indoor",
+        "architecture"
+      ]
+    },
+    {
+      "id": "degraves-street",
+      "name": "Degraves Street",
+      "type": "Street/Laneway",
+      "area": "CBD",
+      "coordinates": "",
+      "bestLight": "Morning",
+      "notes": "Classic Melbourne cafe strip.",
+      "shootCount": 0,
+      "tags": [
+        "cafe",
+        "laneway",
+        "iconic"
+      ]
+    },
+    {
+      "id": "acdc-lane",
+      "name": "AC/DC Lane",
+      "type": "Street/Laneway",
+      "area": "CBD",
+      "coordinates": "",
+      "bestLight": "Afternoon",
+      "notes": "Rock music themed. Cherry Bar. Gritty aesthetic.",
+      "shootCount": 0,
+      "tags": [
+        "gritty",
+        "music",
+        "urban"
+      ]
+    },
+    {
+      "id": "presgrave-place",
+      "name": "Presgrave Place",
+      "type": "Urban/Mixed",
+      "area": "CBD",
+      "coordinates": "",
+      "bestLight": "Mid-morning",
+      "notes": "",
+      "shootCount": 0,
+      "tags": [
+        "laneway"
+      ]
+    },
+    {
+      "id": "rose-garden",
+      "name": "Rose Garden",
+      "type": "Nature/Park",
+      "area": "Royal Botanic Gardens",
+      "coordinates": "-37.8304, 144.9796",
+      "bestLight": "Early morning or late afternoon",
+      "notes": "Romantic, soft light through petals. Seasonal \u2014 best in spring/summer.",
+      "shootCount": 0,
+      "tags": [
+        "nature",
+        "romantic",
+        "seasonal"
+      ]
+    },
+    {
+      "id": "ornamental-lake",
+      "name": "Ornamental Lake",
+      "type": "Urban/Mixed",
+      "area": "Royal Botanic Gardens",
+      "coordinates": "",
+      "bestLight": "Golden hour",
+      "notes": "Reflections on water. Good for wider environmental portraits.",
+      "shootCount": 0,
+      "tags": [
+        "nature",
+        "reflections",
+        "golden-hour"
+      ]
+    },
+    {
+      "id": "herb-garden",
+      "name": "Herb Garden",
+      "type": "Nature/Park",
+      "area": "Royal Botanic Gardens",
+      "coordinates": "",
+      "bestLight": "Morning",
+      "notes": "Structured garden beds, green textures.",
+      "shootCount": 0,
+      "tags": [
+        "nature",
+        "texture"
+      ]
+    },
+    {
+      "id": "observatory-lawn",
+      "name": "Observatory Lawn",
+      "type": "Urban/Mixed",
+      "area": "Royal Botanic Gardens",
+      "coordinates": "",
+      "bestLight": "Late afternoon",
+      "notes": "Open space, skyline backdrop.",
+      "shootCount": 0,
+      "tags": [
+        "open",
+        "skyline"
+      ]
+    },
+    {
+      "id": "fern-gully",
+      "name": "Fern Gully",
+      "type": "Nature/Park",
+      "area": "Royal Botanic Gardens",
+      "coordinates": "",
+      "bestLight": "Overcast or soft morning",
+      "notes": "Moody, green, dappled light. Great for editorial.",
+      "shootCount": 0,
+      "tags": [
+        "moody",
+        "editorial",
+        "nature"
+      ]
+    },
+    {
+      "id": "yarra-river-bank",
+      "name": "Yarra River Bank",
+      "type": "Riverside/Bridge",
+      "area": "Royal Botanic Gardens",
+      "coordinates": "",
+      "bestLight": "Golden hour",
+      "notes": "Water reflections, tree canopy.",
+      "shootCount": 0,
+      "tags": [
+        "water",
+        "golden-hour"
+      ]
+    },
+    {
+      "id": "federation-square",
+      "name": "Federation Square",
+      "type": "Architecture/Public",
+      "area": "CBD",
+      "coordinates": "-37.8179, 144.9690",
+      "bestLight": "Morning golden hour",
+      "notes": "Geometric architecture, public space. Can be busy \u2014 early mornings best.",
+      "shootCount": 0,
+      "tags": [
+        "architecture",
+        "iconic",
+        "geometric"
+      ]
+    },
+    {
+      "id": "southbank-riverwalk",
+      "name": "Southbank Riverwalk",
+      "type": "Riverside/Bridge",
+      "area": "Southbank",
+      "coordinates": "-37.8199, 144.9664",
+      "bestLight": "Late afternoon / sunset",
+      "notes": "City skyline across river. Evening lights work too.",
+      "shootCount": 0,
+      "tags": [
+        "skyline",
+        "river",
+        "sunset"
+      ]
+    },
+    {
+      "id": "southgate-footbridge",
+      "name": "Southgate Footbridge",
+      "type": "Riverside/Bridge",
+      "area": "Southbank",
+      "coordinates": "-37.8202, 144.9641",
+      "bestLight": "Golden hour",
+      "notes": "Leading lines, city backdrop. Good for fashion.",
+      "shootCount": 0,
+      "tags": [
+        "leading-lines",
+        "fashion",
+        "bridge"
+      ]
+    },
+    {
+      "id": "arbory-bar-area",
+      "name": "Riverside Cafes (Arbory Bar area)",
+      "type": "Riverside/Bridge",
+      "area": "Southbank",
+      "coordinates": "",
+      "bestLight": "Afternoon",
+      "notes": "Casual riverside vibe. Good for lifestyle/casual shoots.",
+      "shootCount": 0,
+      "tags": [
+        "cafe",
+        "casual",
+        "lifestyle"
+      ]
+    },
+    {
+      "id": "hamer-hall",
+      "name": "Hamer Hall Exterior/Balcony",
+      "type": "Architecture/Public",
+      "area": "Southbank",
+      "coordinates": "",
+      "bestLight": "Evening / blue hour",
+      "notes": "Dramatic architecture. MCC photowalk venue. Balcony has great river views.",
+      "shootCount": 0,
+      "tags": [
+        "architecture",
+        "dramatic",
+        "mcc"
+      ]
+    },
+    {
+      "id": "kings-domain",
+      "name": "Kings Domain Gardens",
+      "type": "Nature/Park",
+      "area": "Southbank",
+      "coordinates": "-37.8258, 144.9694",
+      "bestLight": "Early morning",
+      "notes": "Quiet green space. Good for natural light portraits.",
+      "shootCount": 0,
+      "tags": [
+        "nature",
+        "quiet",
+        "natural-light"
+      ]
+    },
+    {
+      "id": "state-library",
+      "name": "State Library of Victoria",
+      "type": "Architecture/Public",
+      "area": "CBD",
+      "coordinates": "-37.8098, 144.9652",
+      "bestLight": "Indoor \u2014 any time. Steps: morning",
+      "notes": "Chapters shoot with Nam. La Trobe Reading Room, stairways, columns.",
+      "shootCount": 1,
+      "tags": [
+        "architecture",
+        "indoor",
+        "iconic",
+        "editorial"
+      ]
+    },
+    {
+      "id": "metro-tunnel",
+      "name": "Metro Tunnel Construction Site",
+      "type": "Urban/Mixed",
+      "area": "CBD",
+      "coordinates": "",
+      "bestLight": "Afternoon",
+      "notes": "Summer Streetstyle shoot with Nam. Urban grit, construction aesthetic.",
+      "shootCount": 1,
+      "tags": [
+        "urban",
+        "gritty",
+        "construction"
+      ]
+    }
+  ],
+  "types": [
+    "Street/Laneway",
+    "Urban/Mixed",
+    "Nature/Park",
+    "Riverside/Bridge",
+    "Architecture/Public",
+    "Indoor/Studio"
+  ]
+}

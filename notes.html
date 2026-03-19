@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Notes | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        .notes-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 800px) {
+            .notes-layout { grid-template-columns: 1fr; }
+        }
+
+        /* Form */
+        .note-form {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.15s;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%239090a0' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            padding-right: 2rem;
+        }
+
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .tag-chip {
+            padding: 0.3rem 0.65rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+
+        .tag-chip:hover {
+            border-color: rgba(168, 85, 247, 0.3);
+            color: var(--text-primary);
+        }
+
+        .tag-chip.selected {
+            background: var(--accent-purple);
+            border-color: var(--accent-purple);
+            color: white;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--accent-purple);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .submit-btn:hover {
+            background: #9333ea;
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-msg {
+            display: none;
+            padding: 0.75rem 1rem;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            color: #22c55e;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        /* Notes list */
+        .notes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .note-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            transition: all 0.15s;
+        }
+
+        .note-card:hover {
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        .note-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .note-url {
+            font-size: 0.75rem;
+            color: var(--accent-purple);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .note-url:hover { text-decoration: underline; }
+
+        .note-body {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-top: 0.5rem;
+        }
+
+        .note-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .note-date {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .note-tag {
+            font-size: 0.65rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 999px;
+            background: rgba(168, 85, 247, 0.12);
+            color: var(--accent-purple);
+        }
+
+        .note-priority {
+            font-size: 0.65rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .priority-act { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .priority-discuss { background: rgba(234,179,8,0.15); color: #eab308; }
+        .priority-interesting { background: rgba(34,197,94,0.15); color: #22c55e; }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+
+    <div class="container" style="max-width: 1400px;">
+        <div class="page-header">
+            <h1>📝 Research Notes</h1>
+            <p>Drop ideas, links, and inspiration. Quinn picks these up for discussion.</p>
+        </div>
+
+        <div class="notes-layout">
+            <!-- Form -->
+            <div class="note-form">
+                <h2 style="font-size: 1rem; margin-bottom: 1.25rem; color: var(--text-primary);">New Note</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Title *</label>
+                    <input type="text" class="form-input" id="note-title" placeholder="What's this about?">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">URL</label>
+                    <input type="url" class="form-input" id="note-url" placeholder="https://...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Your thoughts *</label>
+                    <textarea class="form-textarea" id="note-body" placeholder="What caught your eye? What's worth noting?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tags</label>
+                    <div class="tag-row" id="tag-row">
+                        <button class="tag-chip" data-tag="design" onclick="toggleTag(this)">🎨 design</button>
+                        <button class="tag-chip" data-tag="tech" onclick="toggleTag(this)">⚙️ tech</button>
+                        <button class="tag-chip" data-tag="business" onclick="toggleTag(this)">💰 business</button>
+                        <button class="tag-chip" data-tag="photography" onclick="toggleTag(this)">📷 photography</button>
+                        <button class="tag-chip" data-tag="gaming" onclick="toggleTag(this)">🎮 gaming</button>
+                        <button class="tag-chip" data-tag="uap" onclick="toggleTag(this)">🛸 UAP</button>
+                        <button class="tag-chip" data-tag="ai" onclick="toggleTag(this)">🤖 AI</button>
+                        <button class="tag-chip" data-tag="content" onclick="toggleTag(this)">✍️ content</button>
+                        <button class="tag-chip" data-tag="seo" onclick="toggleTag(this)">🔍 SEO</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-select" id="note-priority">
+                        <option value="interesting">💡 Just interesting</option>
+                        <option value="discuss">💬 Worth discussing</option>
+                        <option value="act">🔥 Act on this</option>
+                    </select>
+                </div>
+
+                <button class="submit-btn" id="submit-btn" onclick="submitNote()">Save Note</button>
+                <div class="success-msg" id="success-msg">✅ Note saved! Quinn will pick this up.</div>
+            </div>
+
+            <!-- Existing notes -->
+            <div>
+                <h2 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-primary);">Recent Notes</h2>
+                <div class="notes-list" id="notes-list">
+                    <div style="color: var(--text-secondary); font-size: 0.85rem;">Loading notes...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="shared-footer"></div>
+
+    <script>
+        let selectedTags = [];
+
+        function toggleTag(el) {
+            const tag = el.dataset.tag;
+            el.classList.toggle('selected');
+            if (selectedTags.includes(tag)) {
+                selectedTags = selectedTags.filter(t => t !== tag);
+            } else {
+                selectedTags.push(tag);
+            }
+        }
+
+        async function submitNote() {
+            const title = document.getElementById('note-title').value.trim();
+            const url = document.getElementById('note-url').value.trim();
+            const body = document.getElementById('note-body').value.trim();
+            const priority = document.getElementById('note-priority').value;
+
+            if (!title || !body) {
+                alert('Title and thoughts are required');
+                return;
+            }
+
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const timeStr = now.toLocaleTimeString('en-AU', {hour:'2-digit', minute:'2-digit', hour12:false});
+            const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/,'').substring(0, 50);
+            const filename = `${dateStr}-${slug}.md`;
+
+            // Build markdown
+            let md = `# ${title}\n\n`;
+            md += `**Date:** ${dateStr} ${timeStr}\n`;
+            md += `**From:** Adam\n`;
+            md += `**Priority:** ${priority}\n`;
+            if (selectedTags.length > 0) md += `**Tags:** ${selectedTags.join(', ')}\n`;
+            if (url) md += `**URL:** ${url}\n`;
+            md += `\n---\n\n`;
+            md += body + '\n';
+
+            try {
+                // Save via API
+                const res = await fetch(`http://${window.location.hostname}:8081/api/file`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        path: `memory/notes/${filename}`,
+                        content: md
+                    })
+                });
+
+                if (res.ok) {
+                    document.getElementById('success-msg').style.display = 'block';
+                    document.getElementById('note-title').value = '';
+                    document.getElementById('note-url').value = '';
+                    document.getElementById('note-body').value = '';
+                    selectedTags = [];
+                    document.querySelectorAll('.tag-chip').forEach(c => c.classList.remove('selected'));
+                    setTimeout(() => { document.getElementById('success-msg').style.display = 'none'; }, 3000);
+                    loadNotes();
+                } else {
+                    // Fallback: save to localStorage
+                    saveLocal(filename, md);
+                }
+            } catch(e) {
+                saveLocal(filename, md);
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Save Note';
+        }
+
+        function saveLocal(filename, md) {
+            const notes = JSON.parse(localStorage.getItem('research-notes') || '[]');
+            notes.unshift({ filename, content: md, date: new Date().toISOString() });
+            localStorage.setItem('research-notes', JSON.stringify(notes));
+            document.getElementById('success-msg').textContent = '✅ Saved locally (API offline). Quinn will sync later.';
+            document.getElementById('success-msg').style.display = 'block';
+            setTimeout(() => { document.getElementById('success-msg').style.display = 'none'; }, 3000);
+            loadNotes();
+        }
+
+        async function loadNotes() {
+            const el = document.getElementById('notes-list');
+            let notes = [];
+
+            // Try API
+            try {
+                const res = await fetch(`http://${window.location.hostname}:8081/api/files?dir=memory/notes&t=${Date.now()}`);
+                if (res.ok) {
+                    const files = await res.json();
+                    for (const file of (files.files || []).slice(-20).reverse()) {
+                        try {
+                            const fRes = await fetch(`http://${window.location.hostname}:8081/api/file?path=memory/notes/${file}&t=${Date.now()}`);
+                            if (fRes.ok) {
+                                const content = await fRes.text();
+                                notes.push(parseNote(file, content));
+                            }
+                        } catch(e) {}
+                    }
+                }
+            } catch(e) {}
+
+            // Also load localStorage notes
+            const localNotes = JSON.parse(localStorage.getItem('research-notes') || '[]');
+            localNotes.forEach(n => {
+                notes.push(parseNote(n.filename, n.content));
+            });
+
+            // Dedup by filename
+            const seen = new Set();
+            notes = notes.filter(n => {
+                if (seen.has(n.filename)) return false;
+                seen.add(n.filename);
+                return true;
+            });
+
+            if (notes.length === 0) {
+                el.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.85rem; padding: 1rem; text-align: center;">No notes yet. Drop your first idea!</div>';
+                return;
+            }
+
+            el.innerHTML = notes.map(n => `
+                <div class="note-card">
+                    <div class="note-title">${n.title}</div>
+                    ${n.url ? `<a href="${n.url}" target="_blank" class="note-url">${n.url}</a>` : ''}
+                    <div class="note-body">${n.body.substring(0, 300)}${n.body.length > 300 ? '...' : ''}</div>
+                    <div class="note-meta">
+                        <span class="note-date">${n.date}</span>
+                        <span class="note-priority priority-${n.priority}">${n.priority}</span>
+                        ${n.tags.map(t => `<span class="note-tag">${t}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function parseNote(filename, content) {
+            const titleMatch = content.match(/^# (.+)/m);
+            const urlMatch = content.match(/\*\*URL:\*\*\s*(.+)/);
+            const priorityMatch = content.match(/\*\*Priority:\*\*\s*(\S+)/);
+            const tagsMatch = content.match(/\*\*Tags:\*\*\s*(.+)/);
+            const dateMatch = content.match(/\*\*Date:\*\*\s*(.+)/);
+            
+            // Body is everything after the --- separator
+            const bodyParts = content.split('---');
+            const body = bodyParts.length > 1 ? bodyParts.slice(1).join('---').trim() : '';
+
+            return {
+                filename,
+                title: titleMatch ? titleMatch[1] : filename,
+                url: urlMatch ? urlMatch[1].trim() : '',
+                priority: priorityMatch ? priorityMatch[1].trim() : 'interesting',
+                tags: tagsMatch ? tagsMatch[1].split(',').map(t => t.trim()) : [],
+                date: dateMatch ? dateMatch[1].trim() : '',
+                body
+            };
+        }
+
+        loadNotes();
+    </script>
+    <script src="shared.js?v=20260302"></script>
+</body>
+</html>

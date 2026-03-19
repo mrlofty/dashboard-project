@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Gaming Aesthetic Theme - Quinn & Adam</title>
+    <meta name="description" content="Showcase of the Gaming Aesthetic theme created by Quinn & Adam - dark military/tech design with neon accents">
+    <style>
+        /* Gaming Aesthetic Theme by Quinn & Adam */
+        :root {
+            /* Background Colors - Dark military/tech */
+            --bg-primary: #0a0e13;          
+            --bg-secondary: #161b22;        
+            --bg-tertiary: #21262d;         
+            --bg-card: #1c2128;             
+            --bg-hover: #262c36;            
+            
+            /* Text Colors */
+            --text-primary: #f0f6fc;        
+            --text-secondary: #8b949e;      
+            --text-tertiary: #6e7681;      
+            --text-accent: #58a6ff;         
+            
+            /* Gaming Accent Colors */
+            --accent-primary: #ff6b35;      /* Orange (Battlefield-inspired) */
+            --accent-secondary: #00d4aa;    /* Cyan/teal (FPS UI) */
+            --accent-warning: #ffd60a;      
+            --accent-danger: #f85149;       
+            --accent-success: #3fb950;      
+            
+            /* Gaming-specific colors */
+            --neon-blue: #00d4ff;
+            --neon-green: #39ff14;
+            --fallout-amber: #ffb000;
+            --battlefield-orange: #ff6b35;
+            
+            /* Borders & Effects */
+            --border-primary: #30363d;
+            --border-accent: var(--accent-primary);
+            --glow-primary: 0 0 10px var(--accent-primary);
+            --glow-secondary: 0 0 8px var(--accent-secondary);
+            
+            /* Effects */
+            --shadow-card: 0 8px 25px rgba(0, 0, 0, 0.4);
+            --shadow-hover: 0 12px 30px rgba(255, 107, 53, 0.15);
+            --gradient-primary: linear-gradient(135deg, #0a0e13 0%, #161b22 50%, #21262d 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Roboto', monospace;
+            background: var(--gradient-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 212, 170, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px var(--accent-primary), 0 0 40px var(--accent-primary);
+            color: var(--text-primary);
+            background: var(--gradient-accent);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.3); }
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .description {
+            color: var(--text-tertiary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+        
+        .theme-info {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid var(--accent-primary);
+        }
+        
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .showcase-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow-card);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .showcase-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent-primary);
+        }
+        
+        .showcase-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-accent);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .card-icon {
+            font-size: 1.8rem;
+        }
+        
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .color-swatch {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            border: 2px solid var(--border-primary);
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            padding: 0.5rem;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+            transition: all 0.3s ease;
+        }
+        
+        .color-swatch:hover {
+            transform: scale(1.1);
+            border-color: var(--accent-primary);
+        }
+        
+        .component-demo {
+            margin: 1rem 0;
+        }
+        
+        .demo-button {
+            background: var(--gradient-accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+            margin: 0.5rem;
+        }
+        
+        .demo-button:hover {
+            box-shadow: var(--glow-primary);
+            transform: translateY(-2px);
+        }
+        
+        .demo-input {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-primary);
+            border-radius: 6px;
+            padding: 0.75rem;
+            color: var(--text-primary);
+            font-family: inherit;
+            width: 100%;
+            margin: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: var(--glow-primary);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            border: 1px solid var(--border-primary);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--neon-green);
+            text-shadow: 0 0 8px var(--neon-green);
+            font-family: 'Courier New', monospace;
+            display: block;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.5rem;
+        }
+        
+        .code-preview {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            overflow-x: auto;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding: 2rem;
+            border-top: 1px solid var(--border-primary);
+            color: var(--text-tertiary);
+        }
+        
+        .footer-links {
+            margin: 1rem 0;
+        }
+        
+        .footer-links a {
+            color: var(--accent-secondary);
+            text-decoration: none;
+            margin: 0 1rem;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent-primary);
+            text-shadow: 0 0 5px currentColor;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .showcase-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="hero-title">🎮 Gaming Aesthetic</h1>
+            <p class="subtitle">Dark Military/Tech Theme by Quinn & Adam</p>
+            <p class="description">
+                A professional dark theme inspired by modern FPS games like Battlefield and Fallout. 
+                Features military-tech backgrounds with neon orange and cyan accents for a cutting-edge gaming interface aesthetic.
+            </p>
+            <div class="theme-info">
+                Created: February 2026 | Version: 1.0 | Status: Production Ready
+            </div>
+        </header>
+        
+        <div class="showcase-grid">
+            <div class="showcase-card">
+                <h2 class="card-title">
+                    <span class="card-icon">🎨</span>
+                    Color Palette
+                </h2>
+                <div class="color-palette">
+                    <div class="color-swatch" style="background: #0a0e13;">DARK</div>
+                    <div class="color-swatch" style="background: #161b22;">BASE</div>
+                    <div class="color-swatch" style="background: #1c2128;">CARD</div>
+                    <div class="color-swatch" style="background: #ff6b35;">ORANGE</div>
+                    <div class="color-swatch" style="background: #00d4aa;">CYAN</div>
+                    <div class="color-swatch" style="background: #39ff14;">NEON</div>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 1rem;">
+                    Inspired by Battlefield's orange UI and FPS gaming aesthetics. Perfect for tech projects and gaming interfaces.
+                </p>
+            </div>
+            
+            <div class="showcase-card">
+                <h2 class="card-title">
+                    <span class="card-icon">🔧</span>
+                    Components
+                </h2>
+                <div class="component-demo">
+                    <button class="demo-button">Primary Button</button>
+                    <button class="demo-button" style="background: var(--bg-tertiary); border: 2px solid var(--accent-secondary);">Secondary</button>
+                    <input type="text" class="demo-input" placeholder="Enter your callsign...">
+                    <div style="margin: 1rem 0; padding: 1rem; background: var(--bg-tertiary); border-left: 4px solid var(--accent-primary); border-radius: 4px;">
+                        <strong style="color: var(--accent-primary);">Mission Briefing:</strong>
+                        <span style="color: var(--text-secondary);">All systems operational</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="showcase-card">
+                <h2 class="card-title">
+                    <span class="card-icon">📊</span>
+                    HUD Elements
+                </h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">98%</span>
+                        <span class="stat-label">System Status</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24</span>
+                        <span class="stat-label">Active Users</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">1.2K</span>
+                        <span class="stat-label">Data Points</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">156ms</span>
+                        <span class="stat-label">Response Time</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="showcase-card">
+                <h2 class="card-title">
+                    <span class="card-icon">💻</span>
+                    Code Preview
+                </h2>
+                <div class="code-preview">
+/* Gaming Aesthetic Theme */
+:root {
+  --bg-primary: #0a0e13;
+  --accent-primary: #ff6b35;
+  --accent-secondary: #00d4aa;
+  --neon-green: #39ff14;
+  --gradient-accent: linear-gradient(135deg, 
+    var(--accent-primary) 0%, 
+    var(--accent-secondary) 100%);
+}
+
+.gaming-card:hover {
+  box-shadow: 0 0 10px var(--accent-primary);
+  transform: translateY(-2px);
+}
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 1rem;">
+                    Built with CSS custom properties for easy customization and consistent application across projects.
+                </p>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <p>🔮 Created by Quinn & Adam | A collaboration between AI and human creativity</p>
+            <div class="footer-links">
+                <a href="https://shoots.adamdunstan.com">Portfolio</a>
+                <a href="mailto:quinn@adamdunstan.com">Contact</a>
+                <a href="#theme-download">Download Theme</a>
+            </div>
+            <p style="font-size: 0.8rem; margin-top: 1rem;">
+                Gaming Aesthetic Theme v1.0 • February 2026 • Production Ready
+            </p>
+        </footer>
+    </div>
+    
+    <script>
+        // Add some interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Color swatch click to copy
+            document.querySelectorAll('.color-swatch').forEach(swatch => {
+                swatch.addEventListener('click', function() {
+                    const color = this.style.background;
+                    navigator.clipboard.writeText(color).then(() => {
+                        this.style.transform = 'scale(1.2)';
+                        setTimeout(() => this.style.transform = '', 200);
+                    });
+                });
+            });
+            
+            // Stat counter animation
+            document.querySelectorAll('.stat-number').forEach(stat => {
+                const observer = new IntersectionObserver(entries => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.animation = 'glow 1.5s ease-in-out';
+                        }
+                    });
+                });
+                observer.observe(stat);
+            });
+        });
+    </script>
+</body>
+</html>

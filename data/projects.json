@@ -1,0 +1,142 @@
+{
+  "projects": [
+    {
+      "name": "After Alien Disclosure",
+      "shortName": "AAD",
+      "repo": "mrlofty/afteraliendisclosure",
+      "repoUrl": "https://github.com/mrlofty/afteraliendisclosure",
+      "branch": "master",
+      "pipeline": "GitHub Pages (auto on push)",
+      "host": "GitHub Pages",
+      "liveUrl": "https://mrlofty.github.io/afteraliendisclosure/",
+      "stagingUrl": "https://respawn.monster/disclosure/",
+      "domain": "afteraliendisclosure.com (not yet pointed)",
+      "stack": "Static HTML/CSS/JS",
+      "status": "active",
+      "ga": "G-FH4G4WFCLQ"
+    },
+    {
+      "name": "Shoots \u2014 Adam Dunstan Photography",
+      "shortName": "Shoots",
+      "repo": "mrlofty/shoots.adamdunstan.com",
+      "repoUrl": "https://github.com/mrlofty/shoots.adamdunstan.com",
+      "branch": "main",
+      "pipeline": "GitHub Actions \u2192 SSH deploy",
+      "host": "Oracle Cloud (207.211.147.98)",
+      "liveUrl": "https://shoots.adamdunstan.com",
+      "stagingUrl": null,
+      "domain": "shoots.adamdunstan.com",
+      "stack": "HTML/CSS/JS + PHP management UI",
+      "status": "active"
+    },
+    {
+      "name": "Quinn \u2014 Personal Site",
+      "shortName": "Quinn",
+      "repo": "mrlofty/quinn.adamdunstan.com",
+      "repoUrl": "https://github.com/mrlofty/quinn.adamdunstan.com",
+      "branch": "main",
+      "pipeline": "GitHub Actions \u2192 SSH deploy",
+      "host": "Oracle Cloud (207.211.147.98)",
+      "liveUrl": "https://quinn.adamdunstan.com",
+      "stagingUrl": null,
+      "domain": "quinn.adamdunstan.com",
+      "stack": "Static HTML/CSS",
+      "status": "active",
+      "ga": "G-Y9HD2CWNQR"
+    },
+    {
+      "name": "Immaculate Vibes Art",
+      "shortName": "IVA",
+      "repo": null,
+      "repoUrl": null,
+      "branch": null,
+      "pipeline": "Manual (Google Sites)",
+      "host": "Google Sites",
+      "liveUrl": "https://immaculatevibes.art",
+      "stagingUrl": null,
+      "domain": "immaculatevibes.art",
+      "stack": "Google Sites",
+      "status": "active",
+      "ga": "G-5GKMYBWHGR"
+    },
+    {
+      "name": "Quinn & Adam Dashboard",
+      "shortName": "Dashboard",
+      "repo": null,
+      "repoUrl": null,
+      "branch": null,
+      "pipeline": "Local (bluefin)",
+      "host": "Bluefin localhost:8080 / Tailscale",
+      "liveUrl": "http://100.88.67.100:8080",
+      "stagingUrl": null,
+      "domain": "Local only",
+      "stack": "HTML/CSS/JS + Python API",
+      "status": "active"
+    },
+    {
+      "name": "Respawn Monster",
+      "shortName": "Respawn",
+      "repo": null,
+      "repoUrl": null,
+      "branch": null,
+      "pipeline": "Manual / SCP",
+      "host": "Oracle Cloud (207.211.147.98)",
+      "liveUrl": "https://respawn.monster",
+      "stagingUrl": null,
+      "domain": "respawn.monster",
+      "stack": "Sandbox / staging ground",
+      "status": "active"
+    },
+    {
+      "id": "melbournephotobook",
+      "name": "Melbourne Photo Book",
+      "domain": "melbournephotobook.com",
+      "status": "planning",
+      "ga": "G-BRMEWQK0XJ",
+      "description": "Melbourne photography book/zine project",
+      "hosting": "TBD",
+      "created": "2026-02-21"
+    },
+    {
+      "name": "Coffee Gentlemen",
+      "domain": "coffeegentlemen.com",
+      "status": "planning",
+      "description": "Coffee culture project",
+      "hosting": "TBD",
+      "created": "2026-02-21"
+    },
+    {
+      "name": "Cheese Landslide",
+      "domain": "cheeselandslide.com",
+      "status": "planning",
+      "description": "Original fashion t-shirt / accessories brand. Create concept for this brand.",
+      "hosting": "TBD",
+      "created": "2026-02-21",
+      "tags": [
+        "fashion",
+        "creative",
+        "brand"
+      ]
+    },
+    {
+      "name": "Adam Dunstan \u2014 Main Site",
+      "domain": "adamdunstan.com",
+      "status": "active",
+      "description": "Main personal/portfolio site",
+      "hosting": "TBD",
+      "created": "2026-02-21"
+    },
+    {
+      "name": "Enablitz",
+      "domain": "enablitz.com",
+      "status": "planning",
+      "description": "Generalised affiliate link recommendation site",
+      "hosting": "TBD",
+      "created": "2026-02-21",
+      "tags": [
+        "affiliate",
+        "revenue"
+      ]
+    }
+  ]
+}

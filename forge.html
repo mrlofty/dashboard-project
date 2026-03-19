@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forge Workshop Status</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0a0a0f;
+      --bg-elevated: rgba(18, 18, 28, 0.88);
+      --panel: rgba(22, 23, 35, 0.92);
+      --panel-strong: rgba(29, 30, 45, 0.98);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f5f7fb;
+      --muted: #9aa0b5;
+      --purple: #6366f1;
+      --gold: #d4af37;
+      --green: #22c55e;
+      --red: #f97373;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(99, 102, 241, 0.18), transparent 32%),
+        radial-gradient(circle at top right, rgba(212, 175, 55, 0.14), transparent 26%),
+        linear-gradient(180deg, #0c0d14 0%, var(--bg) 52%, #07070b 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: radial-gradient(circle at center, black 45%, transparent 100%);
+      opacity: 0.35;
+    }
+
+    .shell {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 48px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 100%), var(--bg-elevated);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero-card {
+      padding: 28px;
+    }
+
+    .hero-card::after,
+    .status-card::after,
+    .tasks::after {
+      content: "";
+      position: absolute;
+      inset: auto -20% -55% auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.22), transparent 65%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #c6cae0;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .eyebrow .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 18px rgba(212, 175, 55, 0.65);
+    }
+
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(2rem, 3vw, 3.25rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+
+    .hero-copy {
+      max-width: 58ch;
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.7;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .meta-chip {
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      color: #d8dcef;
+      font-size: 0.92rem;
+    }
+
+    .status-card {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100%;
+      background:
+        linear-gradient(180deg, rgba(99, 102, 241, 0.16), rgba(99, 102, 241, 0.04) 35%, rgba(255, 255, 255, 0.02) 100%),
+        var(--panel-strong);
+    }
+
+    .status-label {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 6px 0 14px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: capitalize;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .status-badge::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 16px currentColor;
+    }
+
+    .status-badge.available {
+      color: #8cf6b0;
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .status-badge.working {
+      color: #f4d67a;
+      background: rgba(212, 175, 55, 0.14);
+    }
+
+    .status-badge.blocked {
+      color: #ff9d9d;
+      background: rgba(249, 115, 115, 0.12);
+    }
+
+    .status-note {
+      margin: 0;
+      color: #d4d8e8;
+      line-height: 1.65;
+    }
+
+    .status-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .tasks {
+      padding: 24px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-head span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 14px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .task-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: rgba(255, 255, 255, 0.03);
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .task-item:hover {
+      transform: translateY(-2px);
+      border-color: rgba(99, 102, 241, 0.32);
+      background: rgba(99, 102, 241, 0.06);
+    }
+
+    .task-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(212, 175, 55, 0.18));
+      color: #eef0fb;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .task-title {
+      margin: 0 0 4px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .task-id {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .task-state {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.12);
+      color: #8cf6b0;
+      border: 1px solid rgba(34, 197, 94, 0.18);
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 860px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .status-card {
+        min-height: 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100% - 20px, 1100px);
+        padding: 20px 0 32px;
+      }
+
+      .hero-card,
+      .status-card,
+      .tasks {
+        padding: 20px;
+        border-radius: 20px;
+      }
+
+      .task-item {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+
+      .task-icon {
+        width: 38px;
+        height: 38px;
+      }
+
+      .status-foot,
+      .footer,
+      .section-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div style="margin-bottom: 16px;"><a href="index.html" style="color: var(--muted); text-decoration: none; font-size: 0.9rem;">← Dashboard</a></div>
+    <section class="hero">
+      <article class="card hero-card">
+        <div class="eyebrow">
+          <span class="dot"></span>
+          Forge Workshop
+        </div>
+        <h1>Forge ⚒️ — Builder</h1>
+        <p class="hero-copy">
+          Personal build board for active delivery work, editor integration, and dashboard polish.
+          Current state is reflected live below with a concise snapshot of the latest completed queue items.
+        </p>
+        <div class="hero-meta">
+          <div class="meta-chip">Single-file status surface</div>
+          <div class="meta-chip">Dark, card-based UI</div>
+          <div class="meta-chip">Responsive desktop/mobile layout</div>
+        </div>
+      </article>
+
+      <aside class="card status-card">
+        <div>
+          <p class="status-label">Current Status</p>
+          <div class="status-row">
+            <span id="statusBadge" class="status-badge working">working</span>
+          </div>
+          <p id="statusNote" class="status-note">
+            Active build window. Shipping interface work and cleaning up integration edges without blockers.
+          </p>
+        </div>
+        <div class="status-foot">
+          <span id="statusMeta">Mode: focused execution</span>
+          <span id="timestamp">Updated just now</span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="card tasks">
+      <div class="section-head">
+        <h2>Recent Completed Tasks</h2>
+        <span id="taskListMeta">Latest activity</span>
+      </div>
+
+      <ul class="task-list" id="taskList">
+        <li class="task-item">
+          <div class="task-icon">53</div>
+          <div>
+            <p class="task-title">Dashboard Research MD Files + Editor Integration</p>
+            <p class="task-id">TASK-053</p>
+          </div>
+          <span class="task-state">Completed</span>
+        </li>
+        <li class="task-item">
+          <div class="task-icon">52</div>
+          <div>
+            <p class="task-title">Dashboard Integration Fixes — Nav frames + research data</p>
+            <p class="task-id">TASK-052</p>
+          </div>
+          <span class="task-state">Completed</span>
+        </li>
+        <li class="task-item">
+          <div class="task-icon">51</div>
+          <div>
+            <p class="task-title">WhichBatman Quiz UX Polish (Part B)</p>
+            <p class="task-id">TASK-051</p>
+          </div>
+          <span class="task-state">Completed</span>
+        </li>
+        <li class="task-item">
+          <div class="task-icon">50</div>
+          <div>
+            <p class="task-title">Mission Control Task Queues Panel</p>
+            <p class="task-id">TASK-050</p>
+          </div>
+          <span class="task-state">Completed</span>
+        </li>
+      </ul>
+
+      <div class="footer">
+        <span>Accent palette: Indigo + forge gold</span>
+        <span>Built as a self-contained dashboard artifact</span>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const statusBadge = document.getElementById("statusBadge");
+    const statusNote = document.getElementById("statusNote");
+    const statusMeta = document.getElementById("statusMeta");
+    const timestamp = document.getElementById("timestamp");
+    const taskList = document.getElementById("taskList");
+
+    const statusDescriptions = {
+      available: {
+        label: "available",
+        note: "Open capacity. Ready to pick up the next item in the queue.",
+        meta: "Mode: ready for intake"
+      },
+      active: {
+        label: "working",
+        note: "Active build window. Shipping interface work without blockers.",
+        meta: "Mode: focused execution"
+      },
+      blocked: {
+        label: "blocked",
+        note: "Dependency or review gate is holding progress until the next input lands.",
+        meta: "Mode: waiting on unblock"
+      },
+      offline: {
+        label: "offline",
+        note: "Data unavailable. Dashboard connection lost.",
+        meta: "Mode: disconnected"
+      }
+    };
+
+    async function fetchAgentStatus() {
+      try {
+        const response = await fetch('data/agents.json');
+        if (!response.ok) throw new Error('Failed to fetch agents data');
+        const data = await response.json();
+        const forge = data.agents.find(agent => agent.id === 'forge');
+        return forge || null;
+      } catch (error) {
+        console.error('Error fetching agent status:', error);
+        return null;
+      }
+    }
+
+    async function fetchActivity() {
+      try {
+        const response = await fetch('data/agent-activity.json');
+        if (!response.ok) throw new Error('Failed to fetch activity data');
+        const activities = await response.json();
+        // Filter for Forge's activities, take latest 4
+        return activities.filter(item => item.agent === 'Forge').slice(0, 4);
+      } catch (error) {
+        console.error('Error fetching activity:', error);
+        return [];
+      }
+    }
+
+    function renderStatus(forge) {
+      if (!forge) {
+        // Offline state
+        const offline = statusDescriptions.offline;
+        statusBadge.className = "status-badge blocked";
+        statusBadge.textContent = offline.label;
+        statusNote.textContent = offline.note;
+        statusMeta.textContent = offline.meta;
+        return;
+      }
+
+      const statusKey = forge.status || 'available';
+      const desc = statusDescriptions[statusKey] || statusDescriptions.available;
+      
+      statusBadge.className = "status-badge " + (statusKey === 'active' ? 'working' : statusKey);
+      statusBadge.textContent = desc.label;
+      
+      // Use currentTask if active, otherwise use the description
+      if (statusKey === 'active' && forge.currentTask) {
+        statusNote.textContent = `Working on: ${forge.currentTask}`;
+      } else {
+        statusNote.textContent = desc.note;
+      }
+      
+      statusMeta.textContent = desc.meta;
+    }
+
+    function renderTimestamp() {
+      const now = new Date();
+      const formatted = new Intl.DateTimeFormat(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      }).format(now);
+      timestamp.textContent = "Updated " + formatted;
+    }
+
+    function extractTaskNumber(headline) {
+      // Try to extract task number from headline like "TASK-055: ..."
+      const match = headline.match(/TASK-(\d+)/i);
+      return match ? match[1] : '—';
+    }
+
+    function renderTaskList(activities) {
+      if (activities.length === 0) {
+        taskList.innerHTML = '<li class="task-item"><div class="task-title">No recent activity available.</div></li>';
+        return;
+      }
+
+      taskList.innerHTML = activities.map(activity => {
+        const taskNum = extractTaskNumber(activity.headline);
+        const shortHeadline = activity.headline.replace(/^TASK-\d+:\s*/i, '').trim();
+        
+        return `
+          <li class="task-item">
+            <div class="task-icon">${taskNum}</div>
+            <div>
+              <p class="task-title">${shortHeadline}</p>
+              <p class="task-id">${activity.category} — ${new Date(activity.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+            </div>
+            <span class="task-state">Completed</span>
+          </li>
+        `;
+      }).join('');
+    }
+
+    async function updateDashboard() {
+      const [forge, activities] = await Promise.all([
+        fetchAgentStatus(),
+        fetchActivity()
+      ]);
+
+      renderStatus(forge);
+      renderTaskList(activities);
+      renderTimestamp();
+    }
+
+    // Initial load
+    updateDashboard();
+
+    // Auto-refresh every 60 seconds
+    setInterval(updateDashboard, 60000);
+  </script>
+</body>
+</html>

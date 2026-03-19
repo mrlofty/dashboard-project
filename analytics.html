@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics — Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.2rem;
+            padding: 1.5rem 0;
+        }
+
+        .site-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .site-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            background: var(--bg-card-hover);
+        }
+
+        .site-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .site-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .site-status {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .status-live {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .status-pending {
+            background: rgba(249, 115, 22, 0.15);
+            color: #f97316;
+        }
+
+        .status-nodata {
+            background: rgba(144, 144, 160, 0.15);
+            color: #9090a0;
+        }
+
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.6rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 0.6rem 0.3rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .metric-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .metric-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-sub {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+
+        .section-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.4rem;
+            margin-top: 0.6rem;
+        }
+
+        .top-pages {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .top-pages li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.3rem 0;
+            font-size: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .top-pages li:last-child {
+            border-bottom: none;
+        }
+
+        .page-path {
+            color: var(--text-secondary);
+            font-family: monospace;
+            font-size: 0.7rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 200px;
+        }
+
+        .page-views {
+            color: #d4af37;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .countries {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            margin-top: 0.3rem;
+        }
+
+        .country-tag {
+            font-size: 0.65rem;
+            padding: 0.1rem 0.4rem;
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            border-radius: 6px;
+        }
+
+        .summary-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            padding: 1.2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .summary-stat {
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #d4af37;
+            line-height: 1;
+        }
+
+        .summary-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .last-updated {
+            text-align: right;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+        }
+
+        .page-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .refresh-btn {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .week-label {
+            background: rgba(168, 85, 247, 0.1);
+            color: #a855f7;
+        }
+
+        .today-label {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        .period-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .period-tab {
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .period-tab.active {
+            background: rgba(212, 175, 55, 0.15);
+            color: #d4af37;
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+
+    <main class="main-content" style="max-width: 1400px; margin: 0 auto; padding: 1rem 1.5rem;">
+        <div class="page-title-row">
+            <h1 style="font-size: 1.5rem; color: var(--text-primary); margin: 0;">📊 Analytics</h1>
+            <div class="last-updated" id="lastUpdated"></div>
+        </div>
+
+        <div class="summary-bar" id="summaryBar"></div>
+
+        <div class="period-tabs">
+            <button class="period-tab active" onclick="setPeriod('today', this)">Today</button>
+            <button class="period-tab" onclick="setPeriod('week', this)">This Week</button>
+        </div>
+
+        <div class="analytics-grid" id="analyticsGrid"></div>
+    </main>
+
+    <script src="shared.js"></script>
+    <script>
+        var analyticsData = null;
+        var currentPeriod = 'today';
+
+        var siteIcons = {
+            'afteraliendisclosure.com': '🛸',
+            'quinn.adamdunstan.com': '🔮',
+            'immaculatevibes.art': '🎨',
+            'melbournephotobook.com': '📸',
+            'cheeselandslide.com': '🧀',
+            'coffeegentlemen.com': '☕',
+            'adamdunstan.com': '🌐',
+            'enablitz.com': '⚡',
+            'shoots.adamdunstan.com': '📷',
+            'respawn.monster': '👾'
+        };
+
+        var siteOrder = [
+            'adamdunstan.com',
+            'afteraliendisclosure.com',
+            'quinn.adamdunstan.com',
+            'immaculatevibes.art',
+            'melbournephotobook.com',
+            'cheeselandslide.com',
+            'coffeegentlemen.com'
+        ];
+
+        function setPeriod(period, btn) {
+            currentPeriod = period;
+            document.querySelectorAll('.period-tab').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            render();
+        }
+
+        function render() {
+            if (!analyticsData) return;
+            var data = analyticsData;
+
+            // Summary
+            var totalUsers = 0, totalViews = 0, totalSessions = 0, activeSites = 0;
+            var sites = data.sites || {};
+
+            Object.keys(sites).forEach(function(domain) {
+                var s = sites[domain][currentPeriod] || {};
+                totalUsers += (s.users || 0);
+                totalViews += (s.pageViews || 0);
+                totalSessions += (s.sessions || 0);
+                if ((s.users || 0) > 0) activeSites++;
+            });
+
+            document.getElementById('summaryBar').innerHTML =
+                '<div class="summary-stat"><div class="summary-value">' + totalUsers + '</div><div class="summary-label">Total Users</div></div>' +
+                '<div class="summary-stat"><div class="summary-value">' + totalViews + '</div><div class="summary-label">Page Views</div></div>' +
+                '<div class="summary-stat"><div class="summary-value">' + totalSessions + '</div><div class="summary-label">Sessions</div></div>' +
+                '<div class="summary-stat"><div class="summary-value">' + activeSites + '/' + Object.keys(sites).length + '</div><div class="summary-label">Active Sites</div></div>';
+
+            // Cards
+            var domains = siteOrder.filter(function(d) { return sites[d]; });
+            // Add any not in order
+            Object.keys(sites).forEach(function(d) {
+                if (domains.indexOf(d) === -1) domains.push(d);
+            });
+
+            var html = domains.map(function(domain) {
+                var site = sites[domain];
+                var period = site[currentPeriod] || {};
+                var icon = siteIcons[domain] || '🌐';
+                var hasData = (period.users || 0) > 0;
+                var statusClass = hasData ? 'status-live' : 'status-nodata';
+                var statusText = hasData ? 'Active' : 'No data';
+
+                var card = '<div class="site-card">' +
+                    '<div class="site-card-header">' +
+                        '<span class="site-name">' + icon + ' ' + domain + '</span>' +
+                        '<span class="site-status ' + statusClass + '">' + statusText + '</span>' +
+                    '</div>' +
+                    '<div class="metrics-row">' +
+                        '<div class="metric"><div class="metric-value">' + (period.users || 0) + '</div><div class="metric-label">Users</div></div>' +
+                        '<div class="metric"><div class="metric-value">' + (period.pageViews || 0) + '</div><div class="metric-label">Views</div></div>' +
+                        '<div class="metric"><div class="metric-value">' + (period.sessions || 0) + '</div><div class="metric-label">Sessions</div></div>' +
+                    '</div>';
+
+                // Top pages (show for week view or if today has data)
+                var pages = site.topPages || [];
+                if (pages.length > 0) {
+                    card += '<div class="section-label">Top Pages (7d)</div><ul class="top-pages">';
+                    pages.forEach(function(p) {
+                        card += '<li><span class="page-path">' + p.path + '</span><span class="page-views">' + p.views + '</span></li>';
+                    });
+                    card += '</ul>';
+                }
+
+                // Countries
+                var countries = site.countries || [];
+                if (countries.length > 0 && countries[0].country) {
+                    card += '<div class="section-label">Countries (today)</div><div class="countries">';
+                    countries.forEach(function(c) {
+                        if (c.country) card += '<span class="country-tag">' + c.country + ' (' + c.users + ')</span>';
+                    });
+                    card += '</div>';
+                }
+
+                card += '</div>';
+                return card;
+            }).join('');
+
+            document.getElementById('analyticsGrid').innerHTML = html;
+
+            // Last updated
+            if (data.lastUpdated) {
+                var d = new Date(data.lastUpdated);
+                document.getElementById('lastUpdated').textContent = 'Last updated: ' + d.toLocaleString('en-AU', {timeZone: 'Australia/Melbourne'});
+            }
+        }
+
+        async function loadData() {
+            try {
+                var resp = await fetch('data/analytics.json');
+                if (resp.ok) {
+                    analyticsData = await resp.json();
+                    render();
+                }
+            } catch(e) {
+                document.getElementById('analyticsGrid').innerHTML = '<p style="color:var(--text-muted);">No analytics data yet. Run pull-analytics.py to populate.</p>';
+            }
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

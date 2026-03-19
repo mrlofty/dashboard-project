@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "id": "1772894482142",
+      "title": "design style review",
+      "url": "https://www.pizzint.watch/",
+      "notes": "this site has a very specific design, does it have a name, id like to attempt to make a css and try applying it to a copy of one of our sites.",
+      "type": "reference",
+      "tags": [
+        "design",
+        "css",
+        "designtrend"
+      ],
+      "priority": "medium",
+      "status": "pending",
+      "addedBy": "adam",
+      "added": "2026-03-07T14:41:22.142Z",
+      "source": "inbox"
+    },
+    {
+      "id": "1772889769852",
+      "title": "Advice on how to utilise different LLM/models for openclaw",
+      "url": "https://x.com/AlexFinn/status/2030112232865206610",
+      "notes": "Dont. need to action, but lets table this for our wider discussion on strategy for model and token planning",
+      "type": "reference",
+      "tags": [
+        "budgeting",
+        "AIModels"
+      ],
+      "priority": "medium",
+      "status": "pending",
+      "addedBy": "adam",
+      "added": "2026-03-07T13:22:49.852Z",
+      "source": "inbox"
+    },
+    {
+      "id": "1772866130617",
+      "title": "Can I have a wordle (NY Times word game) clone in the dash?",
+      "url": null,
+      "notes": "It could be using words from our context :)",
+      "type": "act",
+      "tags": [
+        "game",
+        "dashboard"
+      ],
+      "priority": "low",
+      "status": "pending",
+      "addedBy": "adam",
+      "added": "2026-03-07T06:48:50.617Z",
+      "source": "inbox"
+    },
+    {
+      "id": "1772863975684",
+      "title": "Openclaw general use case research - from various reddit comments",
+      "url": null,
+      "notes": "Custom AI meditations — One user had OpenClaw write personalized meditations, run TTS, generate ambient audio, and combine everything into finished meditation tracks. Automatically.\n\nReconnect with old friends — A skill that analyzes your iMessage history, finds people you haven't talked to recently, and nudges you to reach out.  (we would use the crm as part of this, e.g. who is in a group where contact is normal but may have dropepd off)\n\nios and Apple watch app?   if we are on the tailscale connection, could we have an app?",
+      "type": "discuss",
+      "tags": [
+        "reddit"
+      ],
+      "priority": "medium",
+      "status": "pending",
+      "addedBy": "adam",
+      "added": "2026-03-07T06:12:55.684Z",
+      "source": "inbox"
+    },
+    {
+      "id": "1772863596532",
+      "title": "design and funcional inspo for our project management in the dash",
+      "url": "https://www.reddit.com/r/clawdbot/comments/1rlwqlg/flowboard_v400_project_management_for_ai_agents/",
+      "notes": "An example setup that we can review and potentially adopt concepts from - and build into our own tools.",
+      "type": "research",
+      "tags": [
+        "kanban",
+        "projects"
+      ],
+      "priority": "low",
+      "status": "pending",
+      "addedBy": "adam",
+      "added": "2026-03-07T06:06:36.532Z",
+      "source": "inbox"
+    }
+  ],
+  "settings": {
+    "autoArchiveDays": 90,
+    "showDismissed": false
+  }
+}

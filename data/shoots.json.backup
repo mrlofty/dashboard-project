@@ -1,0 +1,464 @@
+{
+  "statuses": {
+    "concept": {
+      "label": "Concept",
+      "color": "#9090a0",
+      "order": 0
+    },
+    "planned": {
+      "label": "Planned",
+      "color": "#a855f7",
+      "order": 1
+    },
+    "scheduled": {
+      "label": "Scheduled",
+      "color": "#3b82f6",
+      "order": 2
+    },
+    "shot": {
+      "label": "Shot",
+      "color": "#f59e0b",
+      "order": 3
+    },
+    "editing": {
+      "label": "Editing",
+      "color": "#f97316",
+      "order": 4
+    },
+    "delivered": {
+      "label": "Delivered",
+      "color": "#22c55e",
+      "order": 5
+    },
+    "published": {
+      "label": "Published",
+      "color": "#10b981",
+      "order": 6
+    }
+  },
+  "paymentStatuses": {
+    "tfp": {
+      "label": "TFP",
+      "color": "#3b82f6"
+    },
+    "unpaid": {
+      "label": "Unpaid",
+      "color": "#ef4444"
+    },
+    "deposit": {
+      "label": "Deposit Paid",
+      "color": "#f59e0b"
+    },
+    "paid": {
+      "label": "Fully Paid",
+      "color": "#22c55e"
+    },
+    "na": {
+      "label": "N/A",
+      "color": "#9090a0"
+    }
+  },
+  "shoots": [
+    {
+      "id": "alex-foster-collab-tba",
+      "modelId": "alex-foster",
+      "modelName": "Alex Foster",
+      "title": "Collab TBA",
+      "date": null,
+      "location": null,
+      "concept": null,
+      "description": "Industrial, blue tones, full tattoo work",
+      "status": "editing",
+      "payment": "tfp",
+      "depositAmount": null,
+      "totalAmount": null,
+      "paymentNotes": "",
+      "collabPage": null,
+      "shootPage": "/alex-foster/",
+      "publishedToShoots": false,
+      "notes": "Industrial, blue tones, full tattoo work",
+      "created": "2026-02-15",
+      "paymentHistory": [],
+      "invoiceId": null,
+      "paymentLink": null,
+      "packageType": null,
+      "currency": "AUD",
+      "locationIds": [],
+      "routeId": null,
+      "type": "collab",
+      "modelIds": [
+        "alex-foster"
+      ]
+    },
+    {
+      "id": "nam-summer-streetstyle-collab",
+      "modelId": "nam",
+      "modelName": "Nam",
+      "title": "Summer Streetstyle Collab",
+      "date": null,
+      "location": "Metro Tunnel Construction Site",
+      "concept": null,
+      "description": "Backwards cap, glasses, tattoo sleeve",
+      "status": "editing",
+      "payment": "tfp",
+      "depositAmount": null,
+      "totalAmount": null,
+      "paymentNotes": "",
+      "collabPage": "/collabs/summer-streetstyle/",
+      "shootPage": "/nam/",
+      "publishedToShoots": false,
+      "notes": "Backwards cap, glasses, tattoo sleeve",
+      "created": "2026-02-15",
+      "paymentHistory": [],
+      "invoiceId": null,
+      "paymentLink": null,
+      "packageType": null,
+      "currency": "AUD",
+      "locationIds": [
+        "metro-tunnel"
+      ],
+      "routeId": null,
+      "type": "collab",
+      "modelIds": [
+        "nam"
+      ]
+    },
+    {
+      "id": "alex-stone-mcc-sunday-has-a-vibe",
+      "modelId": "alex-stone",
+      "modelName": "Alex Stone",
+      "title": "MCC Sunday Has a Vibe",
+      "date": null,
+      "location": "Melbourne Convention Centre",
+      "concept": null,
+      "description": "Platinum blonde, black shirt, sunglasses, urban street",
+      "status": "shot",
+      "payment": "na",
+      "depositAmount": null,
+      "totalAmount": null,
+      "paymentNotes": "",
+      "collabPage": null,
+      "shootPage": "/alex-stone/",
+      "publishedToShoots": false,
+      "notes": "Platinum blonde, black shirt, sunglasses, urban street",
+      "created": "2026-02-15",
+      "paymentHistory": [],
+      "invoiceId": null,
+      "paymentLink": null,
+      "packageType": null,
+      "currency": "AUD",
+      "locationIds": [
+        "federation-square"
+      ],
+      "routeId": null,
+      "type": "event",
+      "modelIds": [
+        "alex-stone"
+      ]
+    },
+    {
+      "id": "sam-brown-waking-light-collab",
+      "modelId": "sam-brown",
+      "modelName": "Sam Brown",
+      "title": "Waking Light Collab",
+      "date": null,
+      "location": "Melbourne",
+      "concept": null,
+      "description": "Teal/warm tones, white shirt, sandstone",
+      "status": "editing",
+      "payment": "tfp",
+      "depositAmount": null,
+      "totalAmount": null,
+      "paymentNotes": "",
+      "collabPage": "/collabs/waking-light/",
+      "shootPage": "/sam-brown/",
+      "publishedToShoots": false,
+      "notes": "Teal/warm tones, white shirt, sandstone",
+      "created": "2026-02-15",
+      "paymentHistory": [],
+      "invoiceId": null,
+      "paymentLink": null,
+      "packageType": null,
+      "currency": "AUD",
+      "locationIds": [],
+      "routeId": null,
+      "type": "collab",
+      "modelIds": [
+        "sam-brown"
+      ]
+    },
+    {
+      "id": "jay-lam-mcc-valentine's-day-walk",
+      "modelId": "jay-lam",
+      "modelName": "Jay Lam",
+      "title": "MCC Valentine's Day Walk",
+      "date": "2026-02-14",
+      "location": "Melbourne Convention Centre / Hamer Hall",
+      "concept": null,
+      "description": "Industrial sepia portrait, dragon tattoo piece",
+      "status": "published",
+      "payment": "na",
+      "depositAmount": null,
+      "totalAmount": null,
+      "paymentNotes": "",
+      "collabPage": null,
+      "shootPage": "/jay-lam/",
+      "publishedToShoots": false,
+      "notes": "Shot Jay Lam, Ghostgirl Cos, Dana, Elliot. Industrial sepia portraits, vintage Valentine's, fashion editorial.",
+      "created": "2026-02-15",
+      "paymentHistory": [],
+      "invoiceId": null,
+      "paymentLink": null,
+      "packageType": null,
+      "currency": "AUD",
+      "locationIds": [
+        "hamer-hall"
+      ],
+      "routeId": null,
+      "type": "event",
+      "modelIds": [
+        "elliot",
+        "jay-lam",
+        "ghostgirl-cos",
+        "dana"
+      ]
+    },
+    {
+      "id": "anmol-gangster-photowalk",
+      "modelId": "anmol",
+      "modelName": "Anmol",
+      "title": "Gangster Photowalk",
+      "date": null,
+      "location": null,
+      "concept": null,
+      "description": "Grey suit, newspaper, boardwalk night shot",
+      "status": "shot",
+      "payment": "tfp",
+      "depositAmount": null,
+      "totalAmount": null,
+      "paymentNotes": "",
+      "collabPage": null,
+      "shootPage": "/anmol/",
+      "publishedToShoots": false,
+      "notes": "Grey suit, newspaper, boardwalk night shot",
+      "created": "2026-02-15",
+      "paymentHistory": [],
+      "invoiceId": null,
+      "paymentLink": null,
+      "packageType": null,
+      "currency": "AUD",
+      "locationIds": [
+        "southbank-riverwalk"
+      ],
+      "routeId": null,
+      "type": "event",
+      "modelIds": [
+        "anmol"
+      ]
+    },
+    {
+      "id": "dusty-dusty-collab",
+      "modelId": "dusty",
+      "modelName": "Dusty",
+      "title": "Dusty Collab",
+      "date": null,
+      "location": null,
+      "concept": null,
+      "description": "Melbourne collab. fashion shoot.",
+      "status": "concept",
+      "payment": "tfp",
+      "depositAmount": null,
+      "totalAmount": null,
+      "paymentNotes": "",
+      "collabPage": null,
+      "shootPage": "/dusty/",
+      "publishedToShoots": false,
+      "notes": "Melbourne collab. fashion shoot.",
+      "created": "2026-02-21",
+      "paymentHistory": [],
+      "invoiceId": null,
+      "paymentLink": null,
+      "packageType": null,
+      "currency": "AUD",
+      "locationIds": [],
+      "routeId": null,
+      "type": "collab",
+      "modelIds": [
+        "dusty"
+      ]
+    },
+    {
+      "id": "nam-chapters-2026",
+      "modelId": "nam",
+      "modelName": "Nam",
+      "title": "Chapters",
+      "date": "2026-02-23",
+      "location": "State Library of Victoria",
+      "concept": "Portrait / Architecture",
+      "description": "Every book tells a story \u2014 so does every person standing between them.",
+      "status": "shot",
+      "payment": "tfp",
+      "depositAmount": null,
+      "totalAmount": null,
+      "paymentNotes": "",
+      "collabPage": "/collabs/chapters/",
+      "shootPage": "/nam/",
+      "publishedToShoots": true,
+      "notes": "Rescheduled from migraine. Sunday shoot.",
+      "created": "2026-02-21",
+      "paymentHistory": [],
+      "invoiceId": null,
+      "paymentLink": null,
+      "packageType": null,
+      "currency": "AUD",
+      "locationIds": [
+        "state-library"
+      ],
+      "routeId": null,
+      "type": "collab",
+      "modelIds": [
+        "nam"
+      ]
+    },
+    {
+      "id": "alex-stone-brunswick-life-march",
+      "modelId": "alex-stone",
+      "modelIds": [
+        "alex-stone"
+      ],
+      "modelName": "Alex Stone",
+      "type": "event",
+      "title": "Brunswick Life March",
+      "date": "2026-03-15",
+      "location": "Edwards Park Lake",
+      "concept": "Photowalk",
+      "description": "",
+      "status": "planned",
+      "payment": "tfp",
+      "depositAmount": null,
+      "totalAmount": null,
+      "paymentNotes": "",
+      "paymentHistory": [],
+      "invoiceId": null,
+      "paymentLink": null,
+      "packageType": null,
+      "currency": "AUD",
+      "collabPage": null,
+      "shootPage": "/alex-stone/",
+      "publishedToShoots": false,
+      "locationIds": [],
+      "routeId": null,
+      "notes": "",
+      "created": "2026-02-21"
+    },
+    {
+      "id": "alex-stone-mcc-made-with-ink",
+      "modelId": "alex-stone",
+      "modelIds": [
+        "alex-stone"
+      ],
+      "modelName": "Alex Stone",
+      "type": "event",
+      "title": "MCC Made with Ink",
+      "date": "2026-03-08",
+      "location": null,
+      "concept": null,
+      "description": "",
+      "status": "scheduled",
+      "payment": "tfp",
+      "depositAmount": null,
+      "totalAmount": null,
+      "paymentNotes": "",
+      "paymentHistory": [],
+      "invoiceId": null,
+      "paymentLink": null,
+      "packageType": null,
+      "currency": "AUD",
+      "collabPage": null,
+      "shootPage": "/alex-stone/",
+      "publishedToShoots": false,
+      "locationIds": [],
+      "routeId": null,
+      "notes": "MCC public photowalk",
+      "created": "2026-02-28"
+    }
+  ],
+  "packages": [
+    {
+      "id": "tfp",
+      "name": "TFP (Trade for Portfolio)",
+      "price": 0,
+      "description": "Collaborative shoot \u2014 both parties receive portfolio images",
+      "includes": [
+        "1-2 hour shoot",
+        "10-15 edited images",
+        "Online gallery"
+      ]
+    },
+    {
+      "id": "basic",
+      "name": "Basic Portrait",
+      "price": 150,
+      "description": "Quick portrait session",
+      "includes": [
+        "30 min shoot",
+        "5 edited images",
+        "Online gallery"
+      ]
+    },
+    {
+      "id": "standard",
+      "name": "Standard Session",
+      "price": 300,
+      "description": "Full portrait or editorial session",
+      "includes": [
+        "1 hour shoot",
+        "15 edited images",
+        "Online gallery",
+        "1 location"
+      ]
+    },
+    {
+      "id": "premium",
+      "name": "Premium Editorial",
+      "price": 500,
+      "description": "Extended editorial or multi-location shoot",
+      "includes": [
+        "2 hour shoot",
+        "25+ edited images",
+        "Online gallery",
+        "Multiple locations",
+        "Styling consultation"
+      ]
+    },
+    {
+      "id": "custom",
+      "name": "Custom",
+      "price": null,
+      "description": "Custom quote for special projects",
+      "includes": []
+    }
+  ],
+  "shootTypes": {
+    "collab": {
+      "label": "Collab (TFP)",
+      "color": "#3b82f6",
+      "icon": "\ud83e\udd1d"
+    },
+    "paid": {
+      "label": "Paid Session",
+      "color": "#22c55e",
+      "icon": "\ud83d\udcb0"
+    },
+    "event": {
+      "label": "Event",
+      "color": "#a855f7",
+      "icon": "\ud83d\udcc5"
+    },
+    "personal": {
+      "label": "Personal",
+      "color": "#f59e0b",
+      "icon": "\ud83d\udcf7"
+    }
+  }
+}

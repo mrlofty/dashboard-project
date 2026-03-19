@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .contact-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .contact-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .contact-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .contact-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .contact-role {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .contact-details {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .contact-details p {
+            margin: 0.25rem 0;
+        }
+
+        .contact-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .contact-tag {
+            padding: 0.25rem 0.5rem;
+            background: rgba(168, 85, 247, 0.15);
+            border-radius: 12px;
+            font-size: 0.7rem;
+            color: var(--accent-purple);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            margin: 2rem 0 1rem 0;
+            color: var(--text-secondary);
+        }
+
+        .search-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .search-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-home {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            flex-shrink: 0;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .section-home:hover {
+            background: rgba(168, 85, 247, 0.15);
+        }
+
+        .section-icon {
+            font-size: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .search-input {
+            flex: 1;
+        }
+
+        .contact-card.hidden {
+            display: none;
+        }
+
+        .section-title.hidden {
+            display: none;
+        }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            min-width: 60px;
+        }
+
+        .tag-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag-chip {
+            padding: 0.375rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+        }
+
+        .type-chip {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .type-chip:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .type-chip.active {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+        }
+
+        .interest-chip {
+            background: rgba(168, 85, 247, 0.1);
+            color: #c084fc;
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        .interest-chip:hover {
+            background: rgba(168, 85, 247, 0.2);
+        }
+
+        .interest-chip.active {
+            background: rgba(168, 85, 247, 0.3);
+            border-color: #a855f7;
+        }
+
+        .network-chip {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .network-chip:hover {
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        .network-chip.active {
+            background: rgba(34, 197, 94, 0.3);
+            border-color: #22c55e;
+        }
+
+        .circle-chip {
+            background: rgba(236, 72, 153, 0.1);
+            color: #f472b6;
+            border-color: rgba(236, 72, 153, 0.3);
+        }
+
+        .circle-chip:hover {
+            background: rgba(236, 72, 153, 0.2);
+        }
+
+        .circle-chip.active {
+            background: rgba(236, 72, 153, 0.3);
+            border-color: #ec4899;
+        }
+
+        .intimate-chip {
+            background: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+        }
+
+        .add-btn {
+            padding: 0.5rem 1rem;
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .add-btn:hover {
+            background: #9333ea;
+        }
+
+        /* Inline Edit Form */
+        .inline-edit-form {
+            padding: 1.5rem;
+        }
+
+        .inline-edit-form .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .inline-edit-form label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.35rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .inline-edit-form input,
+        .inline-edit-form select,
+        .inline-edit-form textarea {
+            width: 100%;
+            padding: 0.65rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .inline-edit-form input:focus,
+        .inline-edit-form select:focus,
+        .inline-edit-form textarea:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .inline-edit-form .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Network Toggle Chips */
+        .network-toggles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .network-toggle {
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+            opacity: 0.5;
+            filter: grayscale(80%);
+        }
+
+        .network-toggle:hover {
+            opacity: 0.8;
+            filter: grayscale(40%);
+        }
+
+        .network-toggle.active {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            color: #22c55e;
+            opacity: 1;
+            filter: grayscale(0%);
+        }
+
+        .network-toggle.hidden {
+            display: none;
+        }
+
+        .show-all-networks {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.75rem;
+            color: var(--accent-purple);
+            cursor: pointer;
+            border: 1px dashed var(--accent-purple);
+            border-radius: 6px;
+            background: transparent;
+        }
+
+        .add-network-btn {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border: 1px dashed var(--border);
+            border-radius: 6px;
+            background: transparent;
+        }
+
+        .add-network-btn:hover {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-save-inline {
+            flex: 1;
+            padding: 0.75rem;
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-cancel-inline {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .edit-btn:hover {
+            background: rgba(168, 85, 247, 0.2);
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h2 {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .btn-cancel {
+            padding: 0.75rem 1.25rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .btn-save {
+            padding: 0.75rem 1.25rem;
+            background: var(--accent-purple);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Contact Detail View */
+        .contact-detail {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 1rem;
+        }
+
+        .contact-detail.active {
+            display: block;
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .detail-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .detail-name {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .detail-role {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .detail-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-section h3 {
+            font-size: 1rem;
+            color: var(--accent-purple);
+            margin-bottom: 0.75rem;
+        }
+
+        .detail-section p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .detail-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .meta-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .meta-value {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .contact-card {
+            cursor: pointer;
+        }
+
+        /* Hide grids when viewing detail */
+        .main-content.viewing-detail .contacts-grid,
+        .main-content.viewing-detail .section-title {
+            display: none;
+        }
+
+        /* Enhanced Detail View */
+        .detail-tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-tag {
+            padding: 0.5rem 1rem;
+            background: rgba(168, 85, 247, 0.15);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            color: var(--accent-purple);
+            font-weight: 500;
+        }
+
+        .detail-tag.interest {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .detail-tag.network {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+        }
+
+        /* Networks & Circles Section */
+        .social-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .social-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .social-column h3 {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .network-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .network-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 12px;
+        }
+
+        .network-item .icon {
+            font-size: 1.25rem;
+        }
+
+        .network-item .name {
+            font-weight: 500;
+            color: #4ade80;
+        }
+
+        /* Circle Tiles */
+        .circle-tiles {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .circle-tile {
+            padding: 1rem;
+            background: rgba(236, 72, 153, 0.1);
+            border: 1px solid rgba(236, 72, 153, 0.25);
+            border-radius: 16px;
+        }
+
+        .circle-tile-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .circle-tile-header .emoji {
+            font-size: 1.5rem;
+        }
+
+        .circle-tile-header .name {
+            font-weight: 600;
+            color: #f472b6;
+            font-size: 1rem;
+        }
+
+        .circle-members {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .circle-member {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            border: 2px solid rgba(236, 72, 153, 0.3);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .circle-member:hover {
+            transform: scale(1.1);
+            border-color: #ec4899;
+        }
+
+        .circle-member.current {
+            border-color: #ec4899;
+            box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.3);
+        }
+
+        .no-circles, .no-networks {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+    
+    <div class="container main-content" id="main-content">
+        <div class="search-section">
+            <div class="search-row">
+                <a href="#" class="section-home" id="section-home" onclick="closeContact(); return false;">
+                    <span class="section-icon">👥</span>
+                    <span class="section-title">CRM</span>
+                </a>
+                <input type="text" class="search-input" placeholder="Search — Contacts, relationships, and connection context" id="contact-search">
+                <button class="add-btn" onclick="openAddModal()">+ Add Contact</button>
+            </div>
+            
+            <div class="filter-row" style="margin-top: 1rem;">
+                <span class="filter-label">Type:</span>
+                <div class="tag-filters" id="type-filters">
+                    <span class="tag-chip type-chip" data-tag="core">Core</span>
+                    <span class="tag-chip type-chip" data-tag="close">Close</span>
+                    <span class="tag-chip type-chip" data-tag="work">Work</span>
+                    <span class="tag-chip type-chip" data-tag="intimate">💜 Intimate</span>
+                    <span class="tag-chip type-chip" data-tag="other">Other</span>
+                </div>
+            </div>
+            
+            <div class="filter-row" style="margin-top: 0.75rem;">
+                <span class="filter-label">Interests:</span>
+                <div class="tag-filters" id="interest-filters">
+                    <span class="tag-chip interest-chip" data-tag="photography">📸 Photography</span>
+                    <span class="tag-chip interest-chip" data-tag="gaming">🎮 Gaming</span>
+                    <span class="tag-chip interest-chip" data-tag="tech">💻 Tech</span>
+                    <span class="tag-chip interest-chip" data-tag="ai">🤖 AI</span>
+                </div>
+            </div>
+            
+            <div class="filter-row" style="margin-top: 0.75rem;">
+                <span class="filter-label">Network:</span>
+                <div class="tag-filters" id="network-filters">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+            
+            <div class="filter-row" style="margin-top: 0.75rem;">
+                <span class="filter-label">Circles:</span>
+                <div class="tag-filters" id="circle-filters">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Core Circle</h2>
+        <div class="contacts-grid" id="core-contacts">
+            <!-- Loaded dynamically -->
+        </div>
+
+        <h2 class="section-title">Close Friends</h2>
+        <div class="contacts-grid" id="close-contacts">
+            <!-- Loaded dynamically -->
+        </div>
+
+        <h2 class="section-title">All Contacts</h2>
+        <div class="contacts-grid" id="all-contacts">
+            <!-- Loaded dynamically -->
+        </div>
+
+        <!-- Contact Detail View -->
+        <div class="contact-detail" id="contact-detail">
+            <!-- Loaded dynamically -->
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <h2 id="modal-title">Add Contact</h2>
+            <form id="contact-form">
+                <input type="hidden" id="contact-id">
+                <div class="form-group">
+                    <label>Name *</label>
+                    <input type="text" id="form-name" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tier</label>
+                        <select id="form-tier">
+                            <option value="core">Core</option>
+                            <option value="close">Close</option>
+                            <option value="work">Work</option>
+                            <option value="intimate">Intimate</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Year Met</label>
+                        <input type="number" id="form-year" min="1950" max="2030" placeholder="2020">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Birthday</label>
+                        <input type="date" id="form-birthday">
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="form-type">
+                            <option value="personal">Personal</option>
+                            <option value="work">Work</option>
+                            <option value="intimate">Intimate</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Role / Title</label>
+                    <input type="text" id="form-role" placeholder="Friend, Colleague, etc.">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="form-location" placeholder="Melbourne, Texas, etc.">
+                </div>
+                <div class="form-group">
+                    <label>Tags (comma-separated)</label>
+                    <input type="text" id="form-tags" placeholder="photography, gaming, tech">
+                </div>
+                <div class="form-group">
+                    <label>Networks</label>
+                    <div id="form-networks" class="network-checkboxes" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="form-notes" placeholder="Quick notes about this person..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Context</label>
+                    <textarea id="form-context" placeholder="How you know them, shared history..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save Contact</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="shared-footer"></div>
+
+    <script>
+        let networksData = [];
+        let circlesData = [];
+        let activeCircleFilters = new Set();
+        
+        async function loadContacts() {
+            try {
+                const response = await fetch('data/contacts.json');
+                const data = await response.json();
+                contactsData = data.contacts;
+                networksData = data.networks || [];
+                circlesData = data.circles || [];
+                
+                // Render network filters
+                const networkFilters = document.getElementById('network-filters');
+                if (networkFilters && networksData.length > 0) {
+                    networkFilters.innerHTML = networksData.map(n => 
+                        `<span class="tag-chip network-chip" data-network="${n.name}">${n.icon} ${n.name}</span>`
+                    ).join('');
+                    
+                    // Add click handlers for network filters
+                    networkFilters.querySelectorAll('.network-chip').forEach(chip => {
+                        chip.addEventListener('click', () => {
+                            const network = chip.dataset.network;
+                            if (activeNetworkFilters.has(network)) {
+                                activeNetworkFilters.delete(network);
+                                chip.classList.remove('active');
+                            } else {
+                                activeNetworkFilters.add(network);
+                                chip.classList.add('active');
+                            }
+                            applyFilters();
+                        });
+                    });
+                }
+                
+                // Render circle filters
+                const circleFilters = document.getElementById('circle-filters');
+                if (circleFilters && circlesData.length > 0) {
+                    circleFilters.innerHTML = circlesData.map(c => 
+                        `<span class="tag-chip circle-chip" data-circle="${c.id}">${c.emoji || '⭕'} ${c.name}</span>`
+                    ).join('') + '<span class="tag-chip circle-chip add-circle-btn" onclick="addNewCircle()">+ Add Circle</span>';
+                    
+                    // Add click handlers for circle filters
+                    circleFilters.querySelectorAll('.circle-chip:not(.add-circle-btn)').forEach(chip => {
+                        chip.addEventListener('click', () => {
+                            const circleId = chip.dataset.circle;
+                            if (activeCircleFilters.has(circleId)) {
+                                activeCircleFilters.delete(circleId);
+                                chip.classList.remove('active');
+                            } else {
+                                activeCircleFilters.add(circleId);
+                                chip.classList.add('active');
+                            }
+                            applyFilters();
+                        });
+                    });
+                } else if (circleFilters) {
+                    circleFilters.innerHTML = '<span class="tag-chip circle-chip add-circle-btn" onclick="addNewCircle()">+ Add Circle</span>';
+                }
+                
+                const coreContainer = document.getElementById('core-contacts');
+                const closeContainer = document.getElementById('close-contacts');
+                const allContainer = document.getElementById('all-contacts');
+                
+                const core = contactsData.filter(c => c.tier === 'core');
+                const close = contactsData.filter(c => c.tier === 'close');
+                const others = contactsData.filter(c => !['core', 'close'].includes(c.tier));
+                
+                coreContainer.innerHTML = core.map(renderContact).join('');
+                closeContainer.innerHTML = close.map(renderContact).join('');
+                allContainer.innerHTML = others.map(renderContact).join('');
+                
+                // Add click handlers to all cards
+                document.querySelectorAll('.contact-card').forEach(card => {
+                    card.addEventListener('click', () => openContact(card.dataset.contactId));
+                });
+                
+                // Check for hash on load
+                const hash = window.location.hash.slice(1);
+                if (hash) {
+                    openContact(hash);
+                }
+                
+            } catch (e) {
+                console.log('Contacts not loaded:', e);
+                document.getElementById('core-contacts').innerHTML = '<p style="color: var(--text-secondary);">Loading contacts...</p>';
+            }
+        }
+
+        function openContact(contactId) {
+            const contact = contactsData.find(c => c.id === contactId);
+            if (!contact) return;
+            
+            // Update URL hash
+            history.pushState(null, '', '#' + contactId);
+            
+            const initials = contact.name.split(' ').map(n => n[0]).join('').slice(0, 2);
+            const currentYear = new Date().getFullYear();
+            const yearsKnown = contact.yearMet ? currentYear - contact.yearMet : null;
+            const yearsText = yearsKnown !== null ? 
+                (yearsKnown === 0 ? 'This year' : yearsKnown === 1 ? '1 year' : `${yearsKnown} years`) : '';
+            
+            const detail = document.getElementById('contact-detail');
+            const contactCircles = getContactCircles(contact.id);
+            const contactNetworks = contact.networks || [];
+            
+            // Build circle tiles with member avatars
+            const circleTilesHtml = contactCircles.map(circle => {
+                const otherMembers = (circle.members || [])
+                    .filter(m => m !== contact.id)
+                    .map(memberId => {
+                        const member = contactsData.find(c => c.id === memberId);
+                        if (!member) return null;
+                        const memberInitials = member.name.split(' ').map(n => n[0]).join('').slice(0, 2);
+                        return `<div class="circle-member" onclick="openContact('${memberId}')" title="${member.name}">${memberInitials}</div>`;
+                    })
+                    .filter(Boolean)
+                    .join('');
+                
+                const currentInitials = contact.name.split(' ').map(n => n[0]).join('').slice(0, 2);
+                
+                return `
+                    <div class="circle-tile">
+                        <div class="circle-tile-header">
+                            <span class="emoji">${circle.emoji || '⭕'}</span>
+                            <span class="name">${circle.name}</span>
+                        </div>
+                        <div class="circle-members">
+                            <div class="circle-member current" title="${contact.name} (this contact)">${currentInitials}</div>
+                            ${otherMembers}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Build network items
+            const networkItemsHtml = contactNetworks.map(networkName => {
+                const network = networksData.find(n => n.name === networkName);
+                const icon = network?.icon || '🌐';
+                return `
+                    <div class="network-item">
+                        <span class="icon">${icon}</span>
+                        <span class="name">${networkName}</span>
+                    </div>
+                `;
+            }).join('');
+            
+            detail.innerHTML = `
+                <div class="detail-header">
+                    <div class="detail-avatar">${initials}</div>
+                    <div>
+                        <div class="detail-name">${contact.name}</div>
+                        <div class="detail-role">${contact.role || contact.tier || ''}</div>
+                    </div>
+                    <div class="detail-actions">
+                        <button class="edit-btn" onclick="openEditModal('${contact.id}')">✏️ Edit</button>
+                        <button class="delete-btn" onclick="deleteContact('${contact.id}')">🗑️ Delete</button>
+                    </div>
+                </div>
+                
+                ${(contact.tags?.length || contact.interests?.length) ? `
+                    <div class="detail-tags-row">
+                        ${(contact.tags || []).map(t => `<span class="detail-tag">${t}</span>`).join('')}
+                        ${(contact.interests || []).map(i => `<span class="detail-tag interest">${i}</span>`).join('')}
+                    </div>
+                ` : ''}
+                
+                <div class="detail-meta">
+                    ${contact.location ? `
+                        <div class="meta-item">
+                            <div class="meta-label">📍 Location</div>
+                            <div class="meta-value">${contact.location}</div>
+                        </div>
+                    ` : ''}
+                    ${contact.yearMet ? `
+                        <div class="meta-item">
+                            <div class="meta-label">📅 Known Since</div>
+                            <div class="meta-value">${contact.yearMet} · ${yearsText}</div>
+                        </div>
+                    ` : ''}
+                    ${contact.tier ? `
+                        <div class="meta-item">
+                            <div class="meta-label">🔗 Relationship</div>
+                            <div class="meta-value" style="text-transform: capitalize;">${contact.tier}</div>
+                        </div>
+                    ` : ''}
+                    ${contact.birthday ? `
+                        <div class="meta-item">
+                            <div class="meta-label">🎂 Birthday</div>
+                            <div class="meta-value">${formatBirthday(contact.birthday)} (${calculateAge(contact.birthday)} years old)</div>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                ${(contactNetworks.length || contactCircles.length) ? `
+                    <div class="social-section">
+                        <div class="social-column">
+                            <h3>🌐 Networks</h3>
+                            ${contactNetworks.length ? `
+                                <div class="network-list">
+                                    ${networkItemsHtml}
+                                </div>
+                            ` : '<p class="no-networks">Not in any networks</p>'}
+                        </div>
+                        <div class="social-column">
+                            <h3>⭕ Circles</h3>
+                            ${contactCircles.length ? `
+                                <div class="circle-tiles">
+                                    ${circleTilesHtml}
+                                </div>
+                            ` : '<p class="no-circles">Not in any circles</p>'}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                ${contact.notes ? `
+                    <div class="detail-section">
+                        <h3>Notes</h3>
+                        <p>${contact.notes}</p>
+                    </div>
+                ` : ''}
+                
+                ${contact.context ? `
+                    <div class="detail-section">
+                        <h3>Context</h3>
+                        <p>${contact.context}</p>
+                    </div>
+                ` : ''}
+            `;
+            
+            // Show detail, hide grid
+            document.getElementById('main-content').classList.add('viewing-detail');
+            detail.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // Modal functions
+        function openAddModal() {
+            document.getElementById('modal-title').textContent = 'Add Contact';
+            document.getElementById('contact-id').value = '';
+            document.getElementById('form-name').value = '';
+            document.getElementById('form-tier').value = 'other';
+            document.getElementById('form-year').value = '';
+            document.getElementById('form-role').value = '';
+            document.getElementById('form-location').value = '';
+            document.getElementById('form-tags').value = '';
+            document.getElementById('form-notes').value = '';
+            document.getElementById('form-context').value = '';
+            document.getElementById('form-birthday').value = '';
+            document.getElementById('form-type').value = 'personal';
+            
+            // Populate network checkboxes
+            const networkContainer = document.getElementById('form-networks');
+            networkContainer.innerHTML = networksData.map(n => `
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" value="${n.name}" style="cursor: pointer;">
+                    <span>${n.icon} ${n.name}</span>
+                </label>
+            `).join('');
+            
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        let showAllNetworks = false;
+        let editingContactId = null;
+        
+        function openEditModal(contactId) {
+            const contact = contactsData.find(c => c.id === contactId);
+            if (!contact) return;
+            
+            editingContactId = contactId;
+            showAllNetworks = false;
+            
+            const detail = document.getElementById('contact-detail');
+            const selectedNetworks = contact.networks || [];
+            
+            // Determine common networks (ones this person has + most used)
+            const commonNetworkNames = networksData.slice(0, 4).map(n => n.name);
+            
+            detail.innerHTML = `
+                <div class="inline-edit-form">
+                    <div class="detail-header" style="margin-bottom: 1.5rem;">
+                        <div class="detail-avatar">${contact.name.split(' ').map(n => n[0]).join('').slice(0, 2)}</div>
+                        <div>
+                            <div class="detail-name">Edit: ${contact.name}</div>
+                            <div class="detail-role" style="color: var(--accent-purple);">Editing</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Name *</label>
+                            <input type="text" id="edit-name" value="${contact.name || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Role / Title</label>
+                            <input type="text" id="edit-role" value="${contact.role || ''}" placeholder="Friend, Colleague...">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tier</label>
+                            <select id="edit-tier">
+                                <option value="core" ${contact.tier === 'core' ? 'selected' : ''}>Core</option>
+                                <option value="close" ${contact.tier === 'close' ? 'selected' : ''}>Close</option>
+                                <option value="work" ${contact.tier === 'work' ? 'selected' : ''}>Work</option>
+                                <option value="intimate" ${contact.tier === 'intimate' ? 'selected' : ''}>Intimate</option>
+                                <option value="other" ${contact.tier === 'other' || !contact.tier ? 'selected' : ''}>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Year Met</label>
+                            <input type="number" id="edit-year" value="${contact.yearMet || ''}" min="1950" max="2030" placeholder="2020">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Birthday</label>
+                            <input type="date" id="edit-birthday" value="${contact.birthday || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select id="edit-type">
+                                <option value="personal" ${(contact.type || []).includes('personal') ? 'selected' : ''}>Personal</option>
+                                <option value="work" ${(contact.type || []).includes('work') ? 'selected' : ''}>Work</option>
+                                <option value="intimate" ${(contact.type || []).includes('intimate') ? 'selected' : ''}>Intimate</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="edit-location" value="${contact.location || ''}" placeholder="Melbourne, Texas...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Networks</label>
+                        <div class="network-toggles" id="network-toggles">
+                            ${networksData.map((n, i) => `
+                                <span class="network-toggle ${selectedNetworks.includes(n.name) ? 'active' : ''} ${i >= 4 && !selectedNetworks.includes(n.name) ? 'hidden' : ''}" 
+                                      data-network="${n.name}" 
+                                      onclick="toggleNetwork(this)">
+                                    ${n.icon} ${n.name}
+                                </span>
+                            `).join('')}
+                            <span class="show-all-networks" id="show-all-btn" onclick="showAllNetworksToggle()">+ Show all</span>
+                            <span class="add-network-btn" onclick="addNewNetwork()">+ New</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Circles</label>
+                        <div class="network-toggles" id="circle-toggles">
+                            ${circlesData.map(c => `
+                                <span class="network-toggle ${c.members && c.members.includes(contact.id) ? 'active' : ''}" 
+                                      data-circle="${c.id}" 
+                                      onclick="toggleCircle(this)" 
+                                      style="border-color: rgba(236, 72, 153, 0.3);">
+                                    ${c.emoji || '⭕'} ${c.name}
+                                </span>
+                            `).join('')}
+                            <span class="add-network-btn" onclick="addNewCircle()">+ New Circle</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Tags (comma-separated)</label>
+                        <input type="text" id="edit-tags" value="${(contact.tags || []).join(', ')}" placeholder="photography, gaming...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="edit-notes" rows="2" placeholder="Quick notes...">${contact.notes || ''}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Context</label>
+                        <textarea id="edit-context" rows="2" placeholder="How you know them...">${contact.context || ''}</textarea>
+                    </div>
+                    
+                    <div class="edit-actions">
+                        <button type="button" class="btn-cancel-inline" onclick="openContact('${contactId}')">Cancel</button>
+                        <button type="button" class="btn-save-inline" onclick="saveInlineEdit('${contactId}')">💾 Save Changes</button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('main-content').classList.add('viewing-detail');
+            document.getElementById('contact-detail').classList.add('active');
+        }
+        
+        function toggleNetwork(el) {
+            el.classList.toggle('active');
+        }
+        
+        function toggleCircle(el) {
+            el.classList.toggle('active');
+        }
+        
+        function showAllNetworksToggle() {
+            showAllNetworks = !showAllNetworks;
+            document.querySelectorAll('.network-toggle').forEach(el => {
+                el.classList.remove('hidden');
+            });
+            document.getElementById('show-all-btn').style.display = 'none';
+        }
+        
+        function addNewNetwork() {
+            const name = prompt('Enter new network name:');
+            if (!name) return;
+            
+            const icon = prompt('Enter emoji icon (optional):', '🌐') || '🌐';
+            const newNetwork = { id: name.toLowerCase().replace(/\s+/g, '-'), name, icon, description: '' };
+            networksData.push(newNetwork);
+            
+            // Add to toggle list
+            const container = document.getElementById('network-toggles');
+            const newToggle = document.createElement('span');
+            newToggle.className = 'network-toggle active';
+            newToggle.dataset.network = name;
+            newToggle.onclick = function() { toggleNetwork(this); };
+            newToggle.innerHTML = `${icon} ${name}`;
+            container.insertBefore(newToggle, document.getElementById('show-all-btn'));
+        }
+        
+        function addNewCircle() {
+            const name = prompt('Enter circle name (e.g., "Photo Crew", "D&D Group"):');
+            if (!name) return;
+            
+            const emoji = prompt('Enter emoji icon (optional):', '⭕') || '⭕';
+            const newCircle = { 
+                id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'), 
+                name, 
+                emoji, 
+                members: [],
+                notes: ''
+            };
+            circlesData.push(newCircle);
+            
+            // Save and reload
+            saveContacts();
+            loadContacts();
+        }
+        
+        function calculateAge(birthday) {
+            if (!birthday) return null;
+            const today = new Date();
+            const birth = new Date(birthday);
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            return age;
+        }
+        
+        function formatBirthday(birthday) {
+            if (!birthday) return '';
+            const date = new Date(birthday);
+            return date.toLocaleDateString('en-AU', { day: 'numeric', month: 'long' });
+        }
+        
+        function getContactCircles(contactId) {
+            return circlesData.filter(c => c.members && c.members.includes(contactId));
+        }
+        
+        function saveInlineEdit(contactId) {
+            const contact = contactsData.find(c => c.id === contactId);
+            if (!contact) return;
+            
+            contact.name = document.getElementById('edit-name').value;
+            contact.role = document.getElementById('edit-role').value;
+            contact.tier = document.getElementById('edit-tier').value;
+            contact.yearMet = document.getElementById('edit-year').value ? parseInt(document.getElementById('edit-year').value) : null;
+            contact.location = document.getElementById('edit-location').value;
+            contact.tags = document.getElementById('edit-tags').value.split(',').map(t => t.trim()).filter(t => t);
+            contact.notes = document.getElementById('edit-notes').value;
+            contact.context = document.getElementById('edit-context').value;
+            contact.networks = Array.from(document.querySelectorAll('#network-toggles .network-toggle.active')).map(el => el.dataset.network);
+            
+            // Save birthday
+            const birthdayInput = document.getElementById('edit-birthday');
+            contact.birthday = birthdayInput && birthdayInput.value ? birthdayInput.value : null;
+            
+            // Save type
+            const typeInput = document.getElementById('edit-type');
+            if (typeInput && typeInput.value) {
+                contact.type = [typeInput.value];
+            }
+            
+            // Update circle memberships
+            const activeCircles = Array.from(document.querySelectorAll('#circle-toggles .network-toggle.active')).map(el => el.dataset.circle);
+            circlesData.forEach(circle => {
+                if (!circle.members) circle.members = [];
+                const isInCircle = circle.members.includes(contactId);
+                const shouldBeInCircle = activeCircles.includes(circle.id);
+                
+                if (shouldBeInCircle && !isInCircle) {
+                    circle.members.push(contactId);
+                } else if (!shouldBeInCircle && isInCircle) {
+                    circle.members = circle.members.filter(m => m !== contactId);
+                }
+            });
+            
+            saveContacts();
+            reloadContacts();
+            openContact(contactId);
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+        }
+
+        function deleteContact(contactId) {
+            if (!confirm('Delete this contact?')) return;
+            
+            contactsData = contactsData.filter(c => c.id !== contactId);
+            saveContacts();
+            closeContact();
+            reloadContacts();
+        }
+
+        function saveContacts() {
+            const data = { contacts: contactsData, circles: circlesData, networks: networksData };
+            localStorage.setItem('contactsData', JSON.stringify(data));
+            
+            // Save to API (persists to file)
+            fetch(`http://${window.location.hostname}:8081/api/contacts`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: data })
+            })
+            .then(r => r.json())
+            .then(result => {
+                console.log('✅ Contacts saved to file:', result.timestamp);
+            })
+            .catch(err => {
+                console.log('⚠️ API unavailable, saved to localStorage only');
+            });
+        }
+
+        function reloadContacts() {
+            const coreContainer = document.getElementById('core-contacts');
+            const closeContainer = document.getElementById('close-contacts');
+            const allContainer = document.getElementById('all-contacts');
+            
+            const core = contactsData.filter(c => c.tier === 'core');
+            const close = contactsData.filter(c => c.tier === 'close');
+            const others = contactsData.filter(c => !['core', 'close'].includes(c.tier));
+            
+            coreContainer.innerHTML = core.map(renderContact).join('');
+            closeContainer.innerHTML = close.map(renderContact).join('');
+            allContainer.innerHTML = others.map(renderContact).join('');
+            
+            // Re-add click handlers
+            document.querySelectorAll('.contact-card').forEach(card => {
+                card.addEventListener('click', () => openContact(card.dataset.contactId));
+            });
+        }
+
+        // Form submission
+        document.getElementById('contact-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('contact-id').value;
+            const name = document.getElementById('form-name').value;
+            const tier = document.getElementById('form-tier').value;
+            const yearMet = document.getElementById('form-year').value ? parseInt(document.getElementById('form-year').value) : null;
+            const role = document.getElementById('form-role').value;
+            const location = document.getElementById('form-location').value;
+            const tags = document.getElementById('form-tags').value.split(',').map(t => t.trim()).filter(t => t);
+            const notes = document.getElementById('form-notes').value;
+            const context = document.getElementById('form-context').value;
+            const networks = Array.from(document.querySelectorAll('#form-networks input:checked')).map(cb => cb.value);
+            const birthday = document.getElementById('form-birthday').value || null;
+            const type = document.getElementById('form-type').value ? [document.getElementById('form-type').value] : ['personal'];
+            
+            if (id) {
+                // Edit existing
+                const contact = contactsData.find(c => c.id === id);
+                if (contact) {
+                    contact.name = name;
+                    contact.tier = tier;
+                    contact.yearMet = yearMet;
+                    contact.role = role;
+                    contact.location = location;
+                    contact.tags = tags;
+                    contact.notes = notes;
+                    contact.context = context;
+                    contact.networks = networks;
+                    contact.birthday = birthday;
+                    contact.type = type;
+                }
+            } else {
+                // Add new
+                const newId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30);
+                contactsData.push({
+                    id: newId,
+                    name,
+                    tier,
+                    yearMet,
+                    role,
+                    location,
+                    tags,
+                    notes,
+                    context,
+                    networks,
+                    birthday,
+                    type,
+                    interests: []
+                });
+            }
+            
+            saveContacts();
+            closeModal();
+            reloadContacts();
+            
+            if (id && document.getElementById('contact-detail').classList.contains('active')) {
+                openContact(id);
+            }
+        });
+
+        // Load local changes on startup
+        function loadLocalChanges() {
+            const local = localStorage.getItem('contactsData');
+            if (local) {
+                try {
+                    const localData = JSON.parse(local);
+                    if (localData && localData.contacts) {
+                        contactsData = localData.contacts;
+                        circlesData = localData.circles || [];
+                        networksData = localData.networks || networksData;
+                        console.log('Loaded', contactsData.length, 'contacts from localStorage');
+                        reloadContacts();
+                        return true;
+                    }
+                } catch (e) {
+                    console.error('Failed to parse localStorage:', e);
+                }
+            }
+            return false;
+        }
+
+        function closeContact() {
+            document.getElementById('main-content').classList.remove('viewing-detail');
+            document.getElementById('contact-detail').classList.remove('active');
+            history.pushState(null, '', window.location.pathname);
+        }
+
+        // Handle browser back/forward
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.slice(1);
+            if (hash && contactsData.length) {
+                openContact(hash);
+            } else {
+                closeContact();
+            }
+        });
+
+        function renderContact(contact) {
+            const initials = contact.name.split(' ').map(n => n[0]).join('').slice(0, 2);
+            const currentYear = new Date().getFullYear();
+            const yearsKnown = contact.yearMet ? currentYear - contact.yearMet : null;
+            const yearsText = yearsKnown !== null ? 
+                (yearsKnown === 0 ? 'This year' : yearsKnown === 1 ? '1 year' : `${yearsKnown} years`) : '';
+            
+            return `
+                <div class="contact-card" data-contact-id="${contact.id}">
+                    <div class="contact-header">
+                        <div class="contact-avatar">${initials}</div>
+                        <div>
+                            <div class="contact-name">${contact.name}</div>
+                            <div class="contact-role">${contact.role || ''}</div>
+                        </div>
+                    </div>
+                    <div class="contact-details">
+                        ${contact.location ? `<p>📍 ${contact.location}</p>` : ''}
+                        ${contact.yearMet ? `<p>📅 Met ${contact.yearMet} · <strong>${yearsText}</strong></p>` : ''}
+                        ${contact.notes ? `<p>${contact.notes}</p>` : ''}
+                    </div>
+                    ${contact.tags ? `
+                        <div class="contact-tags">
+                            ${contact.tags.map(t => `<span class="contact-tag">${t}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        loadContacts();
+
+        // Filter state
+        let activeTypeFilters = new Set();
+        let activeInterestFilters = new Set();
+        let activeNetworkFilters = new Set();
+        let contactsData = [];
+
+        // Filter functionality
+        function applyFilters() {
+            // Close detail view if open (UX: filters should reset to grid view)
+            if (document.getElementById('contact-detail').classList.contains('active')) {
+                closeContact();
+            }
+            
+            const query = document.getElementById('contact-search').value.toLowerCase();
+            const cards = document.querySelectorAll('.contact-card');
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                const contactId = card.dataset.contactId;
+                const contact = contactsData.find(c => c.id === contactId) || {};
+                
+                // Text search
+                const matchesSearch = query.length < 1 || text.includes(query);
+                
+                // Type filter
+                const matchesType = activeTypeFilters.size === 0 || 
+                    (contact.type && contact.type.some(t => activeTypeFilters.has(t)));
+                
+                // Interest filter
+                const matchesInterest = activeInterestFilters.size === 0 || 
+                    (contact.interests && contact.interests.some(i => activeInterestFilters.has(i)));
+                
+                // Network filter (supports array of networks)
+                const matchesNetwork = activeNetworkFilters.size === 0 || 
+                    (contact.networks && contact.networks.some(n => activeNetworkFilters.has(n)));
+                
+                // Circle filter - check if contact is a member of any active circle
+                const matchesCircle = activeCircleFilters.size === 0 || 
+                    circlesData.some(c => activeCircleFilters.has(c.id) && c.members && c.members.includes(contactId));
+                
+                if (matchesSearch && matchesType && matchesInterest && matchesNetwork && matchesCircle) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            // Hide empty sections
+            document.querySelectorAll('.section-title').forEach(title => {
+                const nextGrid = title.nextElementSibling;
+                if (nextGrid) {
+                    const visibleCards = nextGrid.querySelectorAll('.contact-card:not(.hidden)');
+                    title.classList.toggle('hidden', visibleCards.length === 0);
+                }
+            });
+        }
+
+        // Search input
+        document.getElementById('contact-search').addEventListener('input', applyFilters);
+
+        // Type filter clicks
+        document.querySelectorAll('.type-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const tag = chip.dataset.tag;
+                if (activeTypeFilters.has(tag)) {
+                    activeTypeFilters.delete(tag);
+                    chip.classList.remove('active');
+                } else {
+                    activeTypeFilters.add(tag);
+                    chip.classList.add('active');
+                }
+                applyFilters();
+            });
+        });
+
+        // Interest filter clicks
+        document.querySelectorAll('.interest-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const tag = chip.dataset.tag;
+                if (activeInterestFilters.has(tag)) {
+                    activeInterestFilters.delete(tag);
+                    chip.classList.remove('active');
+                } else {
+                    activeInterestFilters.add(tag);
+                    chip.classList.add('active');
+                }
+                applyFilters();
+            });
+        });
+
+        // Initialize - try localStorage first
+        if (!loadLocalChanges()) {
+            // No local data, will use file data from loadContacts()
+            console.log('No localStorage, using file data');
+        }
+    </script>
+    <script src="shared.js"></script>
+    <script type="module" src="js/sse-init-crm.js"></script>
+</body>
+</html>

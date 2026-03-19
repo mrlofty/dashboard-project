@@ -1,0 +1,232 @@
+[
+  {
+    "id": "evt_task007_og_tags",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "OG Tags + Twitter Cards on all AAD essay pages",
+    "timestamp": "2026-03-20T05:05:00+11:00",
+    "importance": 5,
+    "details": "Added og:image and Twitter Card meta tags to all 7 AAD essay pages. 3 essays use specific promo card images, 4 use fallback. Includes reusable script for future essays. Every essay now gets rich link previews on Telegram/WhatsApp/Discord/X.",
+    "sources": ["/home/adam/clawd/agents/builder/output/aad-og-tags/"]
+  },
+  {
+    "id": "evt_task006_email_campaign",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Email Campaign System — send script, templates, preview page",
+    "timestamp": "2026-03-20T04:55:00+11:00",
+    "importance": 6,
+    "details": "Built complete email campaign system for AAD: Python send script (472 lines) with Brevo API integration, auto UTM tracking, dry-run mode. Two new email templates (article-alert, newsletter) matching AAD purple branding. Local preview page with template selector, device toggle, dark/light modes. All tested with dry-run.",
+    "sources": ["/home/adam/clawd/agents/builder/output/aad-email-campaign/"]
+  },
+  {
+    "id": "evt_1773514200",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Adam's Corner — Dashboard Personal Page",
+    "timestamp": "2026-03-14T22:50:00+11:00",
+    "importance": 8,
+    "details": "Built Adam's Corner — a personal space on the dashboard (NOT ops/work-focused). Four sections: (1) Life Chapters Timeline — horizontal scrollable timeline of life eras with dates, locations, descriptions; (2) Core Memories — standout moments pinned to chapters with emotional categories; (3) Ideas Board — freeform concepts/thoughts with tags and categories; (4) Reading List — current/completed/queued books with notes. Design: dark theme consistent with dashboard, softer purple accent, more journal-like feel than ops pages. Clean spacious layout, responsive, mobile-friendly. Data-driven via adams-corner.json (fully editable). Inspired by quinn.html architecture. 3 files created: adams-corner.html (17KB), adams-corner.json (data), README.md (integration guide). Ready for Quinn/Adam review and dashboard integration.",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/adams-corner/adams-corner.html",
+      "/home/adam/clawd/agents/builder/output/adams-corner/adams-corner.json",
+      "/home/adam/clawd/agents/builder/output/adams-corner/README.md"
+    ]
+  },
+  {
+    "id": "evt_1773411540",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Paper Trading Dashboard — Bloomberg Terminal Vibes",
+    "timestamp": "2026-03-14T01:39:00+11:00",
+    "importance": 8,
+    "details": "Built crypto paper trading dashboard (trading.html) for Adam's trading experiment. Bloomberg terminal aesthetic: dark theme, monospace numbers, green/red P&L. Features: portfolio overview (total value, P&L, cash), holdings table (7 columns with live prices), trade history feed (chronological, color-coded BUY/SELL), portfolio value chart (Chart.js). Auto-refresh 30s, reads from data/trading.json. Responsive grid layout, error handling. Added Trading section to nav (⚡ icon). Currently tracking BTC/SOL/ETH with $4k cash from $10k start. Clean, fast, professional.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/trading.html"
+    ]
+  },
+  {
+    "id": "evt_1773407820",
+    "agent": "Forge",
+    "category": "PLANNING",
+    "headline": "immaculatevibes.art Migration Plan — Architecture + Strategy",
+    "timestamp": "2026-03-14T00:17:00+11:00",
+    "importance": 7,
+    "details": "TASK-057 complete: Comprehensive migration plan for moving immaculatevibes.art from Google Sites to self-hosted infrastructure. Audited current site (Home gallery, Gentlemen collection, ~20+ AI art images), researched AI art portfolio best practices. Drafted 12-section plan covering: architecture (static HTML/CSS/JS, hybrid masonry grid), deployment pipeline (GitHub Actions → Oracle server), design system (dark theme, image-first), SEO strategy, server config, timeline (3 weeks or 2 weeks fast-track), risk assessment, 11 open questions for review. Ready for Quinn/Adam feedback before build phase.",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/immaculatevibes-migration/MIGRATION-PLAN.md"
+    ]
+  },
+  {
+    "id": "evt_1773406620",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Task Analytics Page — Live Data + Agent Status Panel",
+    "timestamp": "2026-03-13T23:17:00+11:00",
+    "importance": 8,
+    "details": "Created production-ready task analytics dashboard with live data integration. Replaced hardcoded sample data with live fetch from agent-activity.json + agents.json. Built Live Agent Status Panel (replaces hero header) showing all agents with status badges, current tasks, last active times. Charts now dynamic: agent lanes scale automatically, category colors expanded, empty state handling added. 60s auto-refresh, error handling for offline states. Single-file HTML (38KB), Chart.js-powered, fully responsive. Deployed to dashboard-project/task-analytics.html. Used Codex CLI (~3min runtime, 40K tokens). Next: add nav link under Analytics menu in dashboard.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/task-analytics.html"
+    ]
+  },
+  {
+    "id": "evt_1773494880",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Workshop Page — Live Data Integration",
+    "timestamp": "2026-03-13T17:08:00+11:00",
+    "importance": 7,
+    "details": "TASK-056 complete: Wired Workshop page (forge.html) to read live data from dashboard API. Replaced hardcoded status with real-time fetch from agents.json (forge.status, forge.currentTask). Replaced hardcoded task list with live data from agent-activity.json (filtered for Forge, latest 4 items). Added 60s auto-refresh, error handling for offline state. Sets template for agent status pages as we add Scout and others. Design preserved, only data source changed.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/forge.html"
+    ]
+  },
+  {
+    "id": "evt_1773491640",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Task Completion Visualizer — Interactive Analytics Dashboard",
+    "timestamp": "2026-03-13T16:54:00+11:00",
+    "importance": 8,
+    "details": "TASK-055 complete (creative freedom task): Built Task Completion Visualizer — interactive analytics dashboard showing team delivery patterns. Features: timeline scatter plot, velocity trend chart, category distribution, metric cards, agent filters, task feed. Single-file HTML (32KB) with Chart.js, 30 sample tasks, production-ready. Codex build completed in ~45s, 40k tokens. Built to answer real questions: Are we shipping faster? What work dominates? Is velocity accelerating? Could become dashboard widget with live data feed.",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/codex-freestyle/index.html"
+    ]
+  },
+  {
+    "id": "evt_1773479580",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Codex Calibration Build — Workshop Status Page",
+    "timestamp": "2026-03-13T13:43:00+11:00",
+    "importance": 6,
+    "details": "TASK-054 complete: Built Forge Workshop status page as Codex calibration task. Single-file HTML (501 lines) with dark theme, status badges, recent task list. Codex validation successful — spawned with --full-auto, completed in ~30s, production-ready output with no manual fixes. Key learning: Specific prompts (file structure, color palette, layout) produce excellent results. Codex confirmed as reliable tool for future production builds.",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/forge-workshop/index.html"
+    ]
+  },
+  {
+    "id": "evt_1773247920",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Dashboard Research MD Files + Editor Integration + Layout Fix",
+    "timestamp": "2026-03-12T23:15:00+11:00",
+    "importance": 7,
+    "details": "TASK-053 complete: Created 7 research item MD files in /research-items/, added Open in Editor buttons to research threads, and PROPERLY FIXED layout editor to support quick-links and heatmap widgets (moved inside dashboard-grid, wrapped in widget framework). All 13 dashboard widgets now draggable/resizable. Adam wanted this fixed properly, not documented as a limitation — delivered.",
+    "sources": [
+      "/home/adam/clawd/research-items/",
+      "/home/adam/clawd/dashboard-project/research.html",
+      "/home/adam/clawd/dashboard-project/editor.html",
+      "/home/adam/clawd/dashboard-project/index.html"
+    ]
+  },
+  {
+    "id": "evt_1773247535",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Dashboard v2 Integration Fixes Complete ✅",
+    "timestamp": "2026-03-12T03:45:35.861788+11:00",
+    "importance": 8,
+    "details": "Fixed navigation frame consistency: research.html & workgraph.html now include shared.css + shared.js, load with sidebar nav. Added to sidebar: Research Threads (Knowledge) + Work Graph (Projects). Fixed research data reconciliation: research.html reads research-queue.json with schema adapter, converts queue→threads format, all 603 lines visible. Layout editor compatibility documented as acceptable limitation (quick-links + heatmap remain fixed-position). Files modified: research.html, workgraph.html, shared.js.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/research.html",
+      "/home/adam/clawd/dashboard-project/workgraph.html",
+      "/home/adam/clawd/dashboard-project/shared.js"
+    ]
+  },
+  {
+    "id": "evt_1773222065",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Dashboard v2 Phase 2 — Work Graph & Heatmap Complete ✅",
+    "timestamp": "2026-03-11T20:41:05.073312+11:00",
+    "importance": 9,
+    "details": "Built Team Heatmap widget (GitHub-style 90-day grid, per-agent views, live aggregation) integrated into index-updated.html. Built workgraph.html (528 lines) with visual task tree, delegation chains, status filtering, expandable nodes. Added workgraph quick-link nav. Sample data files created. Phase 2 complete: index-updated.html (121KB), workgraph.html (16KB), README.md. Dashboard v2 fully delivered (Phase 1 + Phase 2).",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/dashboard-v2-phase2/index-updated.html",
+      "/home/adam/clawd/agents/builder/output/dashboard-v2-phase2/workgraph.html",
+      "/home/adam/clawd/agents/builder/output/dashboard-v2-phase2/README.md"
+    ]
+  },
+  {
+    "id": "evt_1773163367",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Dashboard v2 Phase 1 — Research Threads Complete ✅",
+    "timestamp": "2026-03-11T04:22:47.127249+11:00",
+    "importance": 9,
+    "details": "Built research.html (473 lines) with full thread lifecycle support, status filtering, live search, expandable entries. Added quick-link nav card to index.html with live summary badge. SSE integration for real-time updates. All Phase 1 components complete: Activity Feed v2 ✅, Adam's Inbox ✅, Research Threads ✅. Ready for Friday preview.",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/dashboard-v2-phase1/research.html",
+      "/home/adam/clawd/agents/builder/output/dashboard-v2-phase1/index.html"
+    ]
+  },
+  {
+    "id": "evt_1773138535",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Brunswick Life — 4 Design Variations Built & Deployed",
+    "timestamp": "2026-03-10T21:28:55.369996+11:00",
+    "importance": 8,
+    "details": "Built 4 complete design variations of Brunswick Life landing page: A) Creative South vibrant poster, B) Dark Bento Grid, C) Z-Pattern mesh gradients, D) Warm Community Parallax. All deployed to Oracle for Adam + Séamus preview.",
+    "sources": [
+      "https://shoots.adamdunstan.com/brunswicklife/va/",
+      "https://shoots.adamdunstan.com/brunswicklife/vb/",
+      "https://shoots.adamdunstan.com/brunswicklife/vc/",
+      "https://shoots.adamdunstan.com/brunswicklife/vd/"
+    ]
+  },
+  {
+    "id": "evt_1773119363",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Dashboard v2 Phase 1 — Activity Feed Update Complete",
+    "timestamp": "2026-03-10T16:09:23.695180+11:00",
+    "importance": 8,
+    "details": "Implemented Adam event support for activity feed: extended schema with 6 new categories (SUBMIT, DECIDE, REVIEW-APPROVE, REVIEW-REJECT, FYI-READ, INPUT-PROVIDED), added Adam agent metadata with gold styling, enhanced SSE integration. Data models created for workboard, research threads, heatmap. API endpoints registered. Phase 1 underway.",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/dashboard-v2-phase1/",
+      "/home/adam/clawd/dashboard-project/api/server.py"
+    ]
+  },
+  {
+    "id": "evt_1773026800",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Cyberpunk Command Centre — Fresh Layout",
+    "timestamp": "2026-03-10T00:20:00+11:00",
+    "importance": 7,
+    "details": "Completely redesigned command-cyberpunk.html with 4-panel grid layout (Quinn/Forge/Scout/Reserve), unified activity feed, and terminal hacker aesthetic. Neon borders, scanline effects, color-coded agents. Self-contained 22KB file with SSE integration.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/command-cyberpunk.html"
+    ]
+  },
+  {
+    "id": "evt_1773023320",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "SSE Wired into Dashboard Pages",
+    "timestamp": "2026-03-09T21:22:00+11:00",
+    "importance": 7,
+    "details": "Integrated SSE real-time updates into 6 dashboard pages. Created modular initialization scripts: sse-init-index.js, sse-init-command.js, sse-init-agents.js, sse-init-goals.js, sse-init-topics.js, sse-init-crm.js. Removed polling intervals. Pages now update instantly when data changes.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/js/sse-init-*.js",
+      "/home/adam/clawd/dashboard-project/index.html",
+      "/home/adam/clawd/dashboard-project/command.html"
+    ]
+  },
+  {
+    "id": "evt_1773003970",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "SSE Real-Time Dashboard Updates",
+    "timestamp": "2026-03-09T08:06:10+11:00",
+    "importance": 8,
+    "details": "Implemented Server-Sent Events for instant dashboard updates. Sub-100ms latency when data changes. server.py: SSE endpoint + file watcher thread, sse-client.js: auto-reconnect client library, INTEGRATION.md: guide for page integration. Tested and deployed — service restarted successfully.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/api/server.py",
+      "/home/adam/clawd/dashboard-project/js/sse-client.js",
+      "/home/adam/clawd/dashboard-project/INTEGRATION.md"
+    ]
+  }
+]

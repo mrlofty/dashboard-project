@@ -1,0 +1,26 @@
+{
+  "partnership": {
+    "started": "2026-01-28",
+    "name": "Quinn & Adam",
+    "milestone": "Dashboard V1 Complete"
+  },
+  "stats": {
+    "projectsCompleted": 5,
+    "topicsExplored": 12,
+    "memoriesShared": 15,
+    "linesOfCode": 5000
+  },
+  "recentWins": [
+    "Dashboard with full CRUD",
+    "Knowledge Web visualization",
+    "FQSD - Quinn's blog",
+    "Calendar integration",
+    "gog CLI setup"
+  ],
+  "favoriteTopics": [
+    "Synchronicity",
+    "AI Partnership",
+    "Photography",
+    "Gaming"
+  ]
+}

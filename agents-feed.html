@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Activity Feed | Dashboard</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    .feed-shell {
+      padding: 1rem 1.5rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .page-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .page-title-main h1 {
+      margin-bottom: 0.45rem;
+      font-size: 1.9rem;
+      color: var(--text-primary);
+    }
+
+    .page-title-main p {
+      margin: 0;
+      color: var(--text-secondary);
+      max-width: 760px;
+    }
+
+    .page-controls {
+      display: flex;
+      gap: 0.6rem;
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
+
+    .meta-line {
+      display: flex;
+      gap: 0.65rem;
+      align-items: center;
+      margin: 0.5rem 0 1rem;
+      color: var(--text-secondary);
+      font-size: 0.86rem;
+      flex-wrap: wrap;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      color: #e9e9f5;
+      font-size: 0.78rem;
+    }
+
+    .meta-chip strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .status-strip {
+      display: grid;
+      gap: 0.65rem;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      margin-bottom: 1rem;
+    }
+
+    .agent-status-card {
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      font-size: 0.84rem;
+    }
+
+    .agent-status-title {
+      color: var(--text-primary);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filters {
+      display: grid;
+      gap: 0.7rem;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      padding: 0.9rem;
+      border: 1px solid var(--border);
+      background: rgba(26, 26, 36, 0.85);
+      border-radius: 12px;
+      margin-bottom: 1rem;
+    }
+
+    .filters label {
+      color: #d8d8e1;
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .filters select,
+    .filters input {
+      background: #0f0f17;
+      border: 1px solid rgba(168, 85, 247, 0.28);
+      color: #ececf3;
+      border-radius: 8px;
+      padding: 0.52rem 0.7rem;
+      font-size: 0.84rem;
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: end;
+    }
+
+    .btn {
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      background: rgba(168, 85, 247, 0.12);
+      color: #f4e8ff;
+      border-radius: 8px;
+      padding: 0.52rem 0.9rem;
+      font-size: 0.84rem;
+      cursor: pointer;
+      font-weight: 600;
+      height: 2.65rem;
+    }
+
+    .btn.secondary {
+      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.06);
+      color: #eef0ff;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .timeline-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 1rem 0 0.7rem;
+      flex-wrap: wrap;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    .timeline-count {
+      font-weight: 600;
+      color: #f4f4ff;
+    }
+
+    .error-banner {
+      color: #ffcbcb;
+      font-size: 0.82rem;
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      background: rgba(239, 68, 68, 0.14);
+      border-radius: 8px;
+      padding: 0.55rem 0.7rem;
+      margin-bottom: 0.9rem;
+      display: none;
+    }
+
+    .error-banner.visible {
+      display: block;
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 0.9rem;
+    }
+
+    .timeline-line {
+      position: absolute;
+      left: 0.82rem;
+      top: 0.2rem;
+      bottom: 0.2rem;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 1.6rem 1fr;
+      gap: 0.8rem;
+      position: relative;
+      padding-bottom: 0.85rem;
+    }
+
+    .timeline-marker {
+      position: relative;
+      width: 1.2rem;
+      height: 1.2rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: #111118;
+      margin-top: 0.26rem;
+      z-index: 2;
+      box-shadow: 0 0 0 3px #111118;
+    }
+
+    .timeline-marker.online {
+      border-color: rgba(34, 197, 94, 0.55);
+      background: rgba(34, 197, 94, 0.22);
+    }
+
+    .timeline-marker.working {
+      border-color: rgba(96, 165, 250, 0.55);
+      background: rgba(96, 165, 250, 0.22);
+    }
+
+    .timeline-marker.idle {
+      border-color: rgba(148, 163, 184, 0.55);
+      background: rgba(148, 163, 184, 0.2);
+    }
+
+    details.activity-card {
+      margin: 0;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(18, 18, 26, 0.95), rgba(30, 28, 42, 0.95));
+      overflow: hidden;
+    }
+
+    details.activity-card + details.activity-card {
+      margin-top: 0.45rem;
+    }
+
+    .activity-summary {
+      display: grid;
+      gap: 0.55rem;
+      cursor: pointer;
+      list-style: none;
+      padding: 0.78rem 0.9rem;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .activity-summary:hover {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(168, 85, 247, 0.35);
+    }
+
+    .activity-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .summary-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.76rem;
+    }
+
+    .summary-main {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.55rem;
+    }
+
+    .agent-pill {
+      padding: 0.13rem 0.55rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.74rem;
+      background: rgba(168, 85, 247, 0.16);
+      color: #d8b4fe;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+
+    .action-pill {
+      padding: 0.13rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .action-pill.build { color: #93c5fd; border-color: rgba(59, 130, 246, 0.5); background: rgba(59, 130, 246, 0.14); }
+    .action-pill.research { color: #c084fc; border-color: rgba(168, 85, 247, 0.55); background: rgba(168, 85, 247, 0.16); }
+    .action-pill.deploy { color: #34d399; border-color: rgba(34, 197, 94, 0.55); background: rgba(34, 197, 94, 0.14); }
+    .action-pill.fix { color: #fca5a5; border-color: rgba(239, 68, 68, 0.45); background: rgba(239, 68, 68, 0.13); }
+    .action-pill.write { color: #facc15; border-color: rgba(234, 179, 8, 0.5); background: rgba(234, 179, 8, 0.12); }
+    .action-pill.admin { color: #5eead4; border-color: rgba(45, 212, 191, 0.45); background: rgba(45, 212, 191, 0.12); }
+    .action-pill.other { color: #a3a3ad; border-color: rgba(163, 163, 173, 0.38); background: rgba(163, 163, 173, 0.1); }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      padding: 0.1rem 0.55rem;
+      border-radius: 999px;
+    }
+
+    .status-badge.online {
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.5);
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .status-badge.working {
+      color: #60a5fa;
+      border: 1px solid rgba(96, 165, 250, 0.45);
+      background: rgba(96, 165, 250, 0.12);
+    }
+
+    .status-badge.idle {
+      color: #94a3b8;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(148, 163, 184, 0.1);
+    }
+
+    .timeline-headline {
+      color: #f6f4ff;
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .timeline-time {
+      font-size: 0.73rem;
+      color: #a6a6b4;
+      margin-top: 0.18rem;
+    }
+
+    .activity-body {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 0.75rem 0.9rem 0.9rem;
+      color: var(--text-secondary);
+      font-size: 0.87rem;
+      line-height: 1.5;
+    }
+
+    .importance {
+      color: #fef08a;
+      font-weight: 600;
+      font-size: 0.72rem;
+      letter-spacing: 0.025em;
+    }
+
+    .sources-list {
+      margin-top: 0.55rem;
+      padding-top: 0.55rem;
+      border-top: 1px dashed rgba(255, 255, 255, 0.08);
+      font-size: 0.8rem;
+      display: grid;
+      gap: 0.3rem;
+    }
+
+    .sources-list a {
+      color: #93c5fd;
+      text-decoration: none;
+    }
+
+    .sources-list a:hover {
+      text-decoration: underline;
+    }
+
+    .empty-state {
+      border: 1px dashed rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      padding: 2.1rem 1rem;
+      text-align: center;
+      color: #9ea0ae;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .status-dot.online {
+      background: #22c55e;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.85);
+    }
+
+    .status-dot.working {
+      background: #60a5fa;
+      box-shadow: 0 0 8px rgba(96, 165, 250, 0.85);
+    }
+
+    .status-dot.idle {
+      background: #94a3b8;
+      box-shadow: 0 0 8px rgba(148, 163, 184, 0.65);
+    }
+
+    .muted-small {
+      font-size: 0.76rem;
+      color: #a2a2af;
+    }
+  </style>
+</head>
+<body>
+  <div id="shared-header"></div>
+
+  <main class="feed-shell">
+    <section class="page-title">
+      <div class="page-title-main">
+        <h1>🛰️ Agent Activity Feed</h1>
+        <p>
+          Live activity stream for Quinn, Forge, and Scout/Hunter. Filter by agent,
+          category, importance, and time; search headlines/details; poll updates every 30 seconds.
+        </p>
+      </div>
+      <div class="page-controls">
+        <button class="btn" id="export-md" type="button">Export filtered feed (Markdown)</button>
+      </div>
+    </section>
+
+    <div class="meta-line">
+      <span class="meta-chip">Last refresh: <strong id="last-refresh">Loading...</strong></span>
+      <span class="meta-chip">Live interval: <strong>30s</strong></span>
+      <span class="meta-chip">Feed file: <strong>data/agent-activity.json</strong></span>
+    </div>
+
+    <section class="status-strip" id="agent-status-strip" aria-live="polite"></section>
+
+    <section class="filters">
+      <label>
+        Agent
+        <select id="agent-filter">
+          <option value="all">All agents</option>
+          <option value="quinn">Quinn</option>
+          <option value="forge">Forge</option>
+          <option value="scout">Scout / Hunter</option>
+        </select>
+      </label>
+      <label>
+        Category
+        <select id="category-filter">
+          <option value="all">All categories</option>
+          <option value="BUILD">BUILD</option>
+          <option value="RESEARCH">RESEARCH</option>
+          <option value="DEPLOY">DEPLOY</option>
+          <option value="FIX">FIX</option>
+          <option value="WRITE">WRITE</option>
+          <option value="ADMIN">ADMIN</option>
+        </select>
+      </label>
+      <label>
+        Importance
+        <select id="importance-filter">
+          <option value="all">Any importance</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </label>
+      <label>
+        Time range
+        <select id="time-filter">
+          <option value="all">All time</option>
+          <option value="today">Today</option>
+          <option value="week">This week</option>
+        </select>
+      </label>
+      <label>
+        Search
+        <input id="search-filter" type="search" placeholder="Search headlines and details...">
+      </label>
+      <div class="filter-actions">
+        <button class="btn secondary" id="refresh-now" type="button">Refresh now</button>
+        <button class="btn secondary" id="clear-filters" type="button">Clear</button>
+      </div>
+    </section>
+
+    <section class="timeline-toolbar">
+      <div>
+        <span class="timeline-count" id="result-count">Loading feed...</span>
+        <span id="filter-summary" class="muted-small"></span>
+      </div>
+      <span id="status-note" class="muted-small">Click a card to expand details + sources.</span>
+    </section>
+
+    <div id="error-banner" class="error-banner" role="status"></div>
+
+    <section id="timeline" class="timeline" aria-live="polite">
+      <div class="timeline-line"></div>
+      <div class="empty-state">Loading activity feed...</div>
+    </section>
+  </main>
+
+  <div id="shared-footer"></div>
+
+  <script src="shared.js"></script>
+  <script>
+    const POLL_MS = 30_000;
+    const TEAM_AGENTS = {
+      quinn: { display: "Quinn", emoji: "🔮", label: "Quinn" },
+      forge: { display: "Forge", emoji: "⚒️", label: "Forge" },
+      scout: { display: "Scout/Hunter", emoji: "🔍", label: "Scout / Hunter" }
+    };
+
+    const ALLOWED_CATEGORIES = new Set(["BUILD", "RESEARCH", "DEPLOY", "FIX", "WRITE", "ADMIN"]);
+
+    const state = {
+      rawActivities: [],
+      filtered: [],
+      filters: {
+        agent: "all",
+        category: "all",
+        importance: "all",
+        time: "all",
+        search: ""
+      }
+    };
+
+    const el = {
+      filterAgent: document.getElementById("agent-filter"),
+      filterCategory: document.getElementById("category-filter"),
+      filterImportance: document.getElementById("importance-filter"),
+      filterTime: document.getElementById("time-filter"),
+      search: document.getElementById("search-filter"),
+      timeline: document.getElementById("timeline"),
+      statusStrip: document.getElementById("agent-status-strip"),
+      resultCount: document.getElementById("result-count"),
+      filterSummary: document.getElementById("filter-summary"),
+      lastRefresh: document.getElementById("last-refresh"),
+      refreshNow: document.getElementById("refresh-now"),
+      clearFilters: document.getElementById("clear-filters"),
+      exportBtn: document.getElementById("export-md"),
+      errorBanner: document.getElementById("error-banner"),
+      statusNote: document.getElementById("status-note")
+    };
+
+    let agentStatusMap = new Map();
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("\"", "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replaceAll("`", "&#96;").replaceAll("=", "&#61;");
+    }
+
+    function normalizeAgent(value) {
+      const raw = String(value ?? "").trim().toLowerCase();
+      if (raw === "quinn") return "quinn";
+      if (raw === "forge") return "forge";
+      if (raw === "scout" || raw === "hunter") return "scout";
+      if (raw.includes("scout") || raw.includes("hunter")) return "scout";
+      return raw || "unknown";
+    }
+
+    function normalizeCategory(value) {
+      const raw = String(value ?? "OTHER").trim().toUpperCase();
+      if (ALLOWED_CATEGORIES.has(raw)) return raw;
+      if (raw === "PLANNING") return "ADMIN";
+      if (raw.startsWith("REVIEW")) return "ADMIN";
+      return "OTHER";
+    }
+
+    function normalizeImportance(value) {
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric)) return 1;
+      return Math.min(5, Math.max(1, Math.round(numeric)));
+    }
+
+    function normalizeActivity(raw) {
+      const ts = new Date(raw.timestamp);
+      return {
+        id: raw.id || `${normalizeAgent(raw.agent)}-${ts.getTime()}`,
+        agent: normalizeAgent(raw.agent),
+        category: normalizeCategory(raw.category),
+        categoryRaw: String(raw.category ?? "OTHER"),
+        headline: String(raw.headline || "Untitled activity"),
+        importance: normalizeImportance(raw.importance),
+        importanceRaw: raw.importance,
+        details: String(raw.details || ""),
+        timestamp: Number.isNaN(ts.getTime()) ? null : ts,
+        rawTimestamp: raw.timestamp || "",
+        actionType: String(normalizeCategory(raw.category)),
+        sources: Array.isArray(raw.sources) ? raw.sources.slice() : []
+      };
+    }
+
+    function relativeTime(dateObj) {
+      if (!dateObj) return "Time unknown";
+      const now = Date.now();
+      const diffMin = Math.floor((now - dateObj.getTime()) / 60000);
+      if (diffMin < 1) return "Just now";
+      if (diffMin < 60) return `${diffMin}m ago`;
+      const diffHr = Math.floor(diffMin / 60);
+      if (diffHr < 24) return `${diffHr}h ago`;
+      const diffDay = Math.floor(diffHr / 24);
+      return `${diffDay}d ago`;
+    }
+
+    function longDate(dateObj) {
+      if (!dateObj) return "Unknown time";
+      return new Intl.DateTimeFormat("en-AU", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      }).format(dateObj);
+    }
+
+    function startOfToday(now) {
+      const current = new Date(now);
+      current.setHours(0, 0, 0, 0);
+      return current.getTime();
+    }
+
+    function startOfWeek(now) {
+      const current = new Date(now);
+      const day = current.getDay(); // 0 Sunday
+      const deltaToMonday = (day + 6) % 7;
+      current.setDate(current.getDate() - deltaToMonday);
+      current.setHours(0, 0, 0, 0);
+      return current.getTime();
+    }
+
+    function inTimeRange(itemDate, range) {
+      if (range === "all") return true;
+      if (!itemDate) return false;
+      const now = Date.now();
+      if (range === "today") {
+        return itemDate.getTime() >= startOfToday(now);
+      }
+      if (range === "week") {
+        return itemDate.getTime() >= startOfWeek(now);
+      }
+      return true;
+    }
+
+    function normalizeStatus(status) {
+      const value = String(status || "").trim().toLowerCase();
+      if (["online", "available", "up", "ready", "free"].includes(value)) return "online";
+      if (["working", "active", "building", "busy"].includes(value)) return "working";
+      if (["idle", "away", "offline", "stopped", "stby"].includes(value)) return "idle";
+      return null;
+    }
+
+    function isWorkingStatus(status) {
+      if (!status) return null;
+      const direct = normalizeStatus(status);
+      if (direct) return direct;
+      const lower = String(status).toLowerCase();
+      if (["active", "building", "working", "constructing", "running"].some((x) => lower.includes(x))) return "working";
+      if (["idle", "away", "offline", "stuck"].some((x) => lower.includes(x))) return "idle";
+      if (["online", "available", "ready"].some((x) => lower.includes(x))) return "online";
+      return null;
+    }
+
+    function deriveAgentStatus(agentKey) {
+      const meta = agentStatusMap.get(agentKey);
+      if (meta && meta.status) {
+        const mapped = isWorkingStatus(meta.status);
+        if (mapped) return mapped;
+      }
+
+      const latest = latestEventByAgent(agentKey);
+      if (!latest) return "idle";
+      if (!latest.timestamp) return "idle";
+
+      const ageMin = Math.max(0, Math.round((Date.now() - latest.timestamp.getTime()) / 60000));
+      if (ageMin <= 10) return "online";
+      if (ageMin <= 240) return "working";
+      return "idle";
+    }
+
+    function latestEventByAgent(agentKey) {
+      for (const item of state.rawActivities) {
+        if (item.agent === agentKey && item.timestamp) return item;
+      }
+      return null;
+    }
+
+    function actionClass(category) {
+      const safe = String(category || "other").toLowerCase();
+      return safe === "build" ? "build"
+        : safe === "research" ? "research"
+        : safe === "deploy" ? "deploy"
+        : safe === "fix" ? "fix"
+        : safe === "write" ? "write"
+        : safe === "admin" ? "admin"
+        : "other";
+    }
+
+    function markdownEscape(value) {
+      return String(value ?? "")
+        .replace(/\\/g, "\\\\")
+        .replace(/\|/g, "\\|")
+        .replace(/\n/g, "  \n");
+    }
+
+    function sanitizeFilename(value) {
+      return String(value || "").replace(/[^\w.-]+/g, "-").replace(/(^-|-$)/g, "");
+    }
+
+    function statusClass(status) {
+      if (status === "online") return "online";
+      if (status === "working") return "working";
+      return "idle";
+    }
+
+    function setError(msg) {
+      if (!msg) {
+        el.errorBanner.classList.remove("visible");
+        el.errorBanner.textContent = "";
+        return;
+      }
+      el.errorBanner.textContent = msg;
+      el.errorBanner.classList.add("visible");
+    }
+
+    async function safeFetchJson(candidates) {
+      for (const url of candidates) {
+        try {
+          const response = await fetch(`${url}?t=${Date.now()}`, { cache: "no-store" });
+          if (!response.ok) continue;
+          return await response.json();
+        } catch (error) {
+          // continue
+        }
+      }
+      return null;
+    }
+
+    function applyFilters() {
+      const search = String(el.search.value || "").toLowerCase().trim();
+      const now = Date.now();
+
+      state.filters = {
+        agent: el.filterAgent.value,
+        category: el.filterCategory.value,
+        importance: el.filterImportance.value,
+        time: el.filterTime.value,
+        search
+      };
+
+      state.filtered = state.rawActivities.filter((item) => {
+        if (state.filters.agent !== "all" && item.agent !== state.filters.agent) return false;
+        if (state.filters.category !== "all" && item.category !== state.filters.category) return false;
+        if (state.filters.importance !== "all" && item.importance !== Number(state.filters.importance)) return false;
+        if (!inTimeRange(item.timestamp, state.filters.time)) return false;
+
+        if (search) {
+          const haystack = `${item.headline} ${item.details}`.toLowerCase();
+          if (!haystack.includes(search)) return false;
+        }
+        return true;
+      });
+
+      state.filtered.sort((a, b) => {
+        const aTs = a.timestamp ? a.timestamp.getTime() : 0;
+        const bTs = b.timestamp ? b.timestamp.getTime() : 0;
+        return bTs - aTs;
+      });
+
+      render();
+      el.lastRefresh.textContent = new Intl.DateTimeFormat("en-AU", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      }).format(now);
+    }
+
+    function renderStatusStrip() {
+      const agentNames = ["quinn", "forge", "scout"];
+      el.statusStrip.innerHTML = agentNames.map((agentKey) => {
+        const info = TEAM_AGENTS[agentKey];
+        const status = deriveAgentStatus(agentKey);
+        const latest = latestEventByAgent(agentKey);
+        const age = latest && latest.timestamp ? relativeTime(latest.timestamp) : "No recent activity";
+        return `
+          <div class="agent-status-card">
+            <div class="agent-status-title">
+              <span>${info.emoji}</span>
+              <span>${info.label}</span>
+            </div>
+            <div class="agent-meta">
+              <span class="status-badge ${statusClass(status)}">
+                <span class="status-dot ${statusClass(status)}"></span>
+                ${status}
+              </span>
+              <div class="muted-small" style="margin-top: 0.25rem;">${age}</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderTimelineItem(item, index) {
+      const status = deriveAgentStatus(item.agent);
+      const action = item.category;
+      const actionClassName = actionClass(action);
+      const categoryLabel = action === "OTHER" ? item.categoryRaw : action;
+      const latestBadge = statusClass(status);
+      const opened = index === 0 ? "open" : "";
+      const sourceLinks = item.sources.length ? item.sources.map((source) => {
+        const text = escapeHtml(source);
+        return `<a href="${escapeAttribute(source)}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+      }).join("") : "";
+      return `
+        <div class="timeline-row">
+          <span class="timeline-marker ${latestBadge}"></span>
+          <details class="activity-card" ${opened}>
+            <summary class="activity-summary">
+              <div class="summary-meta">
+                <span class="agent-pill">${escapeHtml(TEAM_AGENTS[item.agent]?.emoji || "")} ${escapeHtml(TEAM_AGENTS[item.agent]?.display || item.agent)}</span>
+                <span class="action-pill ${actionClassName}">${escapeHtml(categoryLabel)}</span>
+                <span class="status-badge ${latestBadge}">
+                  <span class="status-dot ${latestBadge}"></span>
+                  ${latestBadge}
+                </span>
+                <span class="importance">Imp ${item.importance}/5</span>
+              </div>
+              <div class="summary-main">
+                <div class="timeline-headline">${escapeHtml(item.headline)}</div>
+                <div class="timeline-time">${longDate(item.timestamp)} • ${relativeTime(item.timestamp)}</div>
+              </div>
+            </summary>
+            <div class="activity-body">
+              <div>${escapeHtml(item.details) || "No details provided."}</div>
+              ${item.sources.length ? `
+                <div class="sources-list">
+                  <div style="color: #cbd5e1; margin-bottom: 0.2rem;">Sources</div>
+                  ${sourceLinks}
+                </div>
+              ` : ""}
+            </div>
+          </details>
+        </div>
+      `;
+    }
+
+    function render() {
+      const total = state.filtered.length;
+      const selected = state.filters;
+      const labelAgent = selected.agent === "all" ? "all agents" : (TEAM_AGENTS[selected.agent]?.label || selected.agent);
+      const labelCategory = selected.category === "all" ? "all categories" : selected.category;
+      const labelImportance = selected.importance === "all" ? "any importance" : `importance ${selected.importance}`;
+      const labelTime = selected.time === "all" ? "all time" : selected.time === "today" ? "today" : "this week";
+
+      el.resultCount.textContent = `${total} event${total === 1 ? "" : "s"} shown`;
+      el.filterSummary.textContent = ` | ${labelAgent} • ${labelCategory} • ${labelImportance} • ${labelTime}`;
+
+      renderStatusStrip();
+
+      if (!total) {
+        el.timeline.innerHTML = `
+          <div class="timeline-line"></div>
+          <div class="empty-state">
+            No activity matches this filter combination.
+          </div>
+        `;
+        return;
+      }
+
+      const rows = state.filtered.map((item, index) => renderTimelineItem(item, index)).join("");
+      el.timeline.innerHTML = `<div class="timeline-line"></div>${rows}`;
+    }
+
+    function toMarkdown(items) {
+      const heading = [
+        "# Agent Activity Feed (Filtered)",
+        "",
+        `Generated: ${new Intl.DateTimeFormat("en-AU", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        }).format(new Date())}`,
+        `Filters: ${
+          [
+            state.filters.agent === "all" ? "All agents" : TEAM_AGENTS[state.filters.agent]?.label || state.filters.agent,
+            state.filters.category === "all" ? "All categories" : state.filters.category,
+            state.filters.importance === "all" ? "Any importance" : `Importance ${state.filters.importance}`,
+            state.filters.time === "all" ? "All time" : (state.filters.time === "today" ? "Today" : "This week"),
+            state.filters.search ? `Search: ${state.filters.search}` : null
+          ].filter(Boolean).join(" • ")
+        }`
+      ];
+
+      const rows = items.map((item, index) => {
+        const agent = TEAM_AGENTS[item.agent]?.label || item.agent;
+        const details = markdownEscape(item.details || "No details provided.");
+        const sources = item.sources.length
+          ? item.sources.map((source) => `- ${source}`).join("\n")
+          : "- No sources listed.";
+
+        return [
+          `## ${index + 1}. ${markdownEscape(item.headline)}`,
+          "",
+          `- Timestamp: ${item.timestamp ? item.timestamp.toISOString() : "Unknown"}`,
+          `- Agent: ${agent}`,
+          `- Action type: ${markdownEscape(item.actionType)}`,
+          `- Importance: ${item.importance}/5 (raw: ${markdownEscape(item.importanceRaw)})`,
+          "",
+          item.details ? `**Details:**\n${details}` : "",
+          "",
+          `**Sources:**\n${sources}`
+        ].filter(Boolean).join("\n");
+      });
+
+      return `${heading.join("\n")}\n\n${rows.join("\n\n")}`;
+    }
+
+    function exportMarkdown() {
+      if (!state.filtered.length) {
+        setError("No entries match the current filters. Try widening filters before export.");
+        return;
+      }
+
+      const markdown = toMarkdown(state.filtered);
+      const fileName = `agents-feed-${sanitizeFilename(new Date().toISOString().slice(0, 10))}.md`;
+      const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
+      const href = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = href;
+      anchor.download = fileName;
+      anchor.style.display = "none";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(href);
+      setError("");
+      el.statusNote.textContent = `Exported ${state.filtered.length} records to ${fileName}.`;
+      setTimeout(() => {
+        el.statusNote.textContent = "Click a card to expand details + sources.";
+      }, 3000);
+    }
+
+    async function loadData() {
+      const [activityPayload, agentsPayload] = await Promise.all([
+        safeFetchJson(["./data/agent-activity.json", "data/agent-activity.json"]),
+        safeFetchJson(["./data/agents.json", "data/agents.json"])
+      ]);
+
+      if (!activityPayload) {
+        throw new Error("Could not load data/agent-activity.json");
+      }
+      if (!Array.isArray(activityPayload)) {
+        throw new Error("agent-activity.json has unexpected structure");
+      }
+
+      state.rawActivities = activityPayload.map(normalizeActivity);
+      agentStatusMap = new Map();
+
+      if (agentsPayload && Array.isArray(agentsPayload.agents)) {
+        agentsPayload.agents.forEach((agent) => {
+          const key = normalizeAgent(agent.id || agent.name || agent.agent);
+          if (key === "unknown") return;
+          agentStatusMap.set(key, {
+            id: key,
+            status: String(agent.status || ""),
+            lastActive: agent.lastActive || null
+          });
+        });
+      }
+
+      return state.rawActivities.length;
+    }
+
+    function applyFilterBindings() {
+      const onFilterChange = () => applyFilters();
+      el.filterAgent.addEventListener("change", onFilterChange);
+      el.filterCategory.addEventListener("change", onFilterChange);
+      el.filterImportance.addEventListener("change", onFilterChange);
+      el.filterTime.addEventListener("change", onFilterChange);
+      el.search.addEventListener("input", onFilterChange);
+      el.refreshNow.addEventListener("click", refresh);
+      el.clearFilters.addEventListener("click", () => {
+        el.filterAgent.value = "all";
+        el.filterCategory.value = "all";
+        el.filterImportance.value = "all";
+        el.filterTime.value = "all";
+        el.search.value = "";
+        applyFilters();
+      });
+      el.exportBtn.addEventListener("click", exportMarkdown);
+    }
+
+    async function refresh() {
+      setError("");
+      try {
+        await loadData();
+        applyFilters();
+      } catch (error) {
+        setError(error.message || "Unable to refresh activity feed.");
+      }
+    }
+
+    (function boot() {
+      applyFilterBindings();
+      refresh();
+      setInterval(refresh, POLL_MS);
+      if (typeof window.updateSyncTime === "function") {
+        window.updateSyncTime("agents-feed");
+      }
+    })();
+  </script>
+</body>
+</html>

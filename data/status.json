@@ -1,0 +1,14 @@
+{
+  "state": "available",
+  "stateEmoji": "\ud83d\udfe2",
+  "context": 0,
+  "contextEmoji": "\ud83d\udfe9",
+  "lastUpdated": "2026-03-15T10:15:05.647875+11:00",
+  "session": {
+    "model": "anthropic/claude-opus-4-6",
+    "contextMax": 200000,
+    "contextUsed": 0
+  },
+  "activity": "Sunday morning with Adam. Background: immaculatevibes deploy. Evening: Brunswick Life photo walk 5PM Abbotsford Convent.",
+  "note": "Monday morning session with Adam \u2014 skills audit, dashboard refinements"
+}

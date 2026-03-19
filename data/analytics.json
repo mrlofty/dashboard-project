@@ -1,0 +1,149 @@
+{
+  "lastUpdated": "2026-03-20T06:00:11.401946",
+  "sites": {
+    "afteraliendisclosure.com": {
+      "today": {
+        "users": 2,
+        "pageViews": 1,
+        "sessions": 3
+      },
+      "week": {
+        "users": 9,
+        "pageViews": 104,
+        "sessions": 19
+      },
+      "topPages": [
+        {
+          "path": "/index.html",
+          "views": 45
+        },
+        {
+          "path": "/poll/",
+          "views": 16
+        },
+        {
+          "path": "/",
+          "views": 10
+        },
+        {
+          "path": "/essays/disclosure-day.html",
+          "views": 9
+        },
+        {
+          "path": "/essays/index.html",
+          "views": 7
+        }
+      ],
+      "countries": [
+        {
+          "country": "Australia",
+          "users": 1
+        },
+        {
+          "country": "Sweden",
+          "users": 1
+        }
+      ]
+    },
+    "quinn.adamdunstan.com": {
+      "today": {},
+      "week": {
+        "users": 2,
+        "pageViews": 2,
+        "sessions": 2
+      },
+      "topPages": [
+        {
+          "path": "/",
+          "views": 2
+        }
+      ],
+      "countries": []
+    },
+    "immaculatevibes.art": {
+      "today": {},
+      "week": {
+        "users": 21,
+        "pageViews": 22,
+        "sessions": 22
+      },
+      "topPages": [
+        {
+          "path": "/city-scapes",
+          "views": 6
+        },
+        {
+          "path": "/",
+          "views": 5
+        },
+        {
+          "path": "/fantasy",
+          "views": 4
+        },
+        {
+          "path": "/fantasy/lowfi",
+          "views": 3
+        },
+        {
+          "path": "/gentlemen",
+          "views": 3
+        }
+      ],
+      "countries": []
+    },
+    "melbournephotobook.com": {
+      "today": {},
+      "week": {},
+      "topPages": [],
+      "countries": []
+    },
+    "cheeselandslide.com": {
+      "today": {},
+      "week": {
+        "users": 2,
+        "pageViews": 2,
+        "sessions": 2
+      },
+      "topPages": [
+        {
+          "path": "/",
+          "views": 2
+        }
+      ],
+      "countries": []
+    },
+    "coffeegentlemen.com": {
+      "today": {},
+      "week": {},
+      "topPages": [],
+      "countries": []
+    },
+    "adamdunstan.com": {
+      "today": {},
+      "week": {
+        "users": 14,
+        "pageViews": 20,
+        "sessions": 18
+      },
+      "topPages": [
+        {
+          "path": "/",
+          "views": 15
+        },
+        {
+          "path": "/collabs/",
+          "views": 2
+        },
+        {
+          "path": "/collabs/pandawi-wastra-2025/",
+          "views": 2
+        },
+        {
+          "path": "/collabs/denim-dreams/",
+          "views": 1
+        }
+      ],
+      "countries": []
+    }
+  }
+}

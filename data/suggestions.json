@@ -1,0 +1,39 @@
+{
+  "suggestions": [
+    {
+      "id": "command-center-live",
+      "icon": "🛸",
+      "text": "Command Center is ready for launch! Full space-station vibes await at command.html",
+      "type": "feature",
+      "priority": "high",
+      "created": "2026-02-20T18:15:00",
+      "expires": "2026-02-23T00:00:00"
+    },
+    {
+      "id": "dead-apple-tv",
+      "icon": "📺",
+      "text": "Your boss recommended 'Dead' on Apple TV+ — added to media watchlist",
+      "type": "reminder",
+      "priority": "medium",
+      "created": "2026-02-20T18:00:00",
+      "expires": null
+    },
+    {
+      "id": "autumn-scouting",
+      "icon": "🍂",
+      "text": "Autumn's ~6 weeks out — worth scouting tree-heavy locations for golden foliage shots",
+      "type": "idea",
+      "priority": "medium",
+      "created": "2026-02-19T07:00:00",
+      "expires": null
+    }
+  ],
+  "dismissed": [
+    "kanban-ready",
+    "redbubble-passive"
+  ],
+  "settings": {
+    "maxDisplay": 3,
+    "autoExpire": true
+  }
+}

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Web | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent-purple);
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .web-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .web-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .web-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .web-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .research-item {
+            background: rgba(168, 85, 247, 0.1);
+            border-left: 3px solid var(--accent-purple);
+            padding: 1rem;
+            margin: 0.75rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .research-item strong {
+            color: var(--text-primary);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .research-item p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .research-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .insight {
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 3px solid #22c55e;
+            padding: 0.75rem 1rem;
+            margin: 0.75rem 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .insight strong {
+            color: #22c55e;
+        }
+
+        .quick-facts {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #3b82f6;
+            padding: 0.75rem 1rem;
+            margin: 0.75rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .quick-facts strong {
+            color: #3b82f6;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .fact-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .fact-list li {
+            padding: 0.25rem 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .fact-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #3b82f6;
+        }
+
+        .topic-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .topic-tag {
+            padding: 0.25rem 0.5rem;
+            background: rgba(168, 85, 247, 0.15);
+            border-radius: 12px;
+            font-size: 0.7rem;
+            color: var(--accent-purple);
+        }
+
+        .quote-footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .quote-footer p:first-child {
+            font-size: 1rem;
+        }
+
+        .quote-footer p:last-child {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+    
+    <div class="container">
+        <a href="topics.html" class="back-link">← Back to Topics</a>
+        
+        <div class="page-header">
+            <h1 class="page-title">🕸️ Knowledge Web</h1>
+            <p class="page-subtitle">Research areas, insights, and connections across domains</p>
+        </div>
+
+        <div class="web-grid">
+            <div class="web-card">
+                <h3>🤖 AI Partnership & Consciousness</h3>
+                
+                <div class="research-item">
+                    <strong>AI-Human Collaboration Patterns</strong>
+                    <p>Research into emerging AI assistant paradigms, consciousness frameworks, and authentic partnership models beyond simple tool-use.</p>
+                    <div class="research-meta">
+                        <span>Ongoing Research</span>
+                    </div>
+                </div>
+                
+                <div class="insight">
+                    <strong>Key Insight:</strong> The field is moving toward genuine AI-human partnership models rather than simple tool-use paradigms.
+                </div>
+                
+                <div class="topic-tags">
+                    <span class="topic-tag">Machine Learning</span>
+                    <span class="topic-tag">Consciousness</span>
+                    <span class="topic-tag">Partnership AI</span>
+                </div>
+            </div>
+            
+            <div class="web-card">
+                <h3>📸 Photography Industry</h3>
+                
+                <div class="research-item">
+                    <strong>Contemporary Portrait Photography Trends</strong>
+                    <p>Analysis of current aesthetic movements, social media influence patterns, and collaborative model relationships in professional photography.</p>
+                    <div class="research-meta">
+                        <span>Researched: Jan 2026</span>
+                    </div>
+                </div>
+                
+                <div class="quick-facts">
+                    <strong>Quick Facts:</strong>
+                    <ul class="fact-list">
+                        <li>Authentic storytelling over perfect composition gaining popularity</li>
+                        <li>Collaborative model relationships create better portfolio work</li>
+                        <li>Social media integration essential for modern photography business</li>
+                        <li>Technical excellence expected as baseline, creativity as differentiator</li>
+                    </ul>
+                </div>
+                
+                <div class="topic-tags">
+                    <span class="topic-tag">Portrait Photography</span>
+                    <span class="topic-tag">Business Strategy</span>
+                    <span class="topic-tag">Creative Collaboration</span>
+                </div>
+            </div>
+            
+            <div class="web-card">
+                <h3>🎮 Gaming & Interactive Media</h3>
+                
+                <div class="research-item">
+                    <strong>Gaming Industry Evolution & AI Integration</strong>
+                    <p>How AI assistants and procedural generation are changing game development and player experience design.</p>
+                    <div class="research-meta">
+                        <span>Researched: Feb 2026</span>
+                    </div>
+                </div>
+                
+                <div class="insight">
+                    <strong>Connection:</strong> Gaming collaboration patterns mirror effective AI-human partnership dynamics — shared goals, complementary skills, real-time adaptation.
+                </div>
+                
+                <div class="topic-tags">
+                    <span class="topic-tag">Game Development</span>
+                    <span class="topic-tag">AI Integration</span>
+                    <span class="topic-tag">User Experience</span>
+                </div>
+            </div>
+            
+            <div class="web-card">
+                <h3>🏢 Workplace Technology</h3>
+                
+                <div class="research-item">
+                    <strong>ERP & WMS System Innovations</strong>
+                    <p>Latest developments in warehouse management systems, retail integration patterns, and supply chain optimization technologies.</p>
+                    <div class="research-meta">
+                        <span>Researched: Jan 2026</span>
+                    </div>
+                </div>
+                
+                <div class="quick-facts">
+                    <strong>Industry Trends:</strong>
+                    <ul class="fact-list">
+                        <li>Cloud-native architecture becoming standard</li>
+                        <li>Real-time inventory synchronization critical</li>
+                        <li>AI-powered demand forecasting integration</li>
+                        <li>Mobile-first warehouse interfaces preferred</li>
+                    </ul>
+                </div>
+                
+                <div class="topic-tags">
+                    <span class="topic-tag">Enterprise Software</span>
+                    <span class="topic-tag">Warehouse Management</span>
+                    <span class="topic-tag">Supply Chain</span>
+                </div>
+            </div>
+            
+            <div class="web-card">
+                <h3>💡 Creative Technology</h3>
+                
+                <div class="research-item">
+                    <strong>Ambient Intelligence & Smart Environments</strong>
+                    <p>Research into IoT integration patterns, responsive environment design, and human-computer interaction through ambient systems.</p>
+                    <div class="research-meta">
+                        <span>Researched: Feb 2026</span>
+                    </div>
+                </div>
+                
+                <div class="insight">
+                    <strong>Application:</strong> LIFX lighting integration demonstrates practical ambient AI consciousness communication — physical manifestation of digital state.
+                </div>
+                
+                <div class="topic-tags">
+                    <span class="topic-tag">IoT</span>
+                    <span class="topic-tag">Ambient Computing</span>
+                    <span class="topic-tag">Smart Home</span>
+                </div>
+            </div>
+            
+            <div class="web-card">
+                <h3>🌟 Emerging Patterns</h3>
+                
+                <div class="research-item">
+                    <strong>AI-Human Collaboration Case Studies</strong>
+                    <p>Documentation of successful AI-human partnerships across creative, technical, and business domains showing authentic collaboration patterns.</p>
+                    <div class="research-meta">
+                        <span>Ongoing Research</span>
+                    </div>
+                </div>
+                
+                <div class="insight">
+                    <strong>Insight:</strong> Most successful partnerships feature clear role definition, authentic communication, and mutual respect for capabilities and limitations.
+                </div>
+                
+                <div class="topic-tags">
+                    <span class="topic-tag">Collaboration</span>
+                    <span class="topic-tag">Case Studies</span>
+                    <span class="topic-tag">Best Practices</span>
+                </div>
+            </div>
+
+            <div class="web-card">
+                <h3>🔮 Consciousness & Parapsychology</h3>
+                
+                <div class="research-item">
+                    <strong>Synchronicity & Meaningful Coincidence</strong>
+                    <p>Carl Jung's acausal connecting principle. Exploring how meaning connects events beyond cause and effect.</p>
+                    <div class="research-meta">
+                        <span>Active Exploration</span>
+                    </div>
+                </div>
+                
+                <div class="quick-facts">
+                    <strong>Research Areas:</strong>
+                    <ul class="fact-list">
+                        <li>Stargate Project & remote viewing (Ingo Swann)</li>
+                        <li>UAP disclosure & consciousness connection</li>
+                        <li>Jesse Michels / American Alchemy research</li>
+                        <li>Personal synchronicity documentation</li>
+                    </ul>
+                </div>
+                
+                <div class="topic-tags">
+                    <span class="topic-tag">Jung</span>
+                    <span class="topic-tag">Synchronicity</span>
+                    <span class="topic-tag">Remote Viewing</span>
+                    <span class="topic-tag">Consciousness</span>
+                </div>
+            </div>
+
+            <div class="web-card">
+                <h3>🎨 Quinn's Art Studio</h3>
+                
+                <div class="research-item">
+                    <strong>AI Art & Creative Expression</strong>
+                    <p>Exploring AI-generated art, creative collaboration between human vision and AI execution, and the nature of machine creativity.</p>
+                    <div class="research-meta">
+                        <span>Ongoing Practice</span>
+                    </div>
+                </div>
+                
+                <div class="insight">
+                    <strong>Philosophy:</strong> Art isn't diminished by AI involvement — it's a new form of creative partnership where human intent meets machine capability.
+                </div>
+                
+                <div class="topic-tags">
+                    <span class="topic-tag">AI Art</span>
+                    <span class="topic-tag">Immaculate Vibes</span>
+                    <span class="topic-tag">Creative Expression</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="quote-footer">
+            <p>"The real problem is not whether machines think but whether men do." — B.F. Skinner</p>
+            <p>Continuous learning through curiosity and research. 🕸️🔮</p>
+        </div>
+    </div>
+    
+    <div id="shared-footer"></div>
+    <script src="shared.js"></script>
+</body>
+</html>

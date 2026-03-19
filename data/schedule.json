@@ -1,0 +1,206 @@
+{
+  "recurring": [
+    {
+      "id": "heartbeat",
+      "name": "Heartbeat Poll",
+      "icon": "\ud83d\udc93",
+      "frequency": "every 30 min",
+      "times": [
+        "all day"
+      ],
+      "days": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat",
+        "sun"
+      ],
+      "description": "System health check, context monitoring, proactive checks (7am-10pm)",
+      "category": "system"
+    },
+    {
+      "id": "daily-brief",
+      "name": "Daily Brief",
+      "icon": "\ud83c\udf05",
+      "frequency": "daily",
+      "times": [
+        "07:00"
+      ],
+      "days": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat",
+        "sun"
+      ],
+      "description": "Weather, calendar, watchlist, system health sent to Telegram",
+      "category": "communication"
+    },
+    {
+      "id": "email-check-morning",
+      "name": "Email Check",
+      "icon": "\ud83d\udce7",
+      "frequency": "3x daily",
+      "times": [
+        "07:00",
+        "12:00",
+        "18:00"
+      ],
+      "days": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat",
+        "sun"
+      ],
+      "description": "Check for urgent emails, calendar RSVPs, cancellations",
+      "category": "communication"
+    },
+    {
+      "id": "research-review",
+      "name": "Research Review",
+      "icon": "\ud83c\udf19",
+      "frequency": "daily",
+      "times": [
+        "23:00"
+      ],
+      "days": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat",
+        "sun"
+      ],
+      "description": "Review overnight research queue, summarize findings",
+      "category": "research",
+      "cronId": "7f6635b5-b52e-4d15-8297-5107fd86ec29"
+    },
+    {
+      "id": "overnight-research",
+      "name": "Overnight Research",
+      "icon": "\ud83d\udd2c",
+      "frequency": "daily",
+      "times": [
+        "03:00"
+      ],
+      "days": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat",
+        "sun"
+      ],
+      "description": "Work through research queue items, document findings for morning",
+      "category": "research",
+      "cronId": "3b143549-efad-4ad5-8b6d-cedd509e30d9"
+    },
+    {
+      "id": "knowledge-capture",
+      "name": "Knowledge Capture",
+      "icon": "\ud83d\udcda",
+      "frequency": "daily",
+      "times": [
+        "04:00"
+      ],
+      "days": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat",
+        "sun"
+      ],
+      "description": "Review overnight research + previous day's memory for topic-worthy knowledge. Distill and add to Topics knowledge base.",
+      "category": "research",
+      "cronId": "0acd9d3b-5a24-44f3-8456-aa8d30459342"
+    },
+    {
+      "id": "drive-backup",
+      "name": "Google Drive Backup",
+      "icon": "\u2601\ufe0f",
+      "frequency": "weekly",
+      "times": [
+        "03:00"
+      ],
+      "days": [
+        "sun"
+      ],
+      "description": "Backup critical files to Google Drive for offsite redundancy",
+      "category": "backup"
+    },
+    {
+      "id": "nas-backup",
+      "name": "NAS Backup",
+      "icon": "\ud83d\udcbe",
+      "frequency": "daily",
+      "times": [
+        "02:00"
+      ],
+      "days": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat",
+        "sun"
+      ],
+      "description": "Full backup to /mnt/nas-backup via rsync",
+      "category": "backup",
+      "cronId": "38d61961-292a-48ce-bbbc-ed3032e7eca8"
+    },
+    {
+      "id": "analytics-pull",
+      "name": "Analytics Pull",
+      "icon": "\ud83d\udcca",
+      "frequency": "daily",
+      "times": [
+        "6:00 AM"
+      ],
+      "days": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat",
+        "sun"
+      ],
+      "description": "Pull GA4 analytics data for all sites into dashboard",
+      "category": "data"
+    }
+  ],
+  "categories": {
+    "system": {
+      "color": "#22c55e",
+      "label": "System"
+    },
+    "communication": {
+      "color": "#3b82f6",
+      "label": "Communication"
+    },
+    "research": {
+      "color": "#a855f7",
+      "label": "Research"
+    },
+    "backup": {
+      "color": "#f59e0b",
+      "label": "Backup"
+    },
+    "data": {
+      "color": "#06b6d4",
+      "label": "Data"
+    }
+  }
+}

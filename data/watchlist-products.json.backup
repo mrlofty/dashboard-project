@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "id": "rf-24-105-f28-z",
+      "name": "RF 24-105mm f/2.8 L IS USM Z lens",
+      "category": "gear",
+      "targetPrice": 800,
+      "currentPrice": null,
+      "url": "https://www.canon.com.au/camera-lenses/rf-24-105mm-f2-8-l-is-usm-z",
+      "notes": "Camera gear target for price drop around 800 AUD.",
+      "createdAt": "2026-03-05T00:00:00.000Z",
+      "updatedAt": "2026-03-05T00:00:00.000Z"
+    }
+  ]
+}

@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Quinn & Adam Theme System</title>
+    <meta name="description" content="Interactive theme showcase with multiple design systems by Quinn & Adam">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Theme variables will be injected here by JavaScript */
+        :root {
+            --transition-speed: 0.4s;
+        }
+        
+        body {
+            font-family: var(--font-primary, 'Segoe UI', sans-serif);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: all var(--transition-speed) ease;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-pattern, none);
+            pointer-events: none;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .theme-switcher {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 100;
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: var(--shadow-card);
+            backdrop-filter: blur(10px);
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .theme-switcher h3 {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .theme-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .theme-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-primary);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .theme-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+        
+        .theme-btn.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+            box-shadow: var(--glow-primary, none);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--gradient-accent);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all var(--transition-speed) ease;
+            animation: var(--title-animation, none);
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            transition: color var(--transition-speed) ease;
+        }
+        
+        .theme-name {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            color: var(--accent-primary);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--accent-primary);
+        }
+        
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .showcase-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow-card);
+            transition: all var(--transition-speed) ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .showcase-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent-primary);
+        }
+        
+        .showcase-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-accent);
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .demo-button {
+            background: var(--gradient-accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            text-transform: var(--text-transform, none);
+            letter-spacing: var(--letter-spacing, normal);
+        }
+        
+        .demo-button:hover {
+            box-shadow: var(--glow-primary, none);
+            transform: translateY(-2px);
+        }
+        
+        .demo-input {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-primary);
+            border-radius: 6px;
+            padding: 0.75rem;
+            color: var(--text-primary);
+            font-family: inherit;
+            width: 100%;
+            margin: 0.5rem 0;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .demo-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: var(--glow-primary, none);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            border: 1px solid var(--border-primary);
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent-secondary);
+            font-family: var(--font-mono, monospace);
+            display: block;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.5rem;
+        }
+        
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+        
+        .color-swatch {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            border: 2px solid var(--border-primary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .color-swatch:hover {
+            transform: scale(1.1);
+            border-color: var(--accent-primary);
+        }
+        
+        .content-block {
+            padding: 1.5rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-primary);
+            margin: 1rem 0;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .content-title {
+            color: var(--accent-primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .content-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .theme-switcher {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 2rem;
+            }
+            
+            .theme-buttons {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+        }
+        
+        /* Theme-specific animations */
+        @keyframes glow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-switcher">
+        <h3>🎨 Theme Switcher</h3>
+        <div class="theme-buttons">
+            <button class="theme-btn active" data-theme="gaming">🎮 Gaming</button>
+            <button class="theme-btn" data-theme="nord">❄️ Nord</button>
+            <button class="theme-btn" data-theme="photo">📸 Photo Pro</button>
+            <button class="theme-btn" data-theme="fallout">☢️ Fallout</button>
+            <button class="theme-btn" data-theme="minimal">🌙 Minimal</button>
+            <button class="theme-btn" data-theme="material">🎨 Material</button>
+            <button class="theme-btn" data-theme="dracula">🧛 Dracula</button>
+            <button class="theme-btn" data-theme="solarized">☀️ Solarized</button>
+            <button class="theme-btn" data-theme="github">🐙 GitHub</button>
+            <button class="theme-btn" data-theme="monokai">💻 Monokai</button>
+            <button class="theme-btn" data-theme="sunset">🌅 Sunset Pro</button>
+            <button class="theme-btn" data-theme="ocean">🌊 Ocean Deep</button>
+            <button class="theme-btn" data-theme="forest">🌲 Forest Night</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <header class="header">
+            <h1 class="hero-title">Theme System Showcase</h1>
+            <p class="subtitle">13 Professional Themes • Interactive Design System by Quinn & Adam</p>
+            <div class="theme-name" id="current-theme">🎮 Gaming Aesthetic</div>
+        </header>
+        
+        <div class="showcase-grid">
+            <div class="showcase-card">
+                <h2 class="card-title">🎨 Color Palette</h2>
+                <div class="color-palette" id="color-palette">
+                    <!-- Colors will be populated by JavaScript -->
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 1rem;">
+                    Click to copy colors • Hover for preview effects
+                </p>
+            </div>
+            
+            <div class="showcase-card">
+                <h2 class="card-title">🔧 Interactive Components</h2>
+                <div style="margin: 1rem 0;">
+                    <button class="demo-button">Primary Action</button>
+                    <button class="demo-button" style="background: var(--bg-tertiary); border: 2px solid var(--accent-secondary); color: var(--accent-secondary);">Secondary</button>
+                </div>
+                <input type="text" class="demo-input" placeholder="Enter your message...">
+                <div class="content-block">
+                    <div class="content-title">System Message</div>
+                    <div class="content-text">This is how content blocks appear in the current theme.</div>
+                </div>
+            </div>
+            
+            <div class="showcase-card">
+                <h2 class="card-title">📊 Data Display</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">127</span>
+                        <span class="stat-label">Active Users</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">98%</span>
+                        <span class="stat-label">Uptime</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">1.2K</span>
+                        <span class="stat-label">Data Points</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">45ms</span>
+                        <span class="stat-label">Response</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="showcase-card">
+                <h2 class="card-title">📝 Content Areas</h2>
+                <div class="content-block">
+                    <div class="content-title">Project Overview</div>
+                    <div class="content-text">
+                        This showcase demonstrates our theme system capabilities with real-time switching between different design aesthetics.
+                    </div>
+                </div>
+                <div class="content-block" style="border-left-color: var(--accent-secondary);">
+                    <div class="content-title" style="color: var(--accent-secondary);">Features</div>
+                    <div class="content-text">
+                        • Dynamic theme switching<br>
+                        • Consistent component styling<br>
+                        • Smooth transitions<br>
+                        • Professional aesthetics
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const themes = {
+            gaming: {
+                name: '🎮 Gaming Aesthetic',
+                vars: {
+                    '--bg-primary': 'linear-gradient(135deg, #0a0e13 0%, #161b22 50%, #21262d 100%)',
+                    '--bg-secondary': '#161b22',
+                    '--bg-tertiary': '#21262d',
+                    '--bg-card': '#1c2128',
+                    '--text-primary': '#f0f6fc',
+                    '--text-secondary': '#8b949e',
+                    '--accent-primary': '#ff6b35',
+                    '--accent-secondary': '#00d4aa',
+                    '--border-primary': '#30363d',
+                    '--gradient-accent': 'linear-gradient(135deg, #ff6b35 0%, #00d4aa 100%)',
+                    '--shadow-card': '0 8px 25px rgba(0, 0, 0, 0.4)',
+                    '--shadow-hover': '0 12px 30px rgba(255, 107, 53, 0.15)',
+                    '--glow-primary': '0 0 10px #ff6b35',
+                    '--bg-pattern': 'radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0, 212, 170, 0.1) 0%, transparent 50%)',
+                    '--font-primary': '"Segoe UI", "Roboto", monospace',
+                    '--font-mono': '"Courier New", monospace',
+                    '--text-transform': 'uppercase',
+                    '--letter-spacing': '0.5px',
+                    '--title-animation': 'glow 2s ease-in-out infinite alternate'
+                },
+                colors: ['#0a0e13', '#1c2128', '#ff6b35', '#00d4aa', '#39ff14', '#f0f6fc']
+            },
+            nord: {
+                name: '❄️ Nord Dark',
+                vars: {
+                    '--bg-primary': '#2e3440',
+                    '--bg-secondary': '#3b4252',
+                    '--bg-tertiary': '#434c5e',
+                    '--bg-card': '#3b4252',
+                    '--text-primary': '#eceff4',
+                    '--text-secondary': '#d8dee9',
+                    '--accent-primary': '#88c0d0',
+                    '--accent-secondary': '#81a1c1',
+                    '--border-primary': '#4c566a',
+                    '--gradient-accent': 'linear-gradient(135deg, #88c0d0 0%, #81a1c1 100%)',
+                    '--shadow-card': '0 8px 25px rgba(46, 52, 64, 0.4)',
+                    '--shadow-hover': '0 12px 30px rgba(136, 192, 208, 0.15)',
+                    '--glow-primary': '0 0 10px #88c0d0',
+                    '--bg-pattern': 'radial-gradient(circle at 30% 70%, rgba(136, 192, 208, 0.1) 0%, transparent 50%)',
+                    '--font-primary': '"Inter", "Segoe UI", sans-serif',
+                    '--font-mono': '"Fira Code", monospace'
+                },
+                colors: ['#2e3440', '#3b4252', '#88c0d0', '#81a1c1', '#5e81ac', '#eceff4']
+            },
+            photo: {
+                name: '📸 Photography Professional',
+                vars: {
+                    '--bg-primary': '#0d0d0d',
+                    '--bg-secondary': '#1a1a1a',
+                    '--bg-tertiary': '#262626',
+                    '--bg-card': '#1a1a1a',
+                    '--text-primary': '#ffffff',
+                    '--text-secondary': '#d4d4d4',
+                    '--accent-primary': '#f5f5f5',
+                    '--accent-secondary': '#a3a3a3',
+                    '--border-primary': '#404040',
+                    '--gradient-accent': 'linear-gradient(135deg, #f5f5f5 0%, #a3a3a3 100%)',
+                    '--shadow-card': '0 8px 25px rgba(0, 0, 0, 0.6)',
+                    '--shadow-hover': '0 12px 30px rgba(245, 245, 245, 0.15)',
+                    '--glow-primary': '0 0 10px #f5f5f5',
+                    '--bg-pattern': 'none',
+                    '--font-primary': '"Helvetica Neue", "Arial", sans-serif',
+                    '--font-mono': '"SF Mono", monospace'
+                },
+                colors: ['#0d0d0d', '#1a1a1a', '#f5f5f5', '#a3a3a3', '#666666', '#ffffff']
+            },
+            fallout: {
+                name: '☢️ Fallout Terminal',
+                vars: {
+                    '--bg-primary': '#000000',
+                    '--bg-secondary': '#0a0a0a',
+                    '--bg-tertiary': '#1a1a1a',
+                    '--bg-card': '#0a0a0a',
+                    '--text-primary': '#ffb000',
+                    '--text-secondary': '#cc8800',
+                    '--accent-primary': '#ffb000',
+                    '--accent-secondary': '#ff6600',
+                    '--border-primary': '#333300',
+                    '--gradient-accent': 'linear-gradient(135deg, #ffb000 0%, #ff6600 100%)',
+                    '--shadow-card': '0 8px 25px rgba(255, 176, 0, 0.2)',
+                    '--shadow-hover': '0 12px 30px rgba(255, 176, 0, 0.25)',
+                    '--glow-primary': '0 0 15px #ffb000, 0 0 30px #ffb000',
+                    '--bg-pattern': 'radial-gradient(circle at 50% 50%, rgba(255, 176, 0, 0.05) 0%, transparent 70%)',
+                    '--font-primary': '"Courier New", monospace',
+                    '--font-mono': '"Courier New", monospace',
+                    '--text-transform': 'uppercase',
+                    '--letter-spacing': '1px'
+                },
+                colors: ['#000000', '#0a0a0a', '#ffb000', '#ff6600', '#cc8800', '#333300']
+            },
+            minimal: {
+                name: '🌙 Minimal Dark',
+                vars: {
+                    '--bg-primary': '#1e1e1e',
+                    '--bg-secondary': '#252525',
+                    '--bg-tertiary': '#2d2d2d',
+                    '--bg-card': '#252525',
+                    '--text-primary': '#f5f5f5',
+                    '--text-secondary': '#b0b0b0',
+                    '--accent-primary': '#007acc',
+                    '--accent-secondary': '#0099ff',
+                    '--border-primary': '#3e3e3e',
+                    '--gradient-accent': 'linear-gradient(135deg, #007acc 0%, #0099ff 100%)',
+                    '--shadow-card': '0 4px 12px rgba(0, 0, 0, 0.3)',
+                    '--shadow-hover': '0 8px 20px rgba(0, 122, 204, 0.15)',
+                    '--glow-primary': '0 0 8px #007acc',
+                    '--bg-pattern': 'none',
+                    '--font-primary': '"Segoe UI", sans-serif',
+                    '--font-mono': '"Consolas", monospace'
+                },
+                colors: ['#1e1e1e', '#252525', '#007acc', '#0099ff', '#b0b0b0', '#f5f5f5']
+            },
+            material: {
+                name: '🎨 Material Design',
+                vars: {
+                    '--bg-primary': '#303030',
+                    '--bg-secondary': '#424242',
+                    '--bg-tertiary': '#505050',
+                    '--bg-card': '#424242',
+                    '--text-primary': '#ffffff',
+                    '--text-secondary': '#b0bec5',
+                    '--accent-primary': '#ff5722',
+                    '--accent-secondary': '#03dac6',
+                    '--border-primary': '#616161',
+                    '--gradient-accent': 'linear-gradient(135deg, #ff5722 0%, #03dac6 100%)',
+                    '--shadow-card': '0 4px 8px rgba(0, 0, 0, 0.3)',
+                    '--shadow-hover': '0 8px 16px rgba(255, 87, 34, 0.2)',
+                    '--glow-primary': '0 0 12px #ff5722',
+                    '--bg-pattern': 'none',
+                    '--font-primary': '"Roboto", sans-serif',
+                    '--font-mono': '"Roboto Mono", monospace'
+                },
+                colors: ['#303030', '#424242', '#ff5722', '#03dac6', '#9c27b0', '#ffffff']
+            },
+            dracula: {
+                name: '🧛 Dracula',
+                vars: {
+                    '--bg-primary': '#282a36',
+                    '--bg-secondary': '#44475a',
+                    '--bg-tertiary': '#6272a4',
+                    '--bg-card': '#44475a',
+                    '--text-primary': '#f8f8f2',
+                    '--text-secondary': '#6272a4',
+                    '--accent-primary': '#ff79c6',
+                    '--accent-secondary': '#8be9fd',
+                    '--border-primary': '#6272a4',
+                    '--gradient-accent': 'linear-gradient(135deg, #ff79c6 0%, #8be9fd 100%)',
+                    '--shadow-card': '0 8px 25px rgba(40, 42, 54, 0.6)',
+                    '--shadow-hover': '0 12px 30px rgba(255, 121, 198, 0.2)',
+                    '--glow-primary': '0 0 15px #ff79c6',
+                    '--bg-pattern': 'radial-gradient(circle at 25% 75%, rgba(255, 121, 198, 0.08) 0%, transparent 50%)',
+                    '--font-primary': '"Fira Code", monospace',
+                    '--font-mono': '"Fira Code", monospace'
+                },
+                colors: ['#282a36', '#44475a', '#ff79c6', '#8be9fd', '#50fa7b', '#f8f8f2']
+            },
+            solarized: {
+                name: '☀️ Solarized Dark',
+                vars: {
+                    '--bg-primary': '#002b36',
+                    '--bg-secondary': '#073642',
+                    '--bg-tertiary': '#586e75',
+                    '--bg-card': '#073642',
+                    '--text-primary': '#839496',
+                    '--text-secondary': '#657b83',
+                    '--accent-primary': '#268bd2',
+                    '--accent-secondary': '#2aa198',
+                    '--border-primary': '#586e75',
+                    '--gradient-accent': 'linear-gradient(135deg, #268bd2 0%, #2aa198 100%)',
+                    '--shadow-card': '0 4px 12px rgba(0, 43, 54, 0.4)',
+                    '--shadow-hover': '0 8px 20px rgba(38, 139, 210, 0.15)',
+                    '--glow-primary': '0 0 10px #268bd2',
+                    '--bg-pattern': 'none',
+                    '--font-primary': '"Source Code Pro", monospace',
+                    '--font-mono': '"Source Code Pro", monospace'
+                },
+                colors: ['#002b36', '#073642', '#268bd2', '#2aa198', '#859900', '#839496']
+            },
+            github: {
+                name: '🐙 GitHub Dark',
+                vars: {
+                    '--bg-primary': '#0d1117',
+                    '--bg-secondary': '#161b22',
+                    '--bg-tertiary': '#21262d',
+                    '--bg-card': '#161b22',
+                    '--text-primary': '#f0f6fc',
+                    '--text-secondary': '#8b949e',
+                    '--accent-primary': '#238636',
+                    '--accent-secondary': '#1f6feb',
+                    '--border-primary': '#30363d',
+                    '--gradient-accent': 'linear-gradient(135deg, #238636 0%, #1f6feb 100%)',
+                    '--shadow-card': '0 8px 25px rgba(13, 17, 23, 0.4)',
+                    '--shadow-hover': '0 12px 30px rgba(35, 134, 54, 0.15)',
+                    '--glow-primary': '0 0 8px #238636',
+                    '--bg-pattern': 'none',
+                    '--font-primary': '"SF Pro Display", "Segoe UI", sans-serif',
+                    '--font-mono': '"SF Mono", "Monaco", monospace'
+                },
+                colors: ['#0d1117', '#161b22', '#238636', '#1f6feb', '#da3633', '#f0f6fc']
+            },
+            monokai: {
+                name: '💻 Monokai Pro',
+                vars: {
+                    '--bg-primary': '#2d2a2e',
+                    '--bg-secondary': '#403e41',
+                    '--bg-tertiary': '#5b595c',
+                    '--bg-card': '#403e41',
+                    '--text-primary': '#fcfcfa',
+                    '--text-secondary': '#939293',
+                    '--accent-primary': '#ff6188',
+                    '--accent-secondary': '#a9dc76',
+                    '--border-primary': '#5b595c',
+                    '--gradient-accent': 'linear-gradient(135deg, #ff6188 0%, #a9dc76 100%)',
+                    '--shadow-card': '0 8px 25px rgba(45, 42, 46, 0.5)',
+                    '--shadow-hover': '0 12px 30px rgba(255, 97, 136, 0.2)',
+                    '--glow-primary': '0 0 12px #ff6188',
+                    '--bg-pattern': 'radial-gradient(circle at 20% 80%, rgba(255, 97, 136, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(169, 220, 118, 0.1) 0%, transparent 50%)',
+                    '--font-primary': '"Monaco", "Menlo", monospace',
+                    '--font-mono': '"Monaco", "Menlo", monospace'
+                },
+                colors: ['#2d2a2e', '#403e41', '#ff6188', '#a9dc76', '#ffd866', '#fcfcfa']
+            },
+            sunset: {
+                name: '🌅 Sunset Pro',
+                vars: {
+                    '--bg-primary': 'linear-gradient(135deg, #1a0b2e 0%, #2d1b44 50%, #3d2659 100%)',
+                    '--bg-secondary': '#2d1b44',
+                    '--bg-tertiary': '#3d2659',
+                    '--bg-card': '#2d1b44',
+                    '--text-primary': '#fef5e7',
+                    '--text-secondary': '#d4af8c',
+                    '--accent-primary': '#ff6b35',
+                    '--accent-secondary': '#ff9a76',
+                    '--border-primary': '#4a3366',
+                    '--gradient-accent': 'linear-gradient(135deg, #ff6b35 0%, #ff9a76 100%)',
+                    '--shadow-card': '0 8px 25px rgba(26, 11, 46, 0.6)',
+                    '--shadow-hover': '0 12px 30px rgba(255, 107, 53, 0.3)',
+                    '--glow-primary': '0 0 12px #ff6b35',
+                    '--bg-pattern': 'radial-gradient(circle at 30% 20%, rgba(255, 107, 53, 0.15) 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(255, 138, 149, 0.12) 0%, transparent 50%)',
+                    '--font-primary': '"Inter", "Segoe UI", sans-serif',
+                    '--font-mono': '"Fira Code", "Consolas", monospace'
+                },
+                colors: ['#1a0b2e', '#2d1b44', '#ff6b35', '#ff9a76', '#feca57', '#fef5e7']
+            },
+            ocean: {
+                name: '🌊 Ocean Deep',
+                vars: {
+                    '--bg-primary': 'linear-gradient(135deg, #0c1a2e 0%, #1a2b42 50%, #253a56 100%)',
+                    '--bg-secondary': '#1a2b42',
+                    '--bg-tertiary': '#253a56',
+                    '--bg-card': '#1a2b42',
+                    '--text-primary': '#e8f4f8',
+                    '--text-secondary': '#b8d4e3',
+                    '--accent-primary': '#00d4ff',
+                    '--accent-secondary': '#40e0d0',
+                    '--border-primary': '#34495e',
+                    '--gradient-accent': 'linear-gradient(135deg, #00d4ff 0%, #40e0d0 100%)',
+                    '--shadow-card': '0 8px 25px rgba(12, 26, 46, 0.7)',
+                    '--shadow-hover': '0 12px 30px rgba(0, 212, 255, 0.25)',
+                    '--glow-primary': '0 0 15px #00d4ff',
+                    '--bg-pattern': 'radial-gradient(circle at 20% 30%, rgba(0, 212, 255, 0.08) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(64, 224, 208, 0.06) 0%, transparent 50%)',
+                    '--font-primary': '"Inter", "Segoe UI", sans-serif',
+                    '--font-mono': '"SF Mono", "Monaco", monospace'
+                },
+                colors: ['#0c1a2e', '#1a2b42', '#00d4ff', '#40e0d0', '#008b8b', '#e8f4f8']
+            },
+            forest: {
+                name: '🌲 Forest Night',
+                vars: {
+                    '--bg-primary': 'linear-gradient(135deg, #0d1b0f 0%, #1a2f1d 50%, #26422a 100%)',
+                    '--bg-secondary': '#1a2f1d',
+                    '--bg-tertiary': '#26422a',
+                    '--bg-card': '#1a2f1d',
+                    '--text-primary': '#e8f5e8',
+                    '--text-secondary': '#b8d4b8',
+                    '--accent-primary': '#39ff14',
+                    '--accent-secondary': '#00ff7f',
+                    '--border-primary': '#3e5e42',
+                    '--gradient-accent': 'linear-gradient(135deg, #39ff14 0%, #00ff7f 100%)',
+                    '--shadow-card': '0 8px 25px rgba(13, 27, 15, 0.8)',
+                    '--shadow-hover': '0 12px 30px rgba(57, 255, 20, 0.2)',
+                    '--glow-primary': '0 0 15px #39ff14',
+                    '--bg-pattern': 'radial-gradient(circle at 15% 25%, rgba(57, 255, 20, 0.08) 0%, transparent 40%), radial-gradient(circle at 85% 75%, rgba(0, 255, 127, 0.06) 0%, transparent 40%)',
+                    '--font-primary': '"Inter", "Segoe UI", sans-serif',
+                    '--font-mono': '"Source Code Pro", "Monaco", monospace'
+                },
+                colors: ['#0d1b0f', '#1a2f1d', '#39ff14', '#00ff7f', '#228b22', '#e8f5e8']
+            }
+        };
+        
+        let currentTheme = 'gaming';
+        
+        function applyTheme(themeName) {
+            const theme = themes[themeName];
+            if (!theme) return;
+            
+            currentTheme = themeName;
+            
+            // Apply CSS variables
+            Object.entries(theme.vars).forEach(([property, value]) => {
+                document.documentElement.style.setProperty(property, value);
+            });
+            
+            // Update theme name display
+            document.getElementById('current-theme').textContent = theme.name;
+            
+            // Update color palette
+            const palette = document.getElementById('color-palette');
+            palette.innerHTML = theme.colors.map(color => 
+                `<div class="color-swatch" style="background: ${color};" title="${color}"></div>`
+            ).join('');
+            
+            // Update active button
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === themeName);
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize with gaming theme
+            applyTheme('gaming');
+            
+            // Theme switcher buttons
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    applyTheme(btn.dataset.theme);
+                });
+            });
+            
+            // Color swatch click to copy
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('color-swatch')) {
+                    const color = e.target.style.backgroundColor;
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(color).then(() => {
+                            e.target.style.transform = 'scale(1.2)';
+                            setTimeout(() => e.target.style.transform = '', 200);
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

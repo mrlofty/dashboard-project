@@ -1,0 +1,74 @@
+{
+  "description": "Portfolio categories with icons for filter/view system",
+  "categories": [
+    {
+      "id": "portraits",
+      "name": "Portraits",
+      "emoji": "👤",
+      "icon": "user",
+      "color": "#ec4899",
+      "description": "People, headshots, model work"
+    },
+    {
+      "id": "street",
+      "name": "Street",
+      "emoji": "🏙️",
+      "icon": "building",
+      "color": "#64748b",
+      "description": "Urban candids, city life"
+    },
+    {
+      "id": "landscapes",
+      "name": "Landscapes",
+      "emoji": "🏔️",
+      "icon": "mountain",
+      "color": "#22c55e",
+      "description": "Wide scenic shots"
+    },
+    {
+      "id": "night",
+      "name": "Night",
+      "emoji": "🌙",
+      "icon": "moon",
+      "color": "#6366f1",
+      "description": "After dark, city lights, neon"
+    },
+    {
+      "id": "beach",
+      "name": "Beach",
+      "emoji": "🏖️",
+      "icon": "sun",
+      "color": "#f59e0b",
+      "description": "Coastal, water, golden hour"
+    },
+    {
+      "id": "cosplay",
+      "name": "Cosplay",
+      "emoji": "🎭",
+      "icon": "mask",
+      "color": "#8b5cf6",
+      "description": "Convention, character work"
+    },
+    {
+      "id": "nature",
+      "name": "Nature",
+      "emoji": "🌿",
+      "icon": "leaf",
+      "color": "#10b981",
+      "description": "Macro, flora, fauna, textures"
+    },
+    {
+      "id": "fashion",
+      "name": "Fashion",
+      "emoji": "👗",
+      "icon": "shirt",
+      "color": "#f472b6",
+      "description": "Fashion, style, editorial looks"
+    }
+  ],
+  "views": [
+    { "id": "all", "name": "All Work", "emoji": "📸", "filter": null },
+    { "id": "recent", "name": "Recent", "emoji": "🕐", "filter": "last30days" },
+    { "id": "favorites", "name": "Favorites", "emoji": "⭐", "filter": "starred" }
+  ]
+}

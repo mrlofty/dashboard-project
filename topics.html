@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topics | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        :root {
+            --bg-primary: #0f0f14;
+            --bg-card: #1a1a24;
+            --bg-card-hover: #22222e;
+            --border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f0f0f5;
+            --text-secondary: #9090a0;
+            --accent-purple: #a855f7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 1.5rem;
+        }
+
+        .back-link:hover {
+            color: var(--accent-purple);
+        }
+
+        .title {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        /* Search & Filter */
+        .search-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .search-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-home {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            flex-shrink: 0;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .section-home:hover {
+            background: rgba(168, 85, 247, 0.15);
+        }
+
+        .section-icon {
+            font-size: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .web-link {
+            padding: 0.5rem 0.75rem;
+            background: rgba(168, 85, 247, 0.15);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 8px;
+            color: var(--accent-purple);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .web-link:hover {
+            background: rgba(168, 85, 247, 0.25);
+        }
+
+        .search-input {
+            flex: 1;
+        }
+
+        .tag-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag-chip {
+            padding: 0.375rem 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .tag-chip:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tag-chip.active {
+            background: rgba(168, 85, 247, 0.2);
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        /* Topics Grid */
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .topic-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .topic-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .topic-card.hidden {
+            display: none;
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .topic-icon {
+            font-size: 1.5rem;
+        }
+
+        .topic-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .topic-overview {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .topic-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+        }
+
+        .topic-tag {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .topic-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Match context snippet */
+        .match-snippet {
+            display: none;
+            background: rgba(168, 85, 247, 0.1);
+            border-left: 3px solid var(--accent-purple);
+            padding: 0.5rem 0.75rem;
+            margin-top: 0.75rem;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .match-snippet.visible {
+            display: block;
+        }
+
+        .match-snippet .match-label {
+            font-size: 0.7rem;
+            color: var(--accent-purple);
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .match-highlight {
+            background: rgba(168, 85, 247, 0.5);
+            color: #ffffff;
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        /* Topic Detail View (inline) */
+        .topic-detail {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .topic-detail.active {
+            display: block;
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .detail-header h2 {
+            font-size: 1.75rem;
+        }
+
+        .detail-header .topic-icon {
+            font-size: 2.5rem;
+        }
+
+        .detail-section {
+            margin-bottom: 2rem;
+        }
+
+        .detail-section h3 {
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            color: var(--accent-purple);
+        }
+
+        .detail-section p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .reference-list, .example-list, .subtopic-list {
+            list-style: none;
+        }
+
+        .reference-item, .example-item, .subtopic-item {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+        }
+
+        .reference-item strong, .example-item strong {
+            color: var(--text-primary);
+        }
+
+        .example-date {
+            font-size: 0.75rem;
+            color: var(--accent-purple);
+            margin-bottom: 0.25rem;
+        }
+
+        .example-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .example-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .detail-meta {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 2rem;
+        }
+
+        /* No results */
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        /* Hide grid when detail is shown (but keep search) */
+        .main-content.viewing-detail .topics-grid,
+        .main-content.viewing-detail .no-results,
+        .main-content.viewing-detail .page-header {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="shared-header"></div>
+    
+    <div class="container main-content" id="main-content">
+        <!-- Compact Header + Search -->
+        <div class="search-section">
+            <div class="search-row">
+                <a href="#" class="section-home" id="section-home" onclick="closeTopic(); return false;">
+                    <span class="section-icon">🗺️</span>
+                    <span class="section-title">Topics</span>
+                </a>
+                <a href="knowledge-web.html" class="web-link" title="Knowledge Web - Interactive Mind Map">🧠 Web</a>
+                <input type="text" class="search-input" placeholder="Search — Explore our shared interests, research areas, and rabbit holes" id="search-input">
+            </div>
+            <div class="tag-filters" id="tag-filters">
+                <!-- Tags loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Topics Grid -->
+        <div class="topics-grid" id="topics-grid">
+            <!-- Topics loaded dynamically -->
+        </div>
+
+        <div class="no-results" id="no-results" style="display: none;">
+            No topics match your search.
+        </div>
+
+        <!-- Topic Detail View (inline) -->
+        <div class="topic-detail" id="topic-detail">
+            <!-- Loaded dynamically -->
+        </div>
+    </div>
+    
+    <div id="shared-footer"></div>
+
+    <script>
+        let topicsData = null;
+        let activeFilters = new Set();
+
+        // Load topics data
+        async function loadTopics() {
+            try {
+                const response = await fetch('data/topics.json?t=' + Date.now());
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status + ' ' + response.statusText);
+                }
+                topicsData = await response.json();
+                renderTagFilters();
+                renderTopics();
+                return true;
+            } catch (e) {
+                console.error('Failed to load topics:', e);
+                document.getElementById('topics-grid').innerHTML = '<p class="no-results">Failed to load topics data. Error: ' + e.message + '</p>';
+                return false;
+            }
+        }
+
+        // Render tag filter chips
+        function renderTagFilters() {
+            const container = document.getElementById('tag-filters');
+            container.innerHTML = Object.entries(topicsData.tags).map(([id, tag]) => `
+                <div class="tag-chip" data-tag="${id}">
+                    <span>${tag.emoji}</span>
+                    <span>${tag.label}</span>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            container.querySelectorAll('.tag-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const tag = chip.dataset.tag;
+                    if (activeFilters.has(tag)) {
+                        activeFilters.delete(tag);
+                        chip.classList.remove('active');
+                    } else {
+                        activeFilters.add(tag);
+                        chip.classList.add('active');
+                    }
+                    filterTopics();
+                });
+            });
+        }
+
+        // Render topic cards
+        function renderTopics() {
+            const container = document.getElementById('topics-grid');
+            container.innerHTML = topicsData.topics.map(topic => {
+                // Build searchable content from all fields
+                const searchableContent = [
+                    topic.title,
+                    topic.overview,
+                    topic.notes || '',
+                    ...(topic.subtopics?.map(st => st.title + ' ' + st.description) || []),
+                    ...(topic.references?.map(r => r.author + ' ' + r.work + ' ' + (r.notes || '')) || []),
+                    ...(topic.examples?.map(e => e.title + ' ' + e.description) || [])
+                ].join(' ').toLowerCase();
+                
+                return `
+                <div class="topic-card" data-id="${topic.id}" data-tags="${topic.tags.join(',')}" data-searchable="${searchableContent.replace(/"/g, '&quot;')}">
+                    <div class="topic-header">
+                        <span class="topic-icon">${topic.icon}</span>
+                        <span class="topic-title">${topic.title}</span>
+                    </div>
+                    <p class="topic-overview">${topic.overview}</p>
+                    <div class="match-snippet"></div>
+                    <div class="topic-tags">
+                        ${topic.tags.map(tagId => {
+                            const tag = topicsData.tags[tagId];
+                            return `<span class="topic-tag" style="background: ${tag.color}22; color: ${tag.color};">${tag.emoji} ${tag.label}</span>`;
+                        }).join('')}
+                    </div>
+                    <div class="topic-meta">
+                        <span>Updated: ${topic.updated}</span>
+                        <span>${topic.examples?.length || 0} examples</span>
+                    </div>
+                </div>
+            `}).join('');
+
+            // Add click handlers
+            container.querySelectorAll('.topic-card').forEach(card => {
+                card.addEventListener('click', () => openTopic(card.dataset.id));
+            });
+        }
+
+        // Filter topics
+        function filterTopics() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.topic-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const searchable = card.dataset.searchable;
+                const matchesSearch = !searchTerm || searchable.includes(searchTerm);
+                const cardTags = card.dataset.tags.split(',');
+                const matchesTags = activeFilters.size === 0 || [...activeFilters].some(f => cardTags.includes(f));
+                const snippetEl = card.querySelector('.match-snippet');
+
+                if (matchesSearch && matchesTags) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                    
+                    // Show match context when searching
+                    if (searchTerm && searchTerm.length >= 2) {
+                        const topic = topicsData.topics.find(t => t.id === card.dataset.id);
+                        const titleEl = card.querySelector('.topic-title');
+                        const overviewEl = card.querySelector('.topic-overview');
+                        
+                        const titleMatch = topic.title.toLowerCase().includes(searchTerm);
+                        const overviewMatch = topic.overview.toLowerCase().includes(searchTerm);
+                        const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
+                        
+                        // Highlight in title if match
+                        if (titleMatch) {
+                            titleEl.innerHTML = topic.title.replace(regex, '<span class="match-highlight">$1</span>');
+                        } else {
+                            titleEl.textContent = topic.title;
+                        }
+                        
+                        // Check if match is visible in overview (first ~120 chars roughly)
+                        const overviewIdx = topic.overview.toLowerCase().indexOf(searchTerm);
+                        const matchVisibleInOverview = overviewMatch && overviewIdx < 120;
+                        
+                        // Highlight in overview if match
+                        if (overviewMatch) {
+                            overviewEl.innerHTML = topic.overview.replace(regex, '<span class="match-highlight">$1</span>');
+                        } else {
+                            overviewEl.textContent = topic.overview;
+                        }
+                        
+                        // Show snippet if match is hidden (in truncated overview or other fields)
+                        if (!titleMatch && (!overviewMatch || !matchVisibleInOverview)) {
+                            const snippet = findMatchContext(topic, searchTerm);
+                            if (snippet) {
+                                snippetEl.innerHTML = `<div class="match-label">📝 Found in ${snippet.location}</div>${snippet.text}`;
+                                snippetEl.classList.add('visible');
+                            } else if (overviewMatch && !matchVisibleInOverview) {
+                                // Match is in overview but truncated
+                                const ctx = getOverviewContext(topic.overview, searchTerm);
+                                snippetEl.innerHTML = `<div class="match-label">📝 Found in overview</div>${ctx}`;
+                                snippetEl.classList.add('visible');
+                            } else {
+                                snippetEl.classList.remove('visible');
+                            }
+                        } else {
+                            snippetEl.classList.remove('visible');
+                        }
+                    } else {
+                        // Reset highlighting when not searching
+                        const topic = topicsData.topics.find(t => t.id === card.dataset.id);
+                        card.querySelector('.topic-title').textContent = topic.title;
+                        card.querySelector('.topic-overview').textContent = topic.overview;
+                        snippetEl.classList.remove('visible');
+                    }
+                } else {
+                    card.classList.add('hidden');
+                    snippetEl.classList.remove('visible');
+                }
+            });
+
+            document.getElementById('no-results').style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+
+        // Find match context with highlighted term
+        function findMatchContext(topic, term) {
+            const fields = [
+                { text: topic.notes, location: 'notes' },
+                ...(topic.subtopics?.map(st => ({ text: st.title + ' - ' + st.description, location: 'subtopics' })) || []),
+                ...(topic.references?.map(r => ({ text: r.author + ' - ' + r.work + (r.notes ? ': ' + r.notes : ''), location: 'references' })) || []),
+                ...(topic.examples?.map(e => ({ text: e.title + ' - ' + e.description, location: 'examples' })) || [])
+            ];
+
+            for (const field of fields) {
+                if (!field.text) continue;
+                const lowerText = field.text.toLowerCase();
+                const idx = lowerText.indexOf(term);
+                if (idx !== -1) {
+                    // Extract context around match (50 chars before, 80 after)
+                    const start = Math.max(0, idx - 50);
+                    const end = Math.min(field.text.length, idx + term.length + 80);
+                    let snippet = field.text.substring(start, end);
+                    
+                    // Add ellipsis if truncated
+                    if (start > 0) snippet = '...' + snippet;
+                    if (end < field.text.length) snippet = snippet + '...';
+                    
+                    // Highlight the match (case-insensitive replace)
+                    const regex = new RegExp(`(${escapeRegex(term)})`, 'gi');
+                    snippet = snippet.replace(regex, '<span class="match-highlight">$1</span>');
+                    
+                    return { text: snippet, location: field.location };
+                }
+            }
+            return null;
+        }
+
+        // Escape special regex characters
+        function escapeRegex(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // Get context from overview when match is truncated
+        function getOverviewContext(overview, term) {
+            const lowerText = overview.toLowerCase();
+            const idx = lowerText.indexOf(term);
+            const start = Math.max(0, idx - 30);
+            const end = Math.min(overview.length, idx + term.length + 80);
+            let snippet = overview.substring(start, end);
+            
+            if (start > 0) snippet = '...' + snippet;
+            if (end < overview.length) snippet = snippet + '...';
+            
+            const regex = new RegExp(`(${escapeRegex(term)})`, 'gi');
+            return snippet.replace(regex, '<span class="match-highlight">$1</span>');
+        }
+
+        // Open topic detail (inline view)
+        function openTopic(topicId) {
+            const topic = topicsData.topics.find(t => t.id === topicId);
+            if (!topic) return;
+            
+            // Update URL hash for direct linking
+            history.pushState(null, '', '#' + topicId);
+
+            const detail = document.getElementById('topic-detail');
+            detail.innerHTML = `
+                <div class="detail-header">
+                    <span class="topic-icon">${topic.icon}</span>
+                    <h2>${topic.title}</h2>
+                </div>
+
+                <div class="topic-tags" style="margin-bottom: 2rem;">
+                    ${topic.tags.map(tagId => {
+                        const tag = topicsData.tags[tagId];
+                        return `<span class="topic-tag" style="background: ${tag.color}22; color: ${tag.color};">${tag.emoji} ${tag.label}</span>`;
+                    }).join('')}
+                </div>
+
+                <div class="detail-section">
+                    <h3>Overview</h3>
+                    <p>${topic.overview}</p>
+                </div>
+
+                ${topic.subtopics?.length ? `
+                <div class="detail-section">
+                    <h3>Subtopics</h3>
+                    <ul class="subtopic-list">
+                        ${topic.subtopics.map(st => `
+                            <li class="subtopic-item">
+                                <strong>${st.title}</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-secondary);">${st.description}</p>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                ` : ''}
+
+                ${topic.references?.length ? `
+                <div class="detail-section">
+                    <h3>References</h3>
+                    <ul class="reference-list">
+                        ${topic.references.map(ref => `
+                            <li class="reference-item">
+                                <strong>${ref.author}</strong> — ${ref.work}${ref.year ? ` (${ref.year})` : ''}
+                                ${ref.notes ? `<p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">${ref.notes}</p>` : ''}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                ` : ''}
+
+                ${topic.examples?.length ? `
+                <div class="detail-section">
+                    <h3>Examples</h3>
+                    <ul class="example-list">
+                        ${topic.examples.map(ex => `
+                            <li class="example-item">
+                                <div class="example-date">${ex.date}</div>
+                                <div class="example-title">${ex.title}</div>
+                                <div class="example-description">${ex.description}</div>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                ` : ''}
+
+                ${topic.notes ? `
+                <div class="detail-section">
+                    <h3>Notes</h3>
+                    <p>${topic.notes}</p>
+                </div>
+                ` : ''}
+
+                <div class="detail-meta">
+                    <span>Created: ${topic.created}</span>
+                    <span>Updated: ${topic.updated}</span>
+                </div>
+            `;
+
+            // Show detail view, hide grid
+            document.getElementById('main-content').classList.add('viewing-detail');
+            detail.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function closeTopic() {
+            document.getElementById('main-content').classList.remove('viewing-detail');
+            document.getElementById('topic-detail').classList.remove('active');
+            // Clear URL hash
+            history.pushState(null, '', window.location.pathname);
+        }
+
+        // Event listeners
+        document.getElementById('search-input').addEventListener('input', filterTopics);
+        
+        // Handle browser back/forward
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.slice(1);
+            if (hash && topicsData) {
+                openTopic(hash);
+            } else {
+                closeTopic();
+            }
+        });
+
+        // Initialize
+        loadTopics().then(() => {
+            // Check for direct link to topic
+            const hash = window.location.hash.slice(1);
+            if (hash) {
+                openTopic(hash);
+            }
+        });
+    </script>
+    <script src="shared.js"></script>
+    <script type="module" src="js/sse-init-topics.js"></script>
+</body>
+</html>

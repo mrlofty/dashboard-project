@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adam Inbox Widget Preview</title>
+    <style>
+        :root {
+            --bg: #0f0f14;
+            --card: #1a1a24;
+            --border: rgba(212, 175, 55, 0.35);
+            --gold: #d4af37;
+            --text: #f3f1ea;
+            --muted: #b7b2a1;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 2rem;
+            background: radial-gradient(circle at top, #1b1710 0%, var(--bg) 40%);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: grid;
+            place-items: start center;
+        }
+
+        .widget {
+            width: min(460px, 100%);
+            background: linear-gradient(145deg, rgba(36, 32, 18, 0.96) 0%, rgba(26, 24, 20, 0.98) 100%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+            margin-bottom: 0.8rem;
+        }
+
+        .title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #f4d77f;
+        }
+
+        .total {
+            margin-left: auto;
+            background: rgba(212, 175, 55, 0.16);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            color: #f4d77f;
+            border-radius: 999px;
+            padding: 0.125rem 0.5rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .empty {
+            color: #86efac;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 0.9rem;
+            border: 1px dashed rgba(74, 222, 128, 0.35);
+            border-radius: 10px;
+            background: rgba(15, 32, 16, 0.35);
+        }
+
+        .section {
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 10px;
+            background: rgba(18, 18, 16, 0.75);
+            margin-bottom: 0.55rem;
+        }
+
+        .section summary {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            list-style: none;
+            cursor: pointer;
+            padding: 0.55rem 0.65rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .section summary::-webkit-details-marker { display: none; }
+
+        .badge {
+            margin-left: auto;
+            min-width: 1.7rem;
+            text-align: center;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 0.1rem 0.35rem;
+            color: #111;
+        }
+
+        .items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            padding: 0 0.55rem 0.55rem;
+        }
+
+        .item {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .item summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 0.5rem 0.55rem;
+        }
+
+        .item summary::-webkit-details-marker { display: none; }
+
+        .line {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .item-title {
+            flex: 1;
+            min-width: 0;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .priority {
+            font-size: 0.62rem;
+            border: 1px solid rgba(239, 68, 68, 0.65);
+            color: #fca5a5;
+            border-radius: 999px;
+            padding: 0.06rem 0.35rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 700;
+        }
+
+        .meta {
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+
+        .context {
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            padding: 0.52rem 0.55rem 0.6rem;
+            font-size: 0.76rem;
+            color: #ddd8c6;
+            line-height: 1.45;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.4rem;
+            margin-top: 0.52rem;
+        }
+
+        .action {
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            background: rgba(212, 175, 55, 0.08);
+            color: #f4d77f;
+            border-radius: 7px;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 0.26rem 0.5rem;
+            opacity: 0.78;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="widget">
+        <div class="header">
+            <span>📥</span>
+            <span class="title">Adam's Inbox</span>
+            <span id="total" class="total">0</span>
+        </div>
+        <div id="content">Loading inbox...</div>
+    </div>
+
+    <script>
+        const TYPES = [
+            { key: 'decision', label: 'Decisions', emoji: '🔴', inboxKey: 'decisions', color: '#ef4444' },
+            { key: 'review', label: 'Reviews', emoji: '🟡', inboxKey: 'reviews', color: '#f59e0b' },
+            { key: 'fyi', label: 'FYI', emoji: '🔵', inboxKey: 'fyi', color: '#3b82f6' },
+            { key: 'input', label: 'Input Needed', emoji: '🟠', inboxKey: 'input', color: '#f97316' }
+        ];
+
+        const ASSIGNER = { quinn: '🔮', forge: '⚒️', scout: '🔍', adam: '🧑‍💻', codex: '⚡' };
+
+        function esc(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function relTime(dateStr) {
+            const ts = new Date(dateStr).getTime();
+            if (Number.isNaN(ts)) return 'Unknown time';
+            const mins = Math.floor((Date.now() - ts) / 60000);
+            if (mins < 1) return 'Just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return `${hrs}h ago`;
+            const days = Math.floor(hrs / 24);
+            if (days < 7) return `${days}d ago`;
+            return new Date(ts).toLocaleDateString('en-AU', { month: 'short', day: 'numeric' });
+        }
+
+        function normalize(item, type) {
+            const byRaw = item.assignedBy || item.from || 'unknown';
+            const by = String(byRaw).toLowerCase();
+            return {
+                id: item.id || `${type}-${item.title || 'item'}-${item.createdAt || Date.now()}`,
+                type: String(item.type || type).toLowerCase(),
+                title: item.title || 'Untitled item',
+                context: item.context || item.details || item.description || '',
+                assignedByLabel: `${ASSIGNER[by] || '🤖'} ${byRaw}`,
+                createdAt: item.createdAt || item.created || item.updatedAt || new Date().toISOString(),
+                priority: String(item.priority || '').toLowerCase()
+            };
+        }
+
+        function collect(data) {
+            const tasks = Array.isArray(data?.tasks) ? data.tasks : [];
+            const fromTasks = tasks
+                .filter(t => String(t?.assignedTo || '').toLowerCase() === 'adam')
+                .map(t => normalize(t, t.type || 'fyi'));
+
+            const inbox = data?.adamInbox || {};
+            const fromInbox = TYPES.flatMap(typeInfo => {
+                const list = Array.isArray(inbox[typeInfo.inboxKey]) ? inbox[typeInfo.inboxKey] : [];
+                return list.map(item => normalize(item, typeInfo.key));
+            });
+
+            return [...fromTasks, ...fromInbox]
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+
+        function render(data) {
+            const content = document.getElementById('content');
+            const totalEl = document.getElementById('total');
+            const items = collect(data);
+
+            const grouped = TYPES.map(typeInfo => ({
+                ...typeInfo,
+                items: items.filter(item => item.type === typeInfo.key)
+            }));
+
+            const total = grouped.reduce((sum, group) => sum + group.items.length, 0);
+            totalEl.textContent = total;
+
+            if (total === 0) {
+                content.innerHTML = '<div class="empty">✓ Inbox clear</div>';
+                return;
+            }
+
+            content.innerHTML = grouped.map((group, index) => {
+                const body = group.items.length === 0
+                    ? '<div style="color:#8f8a79;font-size:0.74rem;padding:0.2rem 0.1rem 0.3rem;">No items</div>'
+                    : group.items.map(item => {
+                        const high = ['high', 'urgent', 'critical', 'p1'].includes(item.priority);
+                        return `
+                            <details class="item">
+                                <summary>
+                                    <div class="line">
+                                        <span class="item-title" title="${esc(item.title)}">${esc(item.title)}</span>
+                                        ${high ? '<span class="priority">High</span>' : ''}
+                                    </div>
+                                    <div class="meta">${esc(item.assignedByLabel)} • ${relTime(item.createdAt)}</div>
+                                </summary>
+                                <div class="context">
+                                    <div>${esc(item.context || 'No additional context provided yet.')}</div>
+                                    <div class="actions">
+                                        <button class="action" type="button" disabled>Approve</button>
+                                        <button class="action" type="button" disabled>Reject</button>
+                                        <button class="action" type="button" disabled>Mark Seen</button>
+                                    </div>
+                                </div>
+                            </details>
+                        `;
+                    }).join('');
+
+                return `
+                    <details class="section" ${index === 0 && group.items.length ? 'open' : ''}>
+                        <summary>
+                            <span>${group.emoji}</span>
+                            <span>${group.label}</span>
+                            <span class="badge" style="background:${group.color};">${group.items.length}</span>
+                        </summary>
+                        <div class="items">${body}</div>
+                    </details>
+                `;
+            }).join('');
+        }
+
+        async function load() {
+            const urls = [
+                `/api/workboard?t=${Date.now()}`,
+                `http://${window.location.hostname}:8081/api/workboard?t=${Date.now()}`,
+                `../../dashboard-project/data/workboard.json?t=${Date.now()}`
+            ];
+
+            for (const url of urls) {
+                try {
+                    const res = await fetch(url, { cache: 'no-store' });
+                    if (!res.ok) continue;
+                    render(await res.json());
+                    return;
+                } catch (_) {}
+            }
+
+            render({ tasks: [], adamInbox: { decisions: [], reviews: [], fyi: [], input: [] } });
+        }
+
+        load();
+    </script>
+</body>
+</html>

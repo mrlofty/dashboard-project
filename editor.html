@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Editor | Quinn & Adam</title>
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        :root {
+            --editor-bg: #14141e;
+            --card-bg: #1a1a24;
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f0f0f5;
+            --text-sub: #9090a0;
+            --accent-purple: #a855f7;
+            --save-clean: #22c55e;
+            --save-unsaved: #eab308;
+            --browser-width: 250px;
+            --preview-width: 50%;
+            --toolbar-height: 56px;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body.editor-page {
+            overflow: hidden;
+            background: #0f0f14;
+        }
+
+        body.editor-page .app-layout > .page-content {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body.editor-page .shared-footer {
+            display: none;
+        }
+
+        .editor-shell {
+            height: calc(100vh - 50px);
+            display: flex;
+            min-height: 0;
+            background: #0f0f14;
+        }
+
+        .file-browser {
+            width: var(--browser-width);
+            min-width: var(--browser-width);
+            max-width: var(--browser-width);
+            background: var(--card-bg);
+            border-right: 1px solid var(--panel-border);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            transition: width 0.2s ease, min-width 0.2s ease, max-width 0.2s ease, border-color 0.2s ease;
+        }
+
+        .editor-shell.browser-collapsed .file-browser {
+            width: 0;
+            min-width: 0;
+            max-width: 0;
+            border-right-color: transparent;
+            overflow: hidden;
+        }
+
+        .browser-top {
+            padding: 1rem;
+            border-bottom: 1px solid var(--panel-border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .browser-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+
+        .root-list {
+            display: grid;
+            gap: 0.4rem;
+        }
+
+        .root-btn {
+            border: 1px solid var(--panel-border);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+            border-radius: 8px;
+            padding: 0.48rem 0.62rem;
+            text-align: left;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .root-btn:hover {
+            border-color: rgba(168, 85, 247, 0.35);
+        }
+
+        .root-btn.active {
+            border-color: rgba(168, 85, 247, 0.6);
+            background: rgba(168, 85, 247, 0.15);
+            color: #e9d5ff;
+        }
+
+        .breadcrumb-wrap {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--panel-border);
+            color: var(--text-sub);
+            font-size: 0.78rem;
+            line-height: 1.5;
+            min-height: 52px;
+            word-break: break-word;
+        }
+
+        .crumb {
+            color: var(--text-sub);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .crumb:hover {
+            color: var(--text-main);
+        }
+
+        .crumb.current {
+            color: var(--accent-purple);
+            cursor: default;
+        }
+
+        .file-list {
+            flex: 1;
+            min-height: 0;
+            overflow: auto;
+            padding: 0.5rem;
+        }
+
+        .file-item {
+            width: 100%;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-main);
+            border-radius: 8px;
+            padding: 0.58rem 0.62rem;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.6rem;
+            transition: all 0.12s ease;
+        }
+
+        .file-item:hover {
+            border-color: var(--panel-border);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .file-item.active {
+            border-color: rgba(168, 85, 247, 0.5);
+            background: rgba(168, 85, 247, 0.14);
+        }
+
+        .file-name {
+            font-size: 0.83rem;
+            font-weight: 500;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        .file-meta {
+            margin-top: 0.2rem;
+            font-size: 0.7rem;
+            color: var(--text-sub);
+            line-height: 1.3;
+        }
+
+        .file-kind {
+            color: var(--text-sub);
+            font-size: 0.68rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            flex-shrink: 0;
+            margin-top: 0.08rem;
+        }
+
+        .empty-state,
+        .browser-status {
+            padding: 0.9rem 0.65rem;
+            color: var(--text-sub);
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .editor-main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            background: #0f0f14;
+        }
+
+        .editor-toolbar {
+            height: var(--toolbar-height);
+            border-bottom: 1px solid var(--panel-border);
+            background: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.8rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .toolbar-left,
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            min-width: 0;
+        }
+
+        .browser-toggle,
+        .mode-btn,
+        .save-btn {
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 0.45rem 0.65rem;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .browser-toggle:hover,
+        .mode-btn:hover {
+            border-color: rgba(168, 85, 247, 0.4);
+        }
+
+        .mode-btn.active {
+            border-color: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.2);
+            color: #f3e8ff;
+        }
+
+        .save-btn {
+            border-color: transparent;
+            color: #11131a;
+            font-weight: 700;
+            background: var(--save-clean);
+        }
+
+        .save-btn.unsaved {
+            background: var(--save-unsaved);
+        }
+
+        .save-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .file-path {
+            font-family: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, Monaco, monospace;
+            font-size: 0.76rem;
+            color: var(--text-sub);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 0.45rem 0.6rem;
+            max-width: min(60vw, 760px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .dirty-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            color: var(--text-sub);
+            font-size: 0.77rem;
+            min-width: 66px;
+        }
+
+        .dirty-indicator .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+        }
+
+        .dirty-indicator.unsaved {
+            color: #facc15;
+        }
+
+        .dirty-indicator.unsaved .dot {
+            background: #facc15;
+            border-color: #facc15;
+        }
+
+        .work-pane {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .editor-panel {
+            flex: 1;
+            min-width: 0;
+            background: var(--editor-bg);
+            border-right: 1px solid var(--panel-border);
+            display: flex;
+            min-height: 0;
+        }
+
+        #editor {
+            flex: 1;
+            min-height: 0;
+        }
+
+        .preview-splitter {
+            width: 6px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 1px solid rgba(255, 255, 255, 0.06);
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+            cursor: col-resize;
+            transition: background 0.12s ease;
+        }
+
+        .preview-splitter:hover,
+        .preview-splitter.dragging {
+            background: rgba(168, 85, 247, 0.35);
+        }
+
+        .preview-panel {
+            width: var(--preview-width);
+            min-width: 320px;
+            max-width: 78%;
+            background: var(--card-bg);
+            overflow: auto;
+            padding: 1.5rem;
+            color: var(--text-main);
+            line-height: 1.7;
+        }
+
+        .editor-shell[data-view="edit"] .preview-panel,
+        .editor-shell[data-view="edit"] .preview-splitter {
+            display: none;
+        }
+
+        .editor-shell[data-view="edit"] .editor-panel {
+            border-right: 0;
+        }
+
+        .editor-shell[data-view="preview"] .editor-panel,
+        .editor-shell[data-view="preview"] .preview-splitter {
+            display: none;
+        }
+
+        .editor-shell[data-view="preview"] .preview-panel {
+            width: 100%;
+            max-width: none;
+            min-width: 0;
+        }
+
+        .preview-panel h1,
+        .preview-panel h2,
+        .preview-panel h3,
+        .preview-panel h4,
+        .preview-panel h5,
+        .preview-panel h6 {
+            margin-top: 1.4em;
+            margin-bottom: 0.55em;
+            line-height: 1.3;
+            color: #f6f6ff;
+        }
+
+        .preview-panel p,
+        .preview-panel ul,
+        .preview-panel ol,
+        .preview-panel blockquote,
+        .preview-panel pre,
+        .preview-panel table {
+            margin: 0.8em 0;
+        }
+
+        .preview-panel code {
+            font-family: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, Monaco, monospace;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 5px;
+            padding: 0.08em 0.33em;
+            font-size: 0.9em;
+        }
+
+        .preview-panel pre {
+            background: #11111a;
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            overflow: auto;
+        }
+
+        .preview-panel pre code {
+            background: transparent;
+            border: 0;
+            padding: 0;
+        }
+
+        .preview-panel a {
+            color: #c084fc;
+        }
+
+        .preview-panel blockquote {
+            border-left: 3px solid rgba(168, 85, 247, 0.7);
+            padding-left: 0.9rem;
+            color: #c8c8d8;
+        }
+
+        .preview-panel hr {
+            border: 0;
+            border-top: 1px solid var(--panel-border);
+            margin: 1.2rem 0;
+        }
+
+        .CodeMirror {
+            height: 100% !important;
+            font-family: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, Monaco, monospace;
+            font-size: 14px;
+            background: #14141e;
+            color: #e0e0f0;
+        }
+
+        .CodeMirror-gutters {
+            background: #12121a;
+            border-right: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .CodeMirror-linenumber {
+            color: #6f6f82;
+        }
+
+        .CodeMirror-activeline-background {
+            background: rgba(255,255,255,0.04);
+        }
+
+        .CodeMirror-cursor {
+            border-left-color: #a855f7;
+        }
+
+        .CodeMirror-selected {
+            background: rgba(168,85,247,0.25) !important;
+        }
+
+        @media (max-width: 1100px) {
+            .preview-panel {
+                min-width: 260px;
+            }
+
+            .toolbar-left {
+                max-width: 55%;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .editor-toolbar {
+                flex-wrap: wrap;
+                height: auto;
+                min-height: var(--toolbar-height);
+                padding: 0.6rem 0.75rem;
+            }
+
+            .toolbar-left,
+            .toolbar-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .toolbar-left {
+                gap: 0.4rem;
+            }
+
+            .file-path {
+                max-width: calc(100vw - 130px);
+            }
+
+            .editor-shell {
+                height: calc(100vh - 50px);
+            }
+
+            .editor-shell[data-view="split"] {
+                --preview-width: 45%;
+            }
+        }
+    </style>
+</head>
+<body class="editor-page">
+    <div id="shared-header"></div>
+
+    <div id="editor-shell" class="editor-shell" data-view="split">
+        <aside class="file-browser" aria-label="File browser">
+            <div class="browser-top">
+                <div class="browser-title">Markdown Files</div>
+                <div id="root-list" class="root-list"></div>
+            </div>
+            <div id="breadcrumb" class="breadcrumb-wrap"></div>
+            <div id="file-list" class="file-list"></div>
+        </aside>
+
+        <section class="editor-main">
+            <div class="editor-toolbar">
+                <div class="toolbar-left">
+                    <button id="browser-toggle" class="browser-toggle" type="button">Hide Browser</button>
+                    <div id="file-path" class="file-path">No file selected</div>
+                </div>
+                <div class="toolbar-right">
+                    <span id="dirty-indicator" class="dirty-indicator"><span class="dot"></span><span id="dirty-text">clean</span></span>
+                    <button id="mode-edit" class="mode-btn" type="button" data-mode="edit">Edit only</button>
+                    <button id="mode-split" class="mode-btn active" type="button" data-mode="split">Split</button>
+                    <button id="mode-preview" class="mode-btn" type="button" data-mode="preview">Preview only</button>
+                    <button id="save-btn" class="save-btn" type="button" disabled>Save</button>
+                </div>
+            </div>
+
+            <div class="work-pane">
+                <div class="editor-panel">
+                    <div id="editor"></div>
+                </div>
+                <div id="preview-splitter" class="preview-splitter" title="Drag to resize preview" aria-hidden="true"></div>
+                <article id="preview" class="preview-panel"></article>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/lib/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/theme/material-darker.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/lib/codemirror.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.18/mode/markdown/markdown.min.js"></script>
+    <script>
+    window.addEventListener('DOMContentLoaded', function() {
+        if (typeof CodeMirror === 'undefined') {
+            document.getElementById('root-list').innerHTML = '<div style="color:#ef4444;padding:8px;font-size:13px;">CodeMirror failed to load. Try refreshing.</div>';
+            return;
+        }
+
+        const ROOTS = [
+            { label: 'Workspace', path: '/home/adam/clawd/' },
+            { label: 'Planning Docs', path: '/home/adam/clawd/planning-docs/' },
+            { label: 'Memory', path: '/home/adam/clawd/memory/' },
+            { label: 'Forge', path: '/home/adam/clawd/agents/builder/' }
+        ];
+
+        const shell = document.getElementById('editor-shell');
+        const rootListEl = document.getElementById('root-list');
+        const breadcrumbEl = document.getElementById('breadcrumb');
+        const fileListEl = document.getElementById('file-list');
+        const filePathEl = document.getElementById('file-path');
+        const saveBtn = document.getElementById('save-btn');
+        const dirtyIndicator = document.getElementById('dirty-indicator');
+        const dirtyText = document.getElementById('dirty-text');
+        const previewEl = document.getElementById('preview');
+        const previewSplitter = document.getElementById('preview-splitter');
+        const browserToggleBtn = document.getElementById('browser-toggle');
+
+        let activeRoot = ROOTS[0];
+        let currentDir = ROOTS[0].path;
+        let currentItems = [];
+        let currentFilePath = '';
+        let originalContent = '';
+        let isDirty = false;
+        let applyingRemoteUpdate = false;
+        let renderTimer = null;
+        let viewMode = 'split';
+        let splitterDragging = false;
+        let startX = 0;
+        let startPreviewWidth = 50;
+
+        marked.setOptions({
+            gfm: true,
+            breaks: true,
+            headerIds: true,
+            mangle: false
+        });
+
+        const editor = CodeMirror(document.getElementById('editor'), {
+            value: '',
+            mode: 'markdown',
+            theme: 'material-darker',
+            lineNumbers: true,
+            lineWrapping: true,
+            styleActiveLine: true,
+            extraKeys: {
+                'Cmd-S': function() { saveCurrentFile(); },
+                'Ctrl-S': function() { saveCurrentFile(); },
+                'Cmd-B': function() { wrapSelectionWithBold(); },
+                'Ctrl-B': function() { wrapSelectionWithBold(); }
+            }
+        });
+
+        editor.on('change', function() {
+            if (applyingRemoteUpdate) return;
+            var text = editor.getValue();
+            setDirty(text !== originalContent);
+            queuePreviewRender(text);
+        });
+
+        function setDirty(nextDirty) {
+            isDirty = nextDirty;
+            dirtyIndicator.classList.toggle('unsaved', isDirty);
+            dirtyText.textContent = isDirty ? 'unsaved' : 'clean';
+            saveBtn.classList.toggle('unsaved', isDirty);
+            saveBtn.disabled = !currentFilePath;
+        }
+
+        function queuePreviewRender(markdownText) {
+            clearTimeout(renderTimer);
+            renderTimer = setTimeout(() => {
+                const rawHtml = marked.parse(markdownText || '');
+                previewEl.innerHTML = DOMPurify.sanitize(rawHtml);
+            }, 300);
+        }
+
+        function renderRoots() {
+            rootListEl.innerHTML = '';
+            ROOTS.forEach((root) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'root-btn' + (activeRoot.path === root.path ? ' active' : '');
+                button.textContent = root.label;
+                button.addEventListener('click', () => switchRoot(root));
+                rootListEl.appendChild(button);
+            });
+        }
+
+        function formatDate(value) {
+            if (!value) return 'No date';
+            const parsed = new Date(value);
+            if (Number.isNaN(parsed.getTime())) return 'No date';
+            return parsed.toLocaleString([], {
+                year: 'numeric',
+                month: 'short',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function getRootForDir(dirPath) {
+            return ROOTS.find((root) => dirPath.startsWith(root.path)) || activeRoot;
+        }
+
+        function renderBreadcrumb() {
+            const root = getRootForDir(currentDir);
+            const rel = currentDir.slice(root.path.length).replace(/^\/+|\/+$/g, '');
+            const segments = rel ? rel.split('/') : [];
+            const crumbs = [];
+
+            crumbs.push({ label: root.label, path: root.path, current: segments.length === 0 });
+
+            let running = root.path.replace(/\/+$/, '/');
+            segments.forEach((segment, idx) => {
+                running += segment + '/';
+                crumbs.push({
+                    label: segment,
+                    path: running,
+                    current: idx === segments.length - 1
+                });
+            });
+
+            breadcrumbEl.innerHTML = '';
+            crumbs.forEach((crumb, index) => {
+                const node = document.createElement('span');
+                node.className = 'crumb' + (crumb.current ? ' current' : '');
+                node.textContent = crumb.label;
+                if (!crumb.current) {
+                    node.addEventListener('click', () => loadDirectory(crumb.path));
+                }
+                breadcrumbEl.appendChild(node);
+
+                if (index < crumbs.length - 1) {
+                    const sep = document.createElement('span');
+                    sep.textContent = ' / ';
+                    sep.style.color = '#6c6c7d';
+                    breadcrumbEl.appendChild(sep);
+                }
+            });
+        }
+
+        function renderFileList() {
+            fileListEl.innerHTML = '';
+
+            if (!Array.isArray(currentItems) || currentItems.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No markdown files or directories here.';
+                fileListEl.appendChild(empty);
+                return;
+            }
+
+            currentItems.forEach((item) => {
+                const row = document.createElement('button');
+                row.type = 'button';
+                row.className = 'file-item' + (item.path === currentFilePath ? ' active' : '');
+
+                const left = document.createElement('div');
+                const name = document.createElement('div');
+                name.className = 'file-name';
+                name.textContent = item.name;
+
+                const meta = document.createElement('div');
+                meta.className = 'file-meta';
+                meta.textContent = item.type === 'file' ? `Modified: ${formatDate(item.modified)}` : 'Directory';
+
+                left.appendChild(name);
+                left.appendChild(meta);
+
+                const kind = document.createElement('div');
+                kind.className = 'file-kind';
+                kind.textContent = item.type === 'directory' ? 'Dir' : 'MD';
+
+                row.appendChild(left);
+                row.appendChild(kind);
+
+                row.addEventListener('click', async () => {
+                    if (item.type === 'directory') {
+                        await loadDirectory(item.path);
+                    } else {
+                        await openFile(item.path);
+                    }
+                });
+
+                fileListEl.appendChild(row);
+            });
+        }
+
+        function setBrowserStatus(message) {
+            fileListEl.innerHTML = `<div class="browser-status">${message}</div>`;
+        }
+
+        async function apiGetJson(url) {
+            const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+            if (!response.ok) {
+                const body = await response.text();
+                throw new Error(body || `Request failed (${response.status})`);
+            }
+            return response.json();
+        }
+
+        async function loadDirectory(dirPath) {
+            currentDir = dirPath;
+            activeRoot = getRootForDir(dirPath);
+            renderRoots();
+            renderBreadcrumb();
+            setBrowserStatus('Loading directory...');
+
+            try {
+                const data = await apiGetJson(`/api/files?dir=${encodeURIComponent(dirPath)}`);
+                const items = Array.isArray(data.items) ? data.items : [];
+                currentItems = items.sort((a, b) => {
+                    if (a.type !== b.type) return a.type === 'directory' ? -1 : 1;
+                    return String(a.name).localeCompare(String(b.name));
+                });
+                renderFileList();
+            } catch (error) {
+                currentItems = [];
+                setBrowserStatus(`Failed to load directory: ${error.message}`);
+            }
+        }
+
+        function setEditorText(content) {
+            applyingRemoteUpdate = true;
+            editor.setValue(content);
+            applyingRemoteUpdate = false;
+            editor.refresh();
+            queuePreviewRender(content);
+        }
+
+        function confirmLoseChanges() {
+            if (!isDirty) return true;
+            return window.confirm('You have unsaved changes. Continue without saving?');
+        }
+
+        async function openFile(path) {
+            if (path !== currentFilePath && !confirmLoseChanges()) {
+                return;
+            }
+
+            filePathEl.textContent = path;
+            saveBtn.disabled = true;
+
+            try {
+                const data = await apiGetJson(`/api/files/read?path=${encodeURIComponent(path)}`);
+                const content = typeof data.content === 'string' ? data.content : '';
+                currentFilePath = data.path || path;
+                originalContent = content;
+                setEditorText(content);
+                setDirty(false);
+                renderFileList();
+            } catch (error) {
+                filePathEl.textContent = `Failed to open: ${path}`;
+                window.alert(`Could not open file: ${error.message}`);
+                saveBtn.disabled = !currentFilePath;
+            }
+        }
+
+        async function saveCurrentFile() {
+            if (!currentFilePath) return;
+
+            const content = editor.getValue();
+            saveBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/files/write', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ path: currentFilePath, content })
+                });
+
+                if (!response.ok) {
+                    const body = await response.text();
+                    throw new Error(body || `Save failed (${response.status})`);
+                }
+
+                await response.json();
+                originalContent = content;
+                setDirty(false);
+                await loadDirectory(currentDir);
+            } catch (error) {
+                window.alert(`Save failed: ${error.message}`);
+            } finally {
+                saveBtn.disabled = !currentFilePath;
+            }
+        }
+
+        function wrapSelectionWithBold() {
+            var sel = editor.getSelection();
+            editor.replaceSelection('**' + sel + '**');
+            if (!sel) {
+                var cur = editor.getCursor();
+                editor.setCursor({ line: cur.line, ch: cur.ch - 2 });
+            }
+            editor.focus();
+        }
+
+        function setViewMode(mode) {
+            viewMode = mode;
+            shell.dataset.view = mode;
+            document.querySelectorAll('.mode-btn').forEach((btn) => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+        }
+
+        function setBrowserCollapsed(collapsed) {
+            shell.classList.toggle('browser-collapsed', collapsed);
+            browserToggleBtn.textContent = collapsed ? 'Show Browser' : 'Hide Browser';
+        }
+
+        function handleSplitterMouseDown(event) {
+            if (viewMode !== 'split') return;
+            splitterDragging = true;
+            startX = event.clientX;
+            startPreviewWidth = parseFloat(getComputedStyle(shell).getPropertyValue('--preview-width')) || 50;
+            previewSplitter.classList.add('dragging');
+            document.body.style.userSelect = 'none';
+            document.body.style.cursor = 'col-resize';
+        }
+
+        function handleSplitterMouseMove(event) {
+            if (!splitterDragging || viewMode !== 'split') return;
+            const pane = document.querySelector('.work-pane');
+            const width = pane.getBoundingClientRect().width;
+            const delta = startX - event.clientX;
+            const deltaPct = (delta / width) * 100;
+            const next = Math.min(75, Math.max(25, startPreviewWidth + deltaPct));
+            shell.style.setProperty('--preview-width', `${next}%`);
+        }
+
+        function stopSplitterDrag() {
+            if (!splitterDragging) return;
+            splitterDragging = false;
+            previewSplitter.classList.remove('dragging');
+            document.body.style.userSelect = '';
+            document.body.style.cursor = '';
+        }
+
+        function switchRoot(root) {
+            if (!confirmLoseChanges()) return;
+            activeRoot = root;
+            currentFilePath = '';
+            originalContent = '';
+            filePathEl.textContent = 'No file selected';
+            setEditorText('');
+            setDirty(false);
+            loadDirectory(root.path);
+        }
+
+        function wireEvents() {
+            saveBtn.addEventListener('click', saveCurrentFile);
+            browserToggleBtn.addEventListener('click', () => {
+                setBrowserCollapsed(!shell.classList.contains('browser-collapsed'));
+            });
+
+            document.querySelectorAll('.mode-btn').forEach((btn) => {
+                btn.addEventListener('click', () => setViewMode(btn.dataset.mode));
+            });
+
+            previewSplitter.addEventListener('mousedown', handleSplitterMouseDown);
+            window.addEventListener('mousemove', handleSplitterMouseMove);
+            window.addEventListener('mouseup', stopSplitterDrag);
+
+            window.addEventListener('beforeunload', (event) => {
+                if (!isDirty) return;
+                event.preventDefault();
+                event.returnValue = '';
+            });
+        }
+
+        function init() {
+            wireEvents();
+            renderRoots();
+            renderBreadcrumb();
+            queuePreviewRender('');
+            
+            // Check for ?file= parameter in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const fileParam = urlParams.get('file');
+            
+            if (fileParam) {
+                // Resolve relative path to absolute path from /home/adam/clawd/
+                const absolutePath = fileParam.startsWith('/') 
+                    ? fileParam 
+                    : `/home/adam/clawd/${fileParam}`;
+                openFile(absolutePath);
+            } else {
+                loadDirectory(currentDir);
+            }
+            
+            setDirty(false);
+            setViewMode('split');
+            setBrowserCollapsed(false);
+        }
+
+        init();
+    });
+    </script>
+    <script src="shared.js"></script>
+</body>
+</html>

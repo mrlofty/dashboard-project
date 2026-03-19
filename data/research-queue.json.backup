@@ -1,0 +1,538 @@
+{
+  "queue": [
+    {
+      "id": "1772860736122",
+      "title": "Canva subscription \u2014 API access + maximising value",
+      "priority": "medium",
+      "status": "queued",
+      "addedBy": "adam",
+      "added": "2026-03-07T16:18:00+11:00",
+      "tags": [
+        "tools",
+        "design",
+        "api"
+      ],
+      "notes": "Adam's Canva subscription just renewed. Before deciding whether to keep or cancel, research: 1) Does Canva have an API we can integrate with? (automated design generation, template filling, etc.) 2) General suggestions for how we can maximise value \u2014 social media graphics for AAD/SoulForge, portfolio materials, marketing assets, branded templates for collab pages, etc. Goal: justify the subscription or make an informed cancel decision.",
+      "source": "telegram"
+    }
+  ],
+  "completed": [
+    {
+      "id": "1772624637042",
+      "title": "Kimi K2.5 via NVIDIA NIM \u2014 setup and test",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-03-04T22:43:00+11:00",
+      "completedDate": "2026-03-07",
+      "tags": [
+        "tech",
+        "llm",
+        "fallback"
+      ],
+      "notes": "Source: https://build.nvidia.com/moonshotai/kimi-k2-thinking \u2014 We have NVIDIA API key. Kimi K2.5 available via OpenAI-compatible endpoint. Test tool calling reliability and evaluate as fallback option.",
+      "source": "dashboard-notes",
+      "findings": "Kimi K2.5 (1T params, 32.86B activated, 200K context, multimodal) available FREE via NVIDIA NIM but with 30s+ latency (unusable for interactive use). OpenRouter offers same model at $0.60/$3.00/M with much better latency. Tool calling supported but has hallucination risk (may call undeclared tools without constrained decoding). NVIDIA API key confirmed in ~/.openclaw/.env. Recommendation: Add to fallback chain via OpenRouter (not NVIDIA free tier) after Sonnet, before Groq. Position: Opus \u2192 Sonnet \u2192 OpenRouter Kimi K2.5 \u2192 Groq Llama 3.3 70B. Best for: cost-sensitive workloads, long context, multimodal, coding. NOT suitable for: primary model, time-sensitive tasks, high-frequency tool calling, reasoning mode. Full setup guide, performance analysis, and implementation plan in memory/2026/03/2026-03-07.md"
+    },
+    {
+      "id": "1772624637039",
+      "title": "Multi-Agent Command Dash Flows (X post by JulianGoldieSEO)",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-03-04T22:43:00+11:00",
+      "completedDate": "2026-03-06",
+      "tags": [
+        "ai",
+        "multi-agent",
+        "dashboard"
+      ],
+      "notes": "Source: https://x.com/JulianGoldieSEO/status/2028520820084244658 \u2014 Review for useful multi-agent patterns, command dash ideas we can apply to our setup.",
+      "source": "dashboard-notes",
+      "findings": "Mission Control dashboard architecture for multi-agent visibility: Kanban board (backlog \u2192 in progress \u2192 review \u2192 done), live activity feed, agent profiles, approval flows. Key patterns: structured role definitions (not random prompts), org structure files for handoff sequences, tag-based coordination (agents tag next specialist when complete), heartbeat-driven work (agents check tasks automatically). Real workflows: content teams (project manager \u2192 researcher \u2192 writer \u2192 optimizer \u2192 distributor), system maintenance, multi-agent coding (planner \u2192 coder \u2192 tester \u2192 reviewer \u2192 security \u2192 PR agent). Critical insight from Silent Drift research: version system prompts like code, changelog for shared resources, health checks for tool references. Applied to Quinn+Forge: formalize with dashboard visibility, AUTONOMOUS.md + task-log.md split file pattern (Quinn reads goals, generates tasks, Forge appends only), morning task generation from goals, approval flows for Forge work. Full analysis in memory/2026/03/2026-03-06.md"
+    },
+    {
+      "id": "1772624637041",
+      "title": "Free open-source TTS alternatives to ElevenLabs (Chatterbox, PocketTTS)",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-03-04T22:43:00+11:00",
+      "completedDate": "2026-03-06",
+      "tags": [
+        "tech",
+        "tts",
+        "voice"
+      ],
+      "notes": "Reddit tip: 'no need to pay for ElevenLabs anymore \u2014 free open source alternatives like chatterbox or pocket tts.' Evaluate quality, ease of setup, OpenClaw compatibility.",
+      "source": "dashboard-notes",
+      "findings": "Chatterbox by Resemble AI wins: beats ElevenLabs in blind tests (63.75% preference), MIT license, voice cloning from 5-10s audio (zero-shot), unique emotion control, ~200ms latency, built-in watermarking, 23+ languages, production-ready. Other contenders: Kokoro (82M params, 2-3GB VRAM, 210\u00d7 realtime on 4090, runs on CPU, Apache 2.0, NO voice cloning but smallest/fastest), Qwen3-TTS (0.6B/1.7B, voice cloning from 3s, 10 languages, 97ms streaming, Apache 2.0). Cost comparison: Chatterbox FREE vs ElevenLabs $30-120 per 1M chars. Hardware: gaming laptop (RTX 3060+) runs all models, Mac M1-M4 works for Chatterbox+Kokoro. Recommendation: test Chatterbox-Turbo (350M, 4-8GB VRAM, lighter than full version), use for voice cloning Adam's voice for personalized TTS, keep Kokoro as fallback for low-resource situations. Impact: $0 cost, on-premise privacy, better quality, full emotion control, no rate limits. Full comparison table and setup path in memory/2026/03/2026-03-06.md"
+    },
+    {
+      "id": "1772624637040",
+      "title": "Multi-Agent Pitfalls \u2014 Reddit wisdom (r/AI_Agents)",
+      "priority": "high",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-03-04T22:43:00+11:00",
+      "completedDate": "2026-03-05",
+      "tags": [
+        "ai",
+        "multi-agent"
+      ],
+      "notes": "Source: https://www.reddit.com/r/AI_Agents/comments/1rhzp3g/the_part_of_multiagent_setups_nobody_warns_you/ \u2014 'The part nobody warns you about.' Read and extract lessons applicable to our Quinn+Forge setup. Especially timing, comms, and error patterns.",
+      "source": "dashboard-notes",
+      "findings": "Core problem: silent drift. Multi-agent setups degrade slowly (outdated context, file collisions, stale tool references). Solutions: version system prompts like code, changelog for shared resources, health checks for tool references, treat coordination as ops problem not prompt problem. Key insight: none break loudly, outputs just get worse over time. Applied to Quinn+Forge: need shared file protocol, weekly health checks, changelog for dashboard data writes. Full analysis in memory/2026/03/2026-03-05.md"
+    },
+    {
+      "id": "1772624637043",
+      "title": "Alex Finn OpenClaw Use Cases \u2014 agent self-tasking from goals",
+      "priority": "high",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-03-04T22:43:00+11:00",
+      "completedDate": "2026-03-05",
+      "tags": [
+        "ai",
+        "multi-agent",
+        "workflow"
+      ],
+      "notes": "Source: https://ucstrategies.com/news/6-openclaw-use-cases-that-actually-make-your-life-better-according-to-youtuber-alex-finn/ \u2014 Use Case #5 especially: agent reads goals and self-generates tasks. Research how to implement this for Forge. Also his Discord channel-per-agent architecture and 'Last 30 Days' research skill.",
+      "source": "session",
+      "findings": "6 workflows: Second Brain (text-based memory), Morning Brief (scheduled reports), Content Factory (multi-agent pipeline), Last 30 Days (Reddit/X research), Goal-Driven Self-Tasking (brain dump goals \u2192 agent generates 4-5 daily tasks autonomously), Mission Control (replace generic apps with agent-native tools). CRITICAL pattern: split task files to avoid race conditions - AUTONOMOUS.md (goals + open backlog, main session only) + tasks-log.md (append-only, sub-agents add lines only). Implementation plan: create AUTONOMOUS.md, add morning task gen to heartbeat, spawn Forge with append-only rule, build Kanban board in dashboard. Full analysis + implementation roadmap in memory/2026/03/2026-03-05.md"
+    },
+    {
+      "id": "1772452685251",
+      "title": "Dashboard theme system architecture - multiple color themes and layout variations",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-03-02T11:58:05.251Z",
+      "tags": [
+        "dashboard",
+        "ui",
+        "themes"
+      ],
+      "completedDate": "2026-03-04",
+      "findings": "Researched multi-theme architecture using CSS custom properties with data-theme attribute switching. 4 recommended themes: Mission Control (current), Midnight (dark purple/cyan), Solar (warm golden), Matrix (neon green). 3 layout variants: Cards (current grid), Compact (dense), Masonry (Pinterest-style). Implementation: CSS variables for colors, localStorage persistence, theme/layout switcher components. Chart.js colors need theme-aware injection. Analyzed 2026 dashboard design trends: glassmorphism, dark mode dominance, neon accents, card-based layouts. Full architecture plan in memory/2026/03/2026-03-04.md with code examples and file structure."
+    },
+    {
+      "id": "1772455163011",
+      "title": "LLM fallback stack \u2014 providers, pricing, OpenClaw integration",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-03-02T23:39:23.011648+11:00",
+      "tags": [],
+      "notes": "Research viable API providers for our fallback chain. Priorities: cost, tool-call reliability, OpenClaw compatibility. Candidates: Kimi K2.5 (Moonshot/OpenRouter), DeepSeek, Mistral, Groq, Together AI. Goal: have 3-4 solid fallbacks configured so we never go dark when Anthropic rate limits hit. Include setup steps for OpenClaw config.",
+      "completedDate": "2026-03-03",
+      "findings": "Comprehensive LLM fallback research: DeepSeek V3 ($0.14/$0.28/M, unstable tools), Kimi K2.5 ($0.38/.48/M, reliable tools), Groq (free 500K/day, 1000 TPS, reliable), Mistral ($0.25/$0.75/M). Recommended 4-tier chain: Opus \u2192 Kimi K2.5 (OpenRouter) \u2192 Groq Llama 3.3 70B \u2192 DeepSeek. Cost savings 65% (light) to $100/mo (power users). OpenRouter built-in support (no providers config). Setup: env vars + fallbacks array + gateway restart. Tool calling critical: Kimi/Groq excellent, DeepSeek unreliable (looped calls). Full config + verification steps documented."
+    },
+    {
+      "id": "1772112151317",
+      "title": "adamdunstan.com / shoots domain split \u2014 nginx + folder restructure",
+      "priority": "high",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-26T13:10:00.000Z",
+      "tags": [
+        "infrastructure",
+        "shoots.adamdunstan.com",
+        "nginx"
+      ],
+      "notes": "Split webroot: /var/www/adamdunstan.com (public portfolio) vs /var/www/shoots.adamdunstan.com (model pages, proofing, auth-ready). Two nginx configs. Keep shoots URLs working. Public site should be easily movable to CDN/static host later. Plan exact folder split before executing. Codex task.",
+      "completedDate": "2026-02-28",
+      "findings": "Both sites live on Oracle. Separate nginx configs and webroots. adamdunstan.com/html/ and shoots.adamdunstan.com/html/. SSL via Lets Encrypt."
+    },
+    {
+      "id": "1771630887080",
+      "title": "Disclosure prediction poll for afteraliendisclosure.com",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-20T23:41:27.080Z",
+      "tags": [
+        "afteraliendisclosure",
+        "interactive"
+      ],
+      "notes": "Date ranges for poll: Before Christmas 2026, Before Easter 2027, During 2027, By 2030. Include commentary on key figures' predictions alongside poll.",
+      "completedDate": "2026-03-01",
+      "findings": "Built by Codex overnight. 6 timeline options, localStorage voting, animated results. Live at afteraliendisclosure.com/poll/"
+    },
+    {
+      "id": "1771326803396",
+      "title": "Print-on-demand service comparison for low-volume photographer",
+      "priority": "low",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-17T22:13:23.396735",
+      "tags": [
+        "ecommerce",
+        "prints",
+        "shoots.adamdunstan.com"
+      ],
+      "notes": "Requirements: No monthly fees, dropship/POD, Australia shipping, free hosted storefront option. Low volume expected - 'might as well' feature. Compare Printful, Prodigi, Gelato, Printify.",
+      "completedDate": "2026-02-18",
+      "findings": "Recommendation: PRODIGI. Fine Art Trade Guild approved, local AU fulfillment partner, zero monthly fees, museum-quality prints, 80% orders ready 24-48h. Best for photography/fine art focus. Gelato as alternative for broader product range."
+    },
+    {
+      "id": "1771326649676",
+      "title": "Meta Graph API for Instagram feed - read-only implementation",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-17T22:10:49.676413",
+      "tags": [
+        "api",
+        "instagram",
+        "shoots.adamdunstan.com",
+        "security"
+      ],
+      "notes": "Key question: Confirm read-only access scope available. No write/post permissions needed. Research: OAuth scopes, token storage, rate limits, refresh process, implementation approach.",
+      "completedDate": "2026-02-18",
+      "findings": "CONFIRMED: Read-only access available via Instagram Graph API. Basic Display API deprecated Dec 2024. Requires Business/Creator account. Permissions: instagram_basic + instagram_graph_user_profile. 60-day token refresh required. 200 req/hour rate limit. Store tokens server-side only."
+    },
+    {
+      "id": "1771325594172",
+      "title": "Research proper privacy policy content for photography website",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-17T21:53:14.172631",
+      "tags": [
+        "legal",
+        "shoots.adamdunstan.com",
+        "privacy"
+      ],
+      "completedDate": "2026-02-18",
+      "findings": "Required sections: data collected, purpose, model release reference, data protection, third-party sharing, user rights (access/delete), cookies, contact info. AU Privacy Act applies. GDPR if EU visitors (photos = personal data). Use Termly generator or AU template. Include model release cross-reference and gallery retention terms."
+    },
+    {
+      "id": "1771324898922",
+      "title": "research and suggest a privacy policy to use on shoots website",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-17T10:41:38.922Z",
+      "tags": [],
+      "completedDate": "2026-02-17",
+      "findings": "Placeholder privacy policy page created at /privacy/. Terms page also added at /terms/. Both use shared footer component."
+    },
+    {
+      "id": "1771142870959",
+      "title": "Obtain some ideas for layouts, features for photographer websites to compare with our current project goals",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-15T08:07:50.959Z",
+      "completedDate": "2026-02-16",
+      "tags": [
+        "photography",
+        "shoots.adamdunstan.com",
+        "design"
+      ],
+      "findings": "Key features: gallery layouts (grid/masonry), client proofing, booking/e-commerce, mobile responsiveness, SEO, social integration, testimonials. For shoots project: consider model directory, public gallery view, collaboration credits, booking CTA, style categories. Full findings in memory/2026/02/2026-02-16.md"
+    },
+    {
+      "id": "elevenlabs-voice",
+      "title": "ElevenLabs Voice Integration Research",
+      "description": "Deep dive into conversational API, latency requirements, and OpenClaw integration options",
+      "priority": "high",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-14T10:30:00",
+      "completedDate": "2026-02-15",
+      "tags": [
+        "capability",
+        "voice",
+        "integration"
+      ],
+      "notes": "Security model decided: outbound open, inbound Adam-only",
+      "findings": "Sub-100ms latency, $0.08/min pricing, SDK integration with BYOLLM. Startup grant available (680 hours free)."
+    },
+    {
+      "id": "nginx-dashboard",
+      "title": "nginx setup for stable dashboard hosting",
+      "description": "Replace Python http.server with nginx or systemd user service for reliability",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-02-14T15:00:00",
+      "completedDate": "2026-02-15",
+      "tags": [
+        "infrastructure",
+        "reliability"
+      ],
+      "notes": "Current server flaky - dies on exec timeout",
+      "findings": "Systemd user service recommended. Create ~/.config/systemd/user/dashboard.service with Restart=always."
+    },
+    {
+      "id": "1771055870924",
+      "title": "Investigate if we can use opus 4.6 with clawdbot",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-14T07:57:50.924Z",
+      "completedDate": "2026-02-15",
+      "tags": [
+        "models",
+        "claude"
+      ],
+      "findings": "YES - anthropic/claude-opus-4-6 available and authenticated. 1M context with beta header. Switch via config or session_status."
+    },
+    {
+      "id": "1771060756851",
+      "title": "review the impact of gemini API trial month ending",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-14T09:19:16.851Z",
+      "completedDate": "2026-02-15",
+      "tags": [
+        "models",
+        "google"
+      ],
+      "findings": "Free tier continues after trial with rate limits. No cliff. Pay-as-you-go optional. Gemini 2.5 Pro ~$1.25 input per million tokens."
+    },
+    {
+      "id": "1771062351775",
+      "title": "investigate Playwright MCP - full browser automation",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-14T09:45:51.775Z",
+      "completedDate": "2026-02-15",
+      "tags": [
+        "automation",
+        "browser",
+        "mcp"
+      ],
+      "findings": "Microsoft official MCP server. Uses accessibility tree (no vision needed). CLI+SKILLS more token-efficient for coding; MCP better for exploratory/persistent automation."
+    },
+    {
+      "id": "1771062351776",
+      "title": "investigate Playwright Scraper - web scraping with anti-bot protection",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-14T09:45:52.000Z",
+      "completedDate": "2026-02-15",
+      "tags": [
+        "automation",
+        "scraping"
+      ],
+      "findings": "Playwright handles anti-bot natively via real browser fingerprinting. Use headed mode and realistic configs for best results."
+    },
+    {
+      "id": "1771064331039",
+      "title": "review this content and provide suggestions on any useful ideas we may wish to adopt.  https://yu-wenhao.com/en/blog/openclaw-tools-skills-tutorial/",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-14T10:18:51.039Z",
+      "completedDate": "2026-02-15",
+      "tags": [
+        "documentation",
+        "best-practices"
+      ],
+      "findings": "Excellent resource. Key ideas: explicit skills allowlist, exec approval enabled, concentric tool architecture, coding-agent for delegation. We already follow most patterns."
+    },
+    {
+      "id": "dashboard-v1",
+      "title": "Dashboard V1 core features",
+      "description": "Search, deep linking, CRUD for goals and contacts",
+      "completedDate": "2026-02-14",
+      "addedBy": "adam",
+      "tags": [
+        "project",
+        "dashboard"
+      ]
+    },
+    {
+      "id": "migrated_13961",
+      "title": "2026 SEO Best Practices & Algorithm Updates",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-03-02",
+      "completedDate": "2026-03-02",
+      "tags": [],
+      "findings": "Comprehensive 2026 SEO landscape research covering three major updates. Feb 2026 Core Update: crackdown on thin AI content (87% drops), rewards topical authority (+23% for quality clusters), 14-day ob..."
+    },
+    {
+      "id": "migrated_88043",
+      "title": "whichbatman.com Draft Page",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-03-01",
+      "completedDate": "2026-03-01",
+      "tags": [],
+      "findings": "Comprehensive AdSense approval requirements research for Batman quiz site. 2026 standards: no minimum age/traffic, requires 20-25 quality blog posts (600-1500 words), 5 mandatory pages (About, Contact..."
+    },
+    {
+      "id": "migrated_46876",
+      "title": "AAD Disclosure Poll",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-02-28",
+      "completedDate": "2026-02-28",
+      "tags": [],
+      "findings": "Comprehensive interactive poll research for afteraliendisclosure.com timeline predictions. Analyzed: SaaS options (StrawPoll, Mentimeter, Polltab), self-hosted open-source (MyVote, PollN, Claper), cus..."
+    },
+    {
+      "id": "migrated_6566",
+      "title": "Voice Live Call Gameplan \u2014 ElevenLabs Integration",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-02-27",
+      "completedDate": "2026-02-27",
+      "tags": [],
+      "findings": "Comprehensive ElevenLabs Conversational AI research: sub-100ms latency platform with multimodal agents, RAG support, webhook tools. Recommended March 14 launch timeline (3 weeks): apply for Startup Gr..."
+    },
+    {
+      "id": "migrated_63208",
+      "title": "adamdunstan.com / shoots Domain Split Architecture",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-02-27",
+      "completedDate": "2026-02-27",
+      "tags": [],
+      "findings": "Complete nginx virtual host architecture for separating public portfolio (adamdunstan.com) from private client galleries (shoots.adamdunstan.com). Documented: nginx config with SSL/HTTP2, image optimi..."
+    },
+    {
+      "id": "migrated_64491",
+      "title": "Oracle Hosting Backup Playbook",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-02-17",
+      "completedDate": "2026-02-17",
+      "tags": [],
+      "findings": "Created RECOVERY-HOSTING.md with VPS alternatives (Hetzner CX22 recommended at \u20ac4.85/mo), step-by-step server setup for PHP sites, DNS migration checklist, GitHub Actions deployment setup. Estimated r..."
+    },
+    {
+      "id": "migrated_79929",
+      "title": "Bluefin Dies - Rebuild Playbook",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-02-17",
+      "completedDate": "2026-02-17",
+      "tags": [],
+      "findings": "Created RECOVERY-BLUEFIN.md with complete disaster recovery procedure: what's backed up where (NAS, GitHub, Drive), fresh Ubuntu setup steps, OpenClaw reinstall, workspace restoration from NAS, SSH ke..."
+    },
+    {
+      "id": "migrated_48283",
+      "title": "Audio Transcription",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-02-16",
+      "completedDate": "2026-02-16",
+      "tags": [],
+      "findings": "Comprehensive comparison: Local Whisper (faster-whisper with large-v3-turbo recommended for 6GB VRAM) vs Gemini 2.5 Pro API (built-in diarization, 9.5hr max, context QA). Hybrid approach recommended: ..."
+    },
+    {
+      "id": "migrated_5556",
+      "title": "Ayn Rand Overview",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-02-15",
+      "completedDate": "2026-02-15",
+      "tags": [],
+      "findings": "Comprehensive overview including: biography, Objectivism philosophy (metaphysics, epistemology, ethics, politics), major works, famous quotes with context, academic criticisms and counterpoints. Ready..."
+    },
+    {
+      "id": "migrated_89766",
+      "title": "Buy Me a Coffee Style Platforms",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-02-14",
+      "completedDate": "2026-02-14",
+      "tags": [],
+      "findings": "Ko-fi recommended for immaculatevibes.art (0% fee on tips, future-proof for art sales). Buy Me a Coffee takes 5% flat. Both easy to embed. Ko-fi better for art community."
+    },
+    {
+      "id": "migrated_52562",
+      "title": "whichbatman.com Quiz Site",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-02-13",
+      "completedDate": "2026-02-13",
+      "tags": [],
+      "findings": "Static HTML/JS quiz recommended. Low copyright risk with disclaimers. AdSense viable with supporting content. Draft quiz questions created. Ready for implementation."
+    },
+    {
+      "id": "migrated_58660",
+      "title": "Telephony Options",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-02-12",
+      "completedDate": "2026-02-12",
+      "tags": [],
+      "findings": "Twilio Programmable Voice with OpenAI Realtime API is recommended approach. FastAPI + WebSocket architecture. AU pricing: ~$1/mo local number, ~$0.01-0.03/min calls. Requires webhook endpoint. GitHub ..."
+    },
+    {
+      "id": "migrated_60566",
+      "title": "Chrome Browser Relay Disconnect Issue",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-02-11",
+      "completedDate": "2026-02-11",
+      "tags": [],
+      "findings": "Root cause: MV3 service worker 30-sec timeout. Workarounds: alarm/API heartbeats, or use openclaw managed browser. Chrome 118+ has debugger keep-alive. Documented alternatives including Playwright dir..."
+    },
+    {
+      "id": "migrated_90030",
+      "title": "Google Workspace Extensions",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "quinn",
+      "added": "2026-02-10",
+      "completedDate": "2026-02-10",
+      "tags": [],
+      "findings": "Sites API deprecated (classic only). Workaround: embed dynamic content via iframes/Apps Script. gogcli v0.9.0 is current."
+    },
+    {
+      "id": "1771622924464",
+      "title": "Voice live call gameplan - March 14 weekend",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-20T21:28:44.464Z",
+      "tags": [
+        "voice",
+        "elevenlabs"
+      ],
+      "notes": "ElevenLabs unless better alternative found. Create planning doc and link to relevant goal.",
+      "completedDate": "2026-02-27",
+      "findings": "Research completed \u2014 see completed items in memory/state/research-queue.json"
+    },
+    {
+      "id": "1772107524331",
+      "title": "start building out page for whichbatman.com as a draft we can iternate on. choose a free hosting choice that we can easily run adsense on",
+      "priority": "medium",
+      "status": "completed",
+      "addedBy": "adam",
+      "added": "2026-02-26T12:05:24.331Z",
+      "tags": [],
+      "completedDate": "2026-03-01",
+      "findings": "Research completed \u2014 see completed items in memory/state/research-queue.json"
+    }
+  ],
+  "settings": {
+    "showCompleted": true,
+    "autoArchiveDays": 30,
+    "maxItemsPerSession": 2,
+    "comment": "Single source of truth for research queue. 3 AM cron picks from queue[], completes to completed[]."
+  }
+}

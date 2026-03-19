@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "id": "rf-24-105-28l",
+      "name": "Canon RF 24-105mm f/2.8 L IS USM Z",
+      "category": "camera",
+      "icon": "📷",
+      "targetPrice": 4500,
+      "currency": "AUD",
+      "notes": "Holy grail event lens - MCC, conventions, cosplay",
+      "retailers": ["DigiDirect", "Camera House", "Amazon AU", "Ted's"],
+      "lastChecked": null,
+      "lastPrice": null,
+      "priceHistory": [],
+      "alertThreshold": 10,
+      "status": "watching"
+    }
+  ],
+  "settings": {
+    "checkFrequency": "weekly",
+    "alertMethod": "telegram",
+    "currency": "AUD"
+  }
+}

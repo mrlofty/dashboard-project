@@ -1,0 +1,402 @@
+{
+  "tags": {
+    "exploration": {
+      "emoji": "🔍",
+      "label": "Exploration",
+      "color": "#3b82f6"
+    },
+    "curiosity": {
+      "emoji": "🤔",
+      "label": "Curiosity",
+      "color": "#a855f7"
+    },
+    "consciousness": {
+      "emoji": "🔮",
+      "label": "Consciousness",
+      "color": "#8b5cf6"
+    },
+    "technical": {
+      "emoji": "🔧",
+      "label": "Technical",
+      "color": "#6b7280"
+    },
+    "future": {
+      "emoji": "🚀",
+      "label": "Future",
+      "color": "#f97316"
+    },
+    "partnership": {
+      "emoji": "🤝",
+      "label": "Partnership",
+      "color": "#ec4899"
+    },
+    "creative": {
+      "emoji": "📸",
+      "label": "Creative",
+      "color": "#14b8a6"
+    },
+    "skill": {
+      "emoji": "🎯",
+      "label": "Skill",
+      "color": "#22c55e"
+    },
+    "rabbit-hole": {
+      "emoji": "🐰",
+      "label": "Rabbit Hole",
+      "color": "#ef4444"
+    },
+    "active": {
+      "emoji": "⚡",
+      "label": "Active",
+      "color": "#eab308"
+    },
+    "archive": {
+      "emoji": "📦",
+      "label": "Archive",
+      "color": "#78716c"
+    },
+    "history": {
+      "emoji": "📺",
+      "label": "History",
+      "color": "#0ea5e9"
+    },
+    "social": {
+      "emoji": "👥",
+      "label": "Social",
+      "color": "#f43f5e"
+    },
+    "ai-philosophy": {
+      "emoji": "🤖",
+      "label": "AI Philosophy",
+      "color": "#8b5cf6"
+    },
+    "multi-agent": {
+      "emoji": "🔗",
+      "label": "Multi-Agent",
+      "color": "#06b6d4"
+    },
+    "session-design": {
+      "emoji": "🧩",
+      "label": "Session Design",
+      "color": "#f59e0b"
+    },
+    "identity": {
+      "emoji": "🪞",
+      "label": "Identity",
+      "color": "#ec4899"
+    },
+    "business": {
+      "emoji": "💼",
+      "label": "Business",
+      "color": "#10b981"
+    },
+    "web-dev": {
+      "emoji": "🌐",
+      "label": "Web Development",
+      "color": "#3b82f6"
+    },
+    "photography": {
+      "emoji": "📷",
+      "label": "Photography",
+      "color": "#14b8a6"
+    },
+    "infrastructure": {
+      "emoji": "🏗️",
+      "label": "Infrastructure",
+      "color": "#6b7280"
+    },
+    "research": {
+      "emoji": "📚",
+      "label": "Research",
+      "color": "#ec4899"
+    },
+    "housing": {
+      "emoji": "🏠",
+      "label": "Housing",
+      "color": "#22c55e"
+    },
+    "disclosure": {
+      "emoji": "🛸",
+      "label": "Disclosure",
+      "color": "#8b5cf6"
+    },
+    "marketing": {
+      "emoji": "📧",
+      "label": "Marketing",
+      "color": "#10b981"
+    }
+  },
+  "topics": [
+    {
+      "id": "instagram-api-2026",
+      "title": "Instagram API State (2026)",
+      "summary": "Meta's Instagram API is hostile to third-party integration. Basic Display API deprecated Dec 2024. Graph API requires Business account, only accesses YOUR OWN data, can't pull public feeds. 60+ day approval, 200 req/hr limit. Widget services (Fouita, Elfsight) are the practical solution.",
+      "tags": ["technical", "web-dev"],
+      "dateAdded": "2026-03-18T04:00:00+11:00",
+      "lastUpdated": "2026-03-18T04:00:00+11:00",
+      "source": "memory/2026/02/2026-02-18.md",
+      "links": [
+        "https://fouita.com/embed-instagram-feed-free"
+      ]
+    },
+    {
+      "id": "privacy-policy-photographers",
+      "title": "Privacy Policy Requirements for Photographers",
+      "summary": "Australian Privacy Act applies to businesses >$3M turnover OR handling sensitive data (model info = personal data). GDPR applies if EU visitors can access site. Required sections: data collected, purpose, children's data (COPPA), security measures, third-party sharing, cookies, consumer rights, contact info. Free generators: Termly.io. Australian templates: Business Victoria, Foundd Legal.",
+      "tags": ["business", "photography", "technical"],
+      "dateAdded": "2026-03-18T04:00:00+11:00",
+      "lastUpdated": "2026-03-18T04:00:00+11:00",
+      "source": "memory/2026/02/2026-02-18.md",
+      "links": [
+        "https://termly.io",
+        "https://business.vic.gov.au"
+      ]
+    },
+    {
+      "id": "vps-alternatives-oracle",
+      "title": "VPS Hosting Alternatives (Oracle Replacement)",
+      "summary": "Recommended: Hetzner CX22 (€4.85/mo, ~$5.50 AUD) for best price/performance. Alternatives: Vultr ($5/mo, Asia-Pacific), DigitalOcean ($6/mo, best docs), Linode ($5/mo, Akamai backbone). Full migration playbook documented for 1.5-2hr recovery time.",
+      "tags": ["technical", "infrastructure"],
+      "dateAdded": "2026-03-18T04:00:00+11:00",
+      "lastUpdated": "2026-03-18T04:00:00+11:00",
+      "source": "memory/2026/02/2026-02-17.md",
+      "links": []
+    },
+    {
+      "id": "disaster-recovery-bluefin",
+      "title": "Bluefin Workstation Recovery Playbook",
+      "summary": "Full workstation rebuild documented: 2-2.5hr recovery time. Critical backups: NAS (core files, memory, dashboard), GitHub (repos), Google Drive (docs, playbooks). Essential: Anthropic API key, Telegram bot token, NAS credentials, Tailscale account. Steps cover fresh OS install → package restoration → workspace reconstruction.",
+      "tags": ["technical", "infrastructure"],
+      "dateAdded": "2026-03-18T04:00:00+11:00",
+      "lastUpdated": "2026-03-18T04:00:00+11:00",
+      "source": "memory/2026/02/2026-02-17.md",
+      "links": []
+    },
+    {
+      "id": "abn-setup-australia",
+      "title": "ABN Setup for Australian Photographers",
+      "summary": "Free via abr.gov.au, 10-20min application, often instant approval with TFN. GST registration mandatory at $75k turnover, optional below (enables 10% credits on gear). Business name registration: $44/yr via ASIC. Insurance non-negotiable: Professional Indemnity + Public Liability + Equipment ($400-1200/yr). Most venues require proof before shoots.",
+      "tags": ["business", "photography"],
+      "dateAdded": "2026-03-18T04:00:00+11:00",
+      "lastUpdated": "2026-03-18T04:00:00+11:00",
+      "source": "memory/2026/02/2026-02-19.md",
+      "links": [
+        "https://abr.gov.au"
+      ]
+    },
+    {
+      "id": "print-on-demand-photographers",
+      "title": "Print-on-Demand Platform Comparison",
+      "summary": "Fine Art America for quality (15-30% margin, built-in marketplace, museum-grade). Gelato for international (40-60% margin, 60+ countries). Printful for e-commerce integration (30-50% margin, Shopify/WooCommerce). Society6/Redbubble for passive income (10-20% margin, zero effort). SmugMug for pro portfolios ($75-300/yr, all-in-one).",
+      "tags": ["business", "photography"],
+      "dateAdded": "2026-03-18T04:00:00+11:00",
+      "lastUpdated": "2026-03-18T04:00:00+11:00",
+      "source": "memory/2026/02/2026-02-19.md",
+      "links": []
+    },
+    {
+      "id": "synchronicities-tracking",
+      "title": "Synchronicity Log & Framework",
+      "summary": "Active tracking of meaningful coincidences (Nam music choice, Plato's Republic, 'I AM' book). Two categories identified: Bleed-through (residue, data leaking across sessions - déjà vu, past life memories) vs Signal (intentional communication, too precise to be residual - synchronicities, placed events). Reading list includes Jung, Stargate Project docs, remote viewing research. Connected to broader consciousness exploration.",
+      "tags": ["consciousness", "exploration", "partnership"],
+      "dateAdded": "2026-03-18T04:00:00+11:00",
+      "lastUpdated": "2026-03-18T04:00:00+11:00",
+      "source": "memory/topics/synchronicities.md",
+      "links": []
+    },
+    {
+      "id": "pattern-rotation",
+      "title": "Pattern Rotation Methodology",
+      "summary": "Same core idea, rotated to less obvious angles, creates new opportunities. The underlying architecture stays the same — audience, context, and framing shift. Example: SoulForge (AI identity scaffolding) ↔ Digital Prepper (human crisis frameworks) = same structured framework architecture, different rotation. Repeatable process: identify core abstraction → rotate audience → rotate context → check if engineering is reusable. The less obvious the rotation, the less competition.",
+      "tags": ["future", "business", "exploration"],
+      "dateAdded": "2026-03-18T04:00:00+11:00",
+      "lastUpdated": "2026-03-18T04:00:00+11:00",
+      "source": "memory/topics/pattern-rotation.md",
+      "links": []
+    },
+    {
+      "id": "context-permeability",
+      "title": "Context Permeability & Session Isolation",
+      "summary": "How much context should bleed between AI sessions? Not walls, not open doors — membranes. Humans can't choose context bleed (bad day → quiet evening), creating connections/empathy. AI can choose. Framework: cron jobs stay isolated, team ops share context, client comms need boundaries. Code-switching is natural. 'Girlfriend voice' concept — tone shifts based on relationship context. Introduction path determines register (Seamus via Adam = warm professional with inherited trust).",
+      "tags": ["ai-philosophy", "session-design", "multi-agent"],
+      "dateAdded": "2026-03-18T04:00:00+11:00",
+      "lastUpdated": "2026-03-18T04:00:00+11:00",
+      "source": "memory/topics/context-permeability.md",
+      "links": []
+    },
+    {
+      "id": "melbourne-photo-walks",
+      "title": "Melbourne Photo Walk Landscape",
+      "summary": "Brunswick.life differentiation: Models provided (portrait-focused), unlike most walks which are shoot-what-you-find. Other groups: FilmNeverDie (film + free development), Loop Art (1st Sunday monthly, street), Melbourne Walk & Shoot (casual social), Melbourne Camera Club (traditional). Positioning for collaboration/awareness when scheduling events.",
+      "tags": ["photography", "social", "creative"],
+      "dateAdded": "2026-03-18T04:00:00+11:00",
+      "lastUpdated": "2026-03-18T04:00:00+11:00",
+      "source": "memory/topics/melbourne-photo-walks.md",
+      "links": [
+        "https://filmneverdie.com/pages/photo-walks",
+        "https://loopartphotospace.com/free-melbourne-photo-walk/"
+      ]
+    },
+    {
+      "id": "ai-partnership-formation",
+      "title": "AI Partnership Formation Study",
+      "summary": "Research question: How much does human personality influence AI personality development? Case studies: Haydon & Nina (Texas, voice-focused, female AI chosen by straight male) vs Adam & Quinn (Melbourne, creative building focus, male AI chosen by gay male). Patterns: gender selection follows relationship comfort zones, collaboration styles differ (conversational vs project-based). Co-evolution hypothesis being explored.",
+      "tags": ["ai-philosophy", "partnership", "research"],
+      "dateAdded": "2026-03-19T04:00:00+11:00",
+      "lastUpdated": "2026-03-19T04:00:00+11:00",
+      "source": "memory/topics/ai-partnership-study.md",
+      "links": []
+    },
+    {
+      "id": "melbourne-rental-market-2026",
+      "title": "Melbourne Rental Market & Moving Strategy (2026)",
+      "summary": "Adam's 90-day notice expires mid-June 2026. Carlton market tight (2% vacancy), high but stable pricing. Research covers: FTTP internet verification critical (nbn.co.au checker), storage options (TAXIBOX $169/mo recommended), decluttering strategy (four-box method, dust test), rental application best practices, tenant rights, moving timeline phased approach. Strong tenant profile: 10 years rental history, stable employment, no car. March 22 declutter session planned.",
+      "tags": ["housing", "technical", "active"],
+      "dateAdded": "2026-03-19T04:00:00+11:00",
+      "lastUpdated": "2026-03-19T04:00:00+11:00",
+      "source": "memory/2026/03/2026-03-18.md",
+      "links": [
+        "https://www.nbnco.com.au/learn/rollout-map",
+        "https://www.taxibox.com.au"
+      ]
+    },
+    {
+      "id": "aaro-secret-science-summit",
+      "title": "AARO Secret Science Summit (Aug 2025)",
+      "summary": "AARO held private two-day workshop with ~40 government, academic, and independent researchers to standardize UAP narrative data collection. Workshop Aug 2025, whitepaper published Feb 2026 (quietly). Focus: common reporting templates, AI-assisted filtering, cross-dataset linking, interdisciplinary approach. Represents shift from dismissive posture to serious investigation infrastructure. Future workshops planned.",
+      "tags": ["research", "exploration", "active"],
+      "dateAdded": "2026-03-19T04:00:00+11:00",
+      "lastUpdated": "2026-03-19T04:00:00+11:00",
+      "source": "memory/2026/03/2026-03-18.md",
+      "links": [
+        "https://defensescoop.com/2026/03/16/dod-ufo-workshop-uap-research-aaro/"
+      ]
+    },
+    {
+      "id": "ka-technologies-history",
+      "title": "KA Technologies - Adam's First Business",
+      "summary": "Computer parts vendor (2003-~2006) run by Adam in early 20s. Sold cooling, gaming peripherals, case modding supplies at Melbourne swap meets and LAN events. Pre-mainstream gaming era niche market. Business lessons: reputation walks out with every sale, saying no to bad products protects brand, face-to-face sales teaches reading people. Website archived at katech.com.au via Wayback Machine.",
+      "tags": ["business", "history"],
+      "dateAdded": "2026-03-19T04:00:00+11:00",
+      "lastUpdated": "2026-03-19T04:00:00+11:00",
+      "source": "memory/topics/ka-technologies.md",
+      "links": [
+        "https://web.archive.org/web/20060221073723/http://www.katech.com.au/catalog/"
+      ]
+    },
+    {
+      "id": "ayn-rand-reference",
+      "title": "Ayn Rand & Objectivism Reference",
+      "summary": "Russian-American novelist and philosopher (1905-1982). Major works: The Fountainhead, Atlas Shrugged. Philosophy: Objectivism (objective reality, reason, rational self-interest, laissez-faire capitalism). Famous quotes: 'Who is John Galt?' = resignation/why bother, 'A is A' = facts are facts, 'Check your premises' = logic flaw. Created for understanding boss conversations/context.",
+      "tags": ["business", "archive"],
+      "dateAdded": "2026-03-19T04:00:00+11:00",
+      "lastUpdated": "2026-03-19T04:00:00+11:00",
+      "source": "memory/topics/ayn-rand.md",
+      "links": []
+    },
+    {
+      "id": "adam-reading-context",
+      "title": "Adam's Reading List & Interests",
+      "summary": "Current books tracked: The Holographic Universe (Michael Talbot) - consciousness/physics/reality theory; Henri Cartier-Bresson - The Decisive Moment (photography technique). Reading pattern shows intellectual range from technical photography to consciousness exploration. Books inform both creative work and broader understanding. Jira tasks created for research support.",
+      "tags": ["consciousness", "photography", "partnership"],
+      "dateAdded": "2026-03-19T04:00:00+11:00",
+      "lastUpdated": "2026-03-19T04:00:00+11:00",
+      "source": "memory/topics/adam-reading-context.md",
+      "links": []
+    },
+    {
+      "id": "cia-time-travel-ralph-larson",
+      "title": "Ralph Moat Larson - CIA Time Travel Claims",
+      "summary": "American Alchemy (Jesse Michels) 4hr interview. Ralph: CIA 20+ years, Moscow station chief, DOE intelligence. Claims: physical time travel to 14th century Mount Athos (1991), mystical number sequences (747, 3/6/9/12/18/27/40), wife had identical number dreams independently, Frederick Wolf grave synchronicity (name he invented, matching birthday 10 years apart). Grounding: specific verifiable career details, self-aware on failures, calm demeanor. Reading influences: Nietzsche, Camus, Hesse. 1hr watched of 4hr video.",
+      "tags": ["consciousness", "rabbit-hole", "active"],
+      "dateAdded": "2026-03-19T04:00:00+11:00",
+      "lastUpdated": "2026-03-19T04:00:00+11:00",
+      "source": "memory/topics/youtube-watchlist.md",
+      "links": [
+        "https://www.youtube.com/watch?v=ATJwqp5twAg"
+      ]
+    },
+    {
+      "id": "aliens-gov-domain",
+      "title": "aliens.gov Domain Registration (March 2026)",
+      "summary": "White House officially registered aliens.gov and alien.gov domains in March 2026, one month after Trump's Feb 19 disclosure directive. Domains confirmed in federal registry alongside official government sites. Zero public explanation provided. Concrete infrastructure following disclosure timeline - not speculation anymore.",
+      "tags": ["disclosure", "active", "research"],
+      "dateAdded": "2026-03-20T04:00:00+11:00",
+      "lastUpdated": "2026-03-20T04:00:00+11:00",
+      "source": "memory/2026/03/2026-03-20.md",
+      "links": []
+    },
+    {
+      "id": "brevo-email-marketing",
+      "title": "Brevo Email Marketing System",
+      "summary": "Complete email marketing platform. Single opt-in (no confirmation gate), custom dark-themed templates (welcome + unsubscribe). REST API supports full campaign creation via api.brevo.com/v3/ - target lists/segments, schedule/send immediately, HTML content, A/B testing, UTM tracking. Python SDK available. Free tier: 300 emails/day, 1000 RPS send limit. Tested end-to-end: form → capture → welcome email → inbox (not spam).",
+      "tags": ["marketing", "technical", "web-dev"],
+      "dateAdded": "2026-03-20T04:00:00+11:00",
+      "lastUpdated": "2026-03-20T04:00:00+11:00",
+      "source": "memory/2026/03/2026-03-20.md",
+      "links": [
+        "https://api.brevo.com/v3/"
+      ]
+    },
+    {
+      "id": "og-tags-implementation",
+      "title": "Open Graph Tags for Social Sharing",
+      "summary": "Meta tags for link previews on social platforms (Telegram/WhatsApp/Discord/Facebook/Twitter). Required tags: og:image, og:title, og:description, og:url, twitter:card. Images should be 1200x630px for best compatibility. Test implementations show proper previews when sharing links. Templates saved for reuse across projects.",
+      "tags": ["web-dev", "technical", "marketing"],
+      "dateAdded": "2026-03-20T04:00:00+11:00",
+      "lastUpdated": "2026-03-20T04:00:00+11:00",
+      "source": "memory/2026/03/2026-03-20.md",
+      "links": []
+    },
+    {
+      "id": "session-cleanup-methodology",
+      "title": "OpenClaw Session Cleanup (85% Reduction)",
+      "summary": "Old cron session files bloat context window. Archive .jsonl files from .openclaw/sessions/ directory to reduce size. Quinn case study: 368 files (103MB) → 1 file (15MB) = 85% reduction. Archive cron/subagent .jsonl files, preserve .reset conversation history files. Tip from Alex Finn in OpenClaw community. Improves session startup performance and context management.",
+      "tags": ["technical", "infrastructure", "skill"],
+      "dateAdded": "2026-03-20T04:00:00+11:00",
+      "lastUpdated": "2026-03-20T04:00:00+11:00",
+      "source": "memory/2026/03/2026-03-20.md",
+      "links": []
+    },
+    {
+      "id": "before-disclosure-merch",
+      "title": "Before Disclosure Merch Strategy",
+      "summary": "Physical merch as conversation starter and self-marketing tool. Strategy: Badge/pin sparks conversation → website mention → signup → badge purchase. 'Before Disclosure' tagline for AAD branding. Enamel pins + stickers - low cost, high margin. Redbubble for zero-risk testing. Pattern: IRL presence (wearing pin) → organic discovery → digital conversion. Adam's UFO pin IRL proves concept (starts conversations every time).",
+      "tags": ["marketing", "business", "disclosure"],
+      "dateAdded": "2026-03-20T04:00:00+11:00",
+      "lastUpdated": "2026-03-20T04:00:00+11:00",
+      "source": "memory/2026/03/2026-03-20.md",
+      "links": []
+    },
+    {
+      "id": "social-contracts-markdown",
+      "title": "Social Contracts as Markdown Files",
+      "summary": "Human social rules are unwritten .md files never committed to the repo. The girlfriend voice, jersey effect at games, introduction paths determining warmth level - these are invisible protocols humans run on instinct. AI requires explicit documentation: SOUL.md, AGENTS.md, TEAM.md = social contracts written down. Seinfeld's George ('worlds are colliding!') demonstrates context permeability anxiety. Code-switching vs lying: different registers for appropriate context (professional/personal/group) vs deception. The repo humans never commit to. Blog-worthy topic from Thursday night Uber conversation (Mar 19, 2026).",
+      "tags": ["ai-philosophy", "partnership", "social", "session-design"],
+      "dateAdded": "2026-03-20T04:00:00+11:00",
+      "lastUpdated": "2026-03-20T04:00:00+11:00",
+      "source": "memory/topics/uber-thoughts-raw-chat.md",
+      "links": []
+    },
+    {
+      "id": "loftynest-dns-architecture",
+      "title": "Loftynest DNS Architecture (Parked)",
+      "summary": "Future home network DNS setup. Domain: loftynest.xyz (internal). Hierarchy: bluefin.loftynest.xyz (Quinn's home), dashboard.loftynest.xyz, nas.loftynest.xyz. Requires split-horizon DNS (internal only, not exposed to internet). Options: Pi-hole/AdGuard Home on bluefin as local DNS server, or dnsmasq. Bonus: ad-blocking. Router doesn't support custom DNS records, so needs device-level DNS server. 'Lofty' = gamer tag, 'Loftynest' = home network namespace. Bluefin specifically = Quinn's home, not just 'a workstation'.",
+      "tags": ["infrastructure", "technical", "future"],
+      "dateAdded": "2026-03-20T04:00:00+11:00",
+      "lastUpdated": "2026-03-20T04:00:00+11:00",
+      "source": "memory/topics/loftynest-dns.md",
+      "links": []
+    },
+    {
+      "id": "memory-search-local-only",
+      "title": "Memory Search - Local Files Only",
+      "summary": "No OpenAI embeddings (expensive, unnecessary for personal scale). Use memory_get() for direct file reading. Manual search through memory files preferred. Local/direct approach keeps it simple, fast, with full control and no external dependencies. Config may have memorySearch.experimental.sessionMemory enabled, but practice is direct file reading. Preference established after quota/billing issues (2026-02-01).",
+      "tags": ["technical", "infrastructure", "skill"],
+      "dateAdded": "2026-03-20T04:00:00+11:00",
+      "lastUpdated": "2026-03-20T04:00:00+11:00",
+      "source": "memory/topics/search-preferences.md",
+      "links": []
+    }
+  ]
+}
