@@ -30,6 +30,7 @@
             label: 'Command Centre',
             links: [
                 { id: 'command', label: 'Command Centre', href: 'command.html', icon: '🛰️' },
+                { id: 'playbook', label: 'Playbook', href: 'playbook.html', icon: '📖' },
                 { id: 'models', label: 'AI Models', href: 'models.html', icon: '🤖' },
                 { id: 'task-analytics', label: 'Task Analytics', href: 'task-analytics.html', icon: '📈' },
                 { id: 'command-cyberpunk', label: 'Cyberpunk', href: 'command-cyberpunk.html', icon: '🌆' },
@@ -139,6 +140,7 @@
             icon: '⚙️',
             label: 'System',
             links: [
+                { id: 'playbook', label: 'Playbook', href: 'playbook.html', icon: '📖' },
                 { id: 'schedule', label: 'Schedule', href: 'schedule.html', icon: '🗓️' },
                 { id: 'system', label: 'System Health', href: 'system.html', icon: '🩺' },
                 { id: 'agents', label: 'Agents', href: 'agents.html', icon: '🤖' },
@@ -333,6 +335,20 @@
                         <span class="status-dot status-available" id="header-status-dot"></span>
                         <span id="header-status-text">Available</span>
                     </div>
+                    <div class="status-pill team-focus-pill" id="header-team-focus" title="Team Focus">
+                        <select id="header-focus-select" class="focus-select" aria-label="Team Focus">
+                            <option value="auto" selected>⚡ Auto</option>
+                            <option value="research-sprint">🔬 Research Sprint</option>
+                            <option value="hackathon">🔨 Hackathon</option>
+                            <option value="war-room">🚨 War Room</option>
+                            <option value="all-hands">📢 All Hands</option>
+                            <option value="daily-standup">📋 Daily Standup</option>
+                            <option value="freestyle">🎯 Freestyle</option>
+                            <option value="content-pipeline">📊 Content Pipeline</option>
+                            <option value="overnight-operations">🔄 Overnight Ops</option>
+                            <option value="moving-day-ops">📦 Moving Day Ops</option>
+                        </select>
+                    </div>
                     <div class="status-pill activity-pill" id="header-activity" title="Last Activity">🔨 Activity unavailable</div>
                 </div>
 
@@ -485,6 +501,72 @@
         }
     }
 
+    const focusPatterns = {
+        'auto': { icon: '⚡', name: 'Auto' },
+        'research-sprint': { icon: '🔬', name: 'Research Sprint' },
+        'hackathon': { icon: '🔨', name: 'Hackathon' },
+        'war-room': { icon: '🚨', name: 'War Room' },
+        'all-hands': { icon: '📢', name: 'All Hands' },
+        'daily-standup': { icon: '📋', name: 'Daily Standup' },
+        'freestyle': { icon: '🎯', name: 'Freestyle' },
+        'content-pipeline': { icon: '📊', name: 'Content Pipeline' },
+        'overnight-operations': { icon: '🔄', name: 'Overnight Ops' },
+        'moving-day-ops': { icon: '📦', name: 'Moving Day Ops' }
+    };
+
+    async function loadTeamFocus() {
+        const select = document.getElementById('header-focus-select');
+        if (!select) return;
+
+        try {
+            const response = await fetch(`data/team-focus.json?t=${Date.now()}`, { cache: 'no-store' });
+            if (!response.ok) return;
+
+            const data = await response.json();
+            if (data.activePatternId && focusPatterns[data.activePatternId]) {
+                select.value = data.activePatternId;
+            }
+        } catch (error) {
+            console.log('Team focus data not available');
+        }
+    }
+
+    function bindTeamFocusSelect() {
+        const select = document.getElementById('header-focus-select');
+        if (!select) return;
+
+        select.addEventListener('change', async () => {
+            const patternId = select.value;
+            const pattern = focusPatterns[patternId];
+            if (!pattern) return;
+
+            // Save to team-focus.json via API
+            try {
+                await fetch('api/team-focus', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        activePatternId: patternId,
+                        activePatternName: pattern.name,
+                        activePatternIcon: pattern.icon,
+                        source: 'nav-select',
+                        updated: new Date().toISOString()
+                    })
+                });
+            } catch (error) {
+                // Fallback: write to localStorage for playbook page sync
+                console.log('API save failed, using localStorage fallback');
+            }
+
+            // Sync with playbook page localStorage
+            try {
+                localStorage.setItem('qa.activePatternOverride', patternId);
+            } catch (error) {
+                // ignore
+            }
+        });
+    }
+
     function setupMobileHandlers() {
         const backdrop = document.getElementById('sidebar-backdrop');
         if (backdrop) {
@@ -565,9 +647,12 @@
         setupMobileHandlers();
         loadHeaderStatus();
         loadLastActivity();
+        loadTeamFocus();
+        bindTeamFocusSelect();
 
         setInterval(loadHeaderStatus, 30000);
         setInterval(loadLastActivity, 45000);
+        setInterval(loadTeamFocus, 60000);
     }
 
     if (document.readyState === 'loading') {
