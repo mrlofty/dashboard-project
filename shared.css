@@ -515,6 +515,43 @@ body {
     text-overflow: ellipsis;
 }
 
+.team-focus-pill {
+    position: relative;
+    cursor: pointer;
+    padding: 0 0.5rem;
+}
+
+.team-focus-pill .focus-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    padding: 0 1.2rem 0 0;
+    outline: none;
+    max-width: 160px;
+}
+
+.team-focus-pill .focus-select option {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+}
+
+.team-focus-pill::after {
+    content: "▾";
+    position: absolute;
+    right: 0.6rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.6rem;
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
 .app-layout {
     display: flex;
     min-height: calc(100vh - 50px);
@@ -773,6 +810,10 @@ body.sidebar-collapsed .sidebar-section-content {
 
     .status-pill {
         display: none;
+    }
+
+    .status-pill.team-focus-pill {
+        display: inline-flex;
     }
 
     #sidebar {

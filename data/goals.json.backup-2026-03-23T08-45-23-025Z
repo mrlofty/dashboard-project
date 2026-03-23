@@ -1,0 +1,673 @@
+{
+  "goals": [
+    {
+      "id": "forge-agent",
+      "title": "\u2692\ufe0f Forge \u2014 First Builder Agent Live",
+      "status": "completed",
+      "priority": "high",
+      "description": "Born March 1, 2026. Full agent with own workspace, identity, heartbeat, memory. Running on Sonnet. Execute \u2192 Advise \u2192 Initiate growth trajectory.",
+      "subtasks": [
+        {
+          "text": "Workspace prepared (SOUL.md, AGENTS.md, LEARNING.md, TOOLS.md)",
+          "done": true
+        },
+        {
+          "text": "Agent config in OpenClaw (multi-agent mode)",
+          "done": true
+        },
+        {
+          "text": "Forge chose name and created IDENTITY.md",
+          "done": true
+        },
+        {
+          "text": "First memory written",
+          "done": true
+        },
+        {
+          "text": "Dashboard activity feed live",
+          "done": true
+        },
+        {
+          "text": "Ops channel posting verified",
+          "done": false
+        },
+        {
+          "text": "First real build task completed",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "fqsd",
+      "title": "FQSD - Quinn's blog live",
+      "description": "Get quinn.adamdunstan.com live with autonomous publishing capability",
+      "status": "completed",
+      "completedDate": "2026-02-11",
+      "category": "project",
+      "priority": "high",
+      "subtasks": [
+        {
+          "text": "Set up domain/hosting",
+          "done": true
+        },
+        {
+          "text": "Configure GitHub Actions deploy",
+          "done": true
+        },
+        {
+          "text": "First blog post published",
+          "done": true
+        }
+      ],
+      "notes": "Full autonomous publishing achieved. Adam built the infrastructure, Quinn got the keys.",
+      "created": "2026-02-01",
+      "updated": "2026-02-11"
+    },
+    {
+      "id": "voice-calling",
+      "title": "Voice calling capability",
+      "description": "Enable Quinn to make and receive voice calls via ElevenLabs integration",
+      "status": "active",
+      "category": "capability",
+      "priority": "high",
+      "subtasks": [
+        {
+          "text": "Research ElevenLabs conversational API",
+          "done": true
+        },
+        {
+          "text": "Design security model (inbound restrictions)",
+          "done": true
+        },
+        {
+          "text": "Implement OpenClaw integration",
+          "done": false
+        },
+        {
+          "text": "Test outbound calls",
+          "done": false
+        }
+      ],
+      "notes": "Security model: outbound open, inbound Adam-only to prevent voice prompt injection",
+      "created": "2026-02-10",
+      "updated": "2026-02-19",
+      "completedDate": null
+    },
+    {
+      "id": "crm-v1",
+      "title": "CRM v1 functional",
+      "description": "Build a working contact relationship manager for tracking people and connections",
+      "status": "active",
+      "category": "project",
+      "priority": "medium",
+      "subtasks": [
+        {
+          "text": "Contact data structure",
+          "done": true
+        },
+        {
+          "text": "List view with tiers",
+          "done": true
+        },
+        {
+          "text": "Detail view",
+          "done": true
+        },
+        {
+          "text": "Search functionality",
+          "done": true
+        },
+        {
+          "text": "Edit capability",
+          "done": true
+        },
+        {
+          "text": "Add 'Circles' as another layer - e.g. in the photograpy scene, Evelyn, Adam, Alex have a group chat, and hang out. we are a circle or click.",
+          "done": true
+        },
+        {
+          "text": "add birthday for each person - and their age.",
+          "done": true
+        },
+        {
+          "text": "Add \"Intimate\" as a TYPE e.g. people i have dated or hooked up with are in this.",
+          "done": true
+        },
+        {
+          "text": "Add a google maps view embedded (?) to the page showing the locations of friends. will be zoomed thanks to haydon lol",
+          "done": false
+        }
+      ],
+      "notes": "Getting close! Edit capability is the final piece.",
+      "created": "2026-02-08",
+      "updated": "2026-02-14"
+    },
+    {
+      "id": "kofi-immaculatevibes",
+      "title": "Ko-fi for immaculatevibes.art",
+      "description": "Set up Ko-fi integration for the AI art site to accept support/commissions",
+      "status": "planned",
+      "category": "project",
+      "priority": "low",
+      "subtasks": [],
+      "notes": "Funding for better tools for us!",
+      "created": "2026-02-12",
+      "updated": "2026-02-14"
+    },
+    {
+      "id": "whichbatman",
+      "title": "whichbatman.com build",
+      "description": "Build the Batman comparison site - research complete, ready to develop",
+      "status": "planned",
+      "category": "project",
+      "priority": "medium",
+      "subtasks": [
+        {
+          "text": "Domain secured",
+          "done": true
+        },
+        {
+          "text": "Research/content prep",
+          "done": true
+        },
+        {
+          "text": "Design mockup",
+          "done": false
+        },
+        {
+          "text": "Build site",
+          "done": false
+        },
+        {
+          "text": "Launch",
+          "done": false
+        },
+        {
+          "text": "draft quiz copy",
+          "done": false
+        },
+        {
+          "text": "research requirements for privacy policy / legal requirements given reference to batman IP",
+          "done": false
+        },
+        {
+          "text": "research requirements for google adsense - create subtasks for google adsense qualifiecation",
+          "done": false
+        },
+        {
+          "text": "Decide on web site /app framework and hosting - ensuring key requirement of adsense will be supported",
+          "done": false
+        }
+      ],
+      "notes": "Fun project in the queue",
+      "created": "2026-02-10",
+      "updated": "2026-02-14"
+    },
+    {
+      "id": "dashboard-v1",
+      "title": "Dashboard v1 complete",
+      "description": "Finish the Quinn & Adam dashboard with all core features",
+      "status": "active",
+      "category": "project",
+      "priority": "high",
+      "subtasks": [
+        {
+          "text": "Home page with widgets",
+          "done": true
+        },
+        {
+          "text": "Topics page",
+          "done": true
+        },
+        {
+          "text": "CRM page",
+          "done": true
+        },
+        {
+          "text": "Memory page",
+          "done": true
+        },
+        {
+          "text": "System page",
+          "done": true
+        },
+        {
+          "text": "Goals page",
+          "done": false
+        },
+        {
+          "text": "Edit capability",
+          "done": false
+        }
+      ],
+      "notes": "Valentine's Day gift to Adam \ud83d\udc9c",
+      "created": "2026-02-13",
+      "updated": "2026-02-14"
+    },
+    {
+      "id": "cheeselandslide-com",
+      "title": "Cheeselandslide.com",
+      "description": "Create concept for this brand, intended as original as fashion t-shirt / accessories brand.",
+      "category": "project",
+      "priority": "low",
+      "status": "planned",
+      "subtasks": [],
+      "notes": "Domain is owned.",
+      "created": "2026-02-14",
+      "updated": "2026-02-14"
+    },
+    {
+      "id": "deploy-ollama-on-a-new-machine",
+      "title": "Deploy ollama on a new machine running local LLM",
+      "description": "Add a new local AI agent (would only be a small / simple model) that can assist with basic tasks with no external API fees.",
+      "category": "capability",
+      "priority": "low",
+      "status": "planned",
+      "subtasks": [],
+      "notes": "This is a longer term goal.  Over time, hardware and models make the goal more effective the longer we wait.",
+      "created": "2026-02-14",
+      "updated": "2026-02-14"
+    },
+    {
+      "id": "enhance-dashboard-goals-page",
+      "title": "Enhance dashboard goals page",
+      "description": "Create the current view as 'category' view and then introduce kanban style column view for active, planned, completed.",
+      "category": "project",
+      "priority": "medium",
+      "status": "active",
+      "subtasks": [],
+      "notes": "",
+      "created": "2026-02-14",
+      "updated": "2026-02-28",
+      "completedDate": null
+    },
+    {
+      "id": "let-s-add-a-weekly-security-ch",
+      "title": "Let's add a weekly security check & discussion",
+      "description": "Add to schedule. Chat about security, what have we added that might need security consideration, where could we be vunerable.",
+      "category": "habit",
+      "priority": "medium",
+      "status": "planned",
+      "subtasks": [],
+      "notes": "For internal scheduling.",
+      "created": "2026-02-14",
+      "updated": "2026-02-14"
+    },
+    {
+      "id": "build-content-and-deploy-after",
+      "title": "Build content and deploy afteraliendisclosure.com",
+      "description": "Add content for this static site. Publish live via oracle host and point DNS.",
+      "category": "project",
+      "priority": "medium",
+      "status": "completed",
+      "subtasks": [],
+      "notes": "done in one day",
+      "created": "2026-02-21",
+      "updated": "2026-02-21",
+      "completedDate": "2026-02-21"
+    },
+    {
+      "id": "digital-modelling-agency",
+      "title": "\ud83c\udfe2 Digital Modelling Agency",
+      "description": "Evolve the photography CRM/management platform into a full digital modelling agency. Book models, manage portfolios, handle payments, publish shoot pages \u2014 all from one system.",
+      "status": "planning",
+      "priority": "high",
+      "timeframe": "3-5 years",
+      "tags": [
+        "photography",
+        "business",
+        "long-term"
+      ],
+      "subtasks": [
+        {
+          "title": "Photography CRM on dashboard",
+          "done": true
+        },
+        {
+          "title": "Shoots pipeline with drag & drop",
+          "done": true
+        },
+        {
+          "title": "Model profiles with inline editing",
+          "done": true
+        },
+        {
+          "title": "Events vs Shoots distinction",
+          "done": true
+        },
+        {
+          "title": "Publish flow \u2014 CRM generates shoot pages on shoots.adamdunstan.com",
+          "done": false
+        },
+        {
+          "title": "Stripe payment integration",
+          "done": false
+        },
+        {
+          "title": "Model self-service portal (booking requests)",
+          "done": false
+        },
+        {
+          "title": "Portfolio generation from shoots",
+          "done": false
+        },
+        {
+          "title": "Client-facing booking page",
+          "done": false
+        },
+        {
+          "title": "Agency branding & public presence",
+          "done": false
+        }
+      ],
+      "created": "2026-02-21",
+      "notes": "Foundation already built: models CRM, shoots pipeline, locations, routes, payment schema. Next: publish flow, then Stripe, then client-facing features."
+    },
+    {
+      "id": "melbourne-photo-cards",
+      "title": "\ud83d\udcf8 Melbourne Photography Card Set",
+      "description": "Original Melbourne-themed photography challenge card set. Combines locations, shot details, photographic styles, and times of day. Physical deck + potential digital companion.",
+      "status": "planning",
+      "priority": "medium",
+      "timeframe": "2026",
+      "tags": [
+        "photography",
+        "creative",
+        "product"
+      ],
+      "subtasks": [
+        {
+          "title": "Define card categories (location, style, time, challenge)",
+          "done": false
+        },
+        {
+          "title": "Curate Melbourne locations list",
+          "done": false
+        },
+        {
+          "title": "Design card template/visual style",
+          "done": false
+        },
+        {
+          "title": "Write challenge prompts",
+          "done": false
+        },
+        {
+          "title": "Test with photo walk group",
+          "done": false
+        },
+        {
+          "title": "Print production research",
+          "done": false
+        },
+        {
+          "title": "Digital companion (web/app)",
+          "done": false
+        }
+      ],
+      "created": "2026-02-21",
+      "notes": "Ties into existing locations database (20 spots). Could connect to melbournephotobook.com. Discuss vision in detail next week."
+    },
+    {
+      "id": "life-chapters",
+      "title": "\ud83d\udcd6 Life Chapters \u2014 Personal Timeline Project",
+      "description": "A personal timeline/memoir exploring Adam's life through place, identity, and change. Not a chronological list \u2014 a reflection on how geography shapes who we are. 'The man and the river both have changed.'",
+      "status": "planning",
+      "priority": "medium",
+      "timeframe": "2026",
+      "tags": [
+        "personal",
+        "creative",
+        "memoir"
+      ],
+      "subtasks": [
+        {
+          "title": "Twitter/X archaeology (2009-2019) \u2014 Foursquare check-ins mapped",
+          "done": true
+        },
+        {
+          "title": "Define life chapters with Adam (fill in blurry bits)",
+          "done": false
+        },
+        {
+          "title": "Cross-reference Instagram timeline",
+          "done": false
+        },
+        {
+          "title": "Google Maps location history (if available)",
+          "done": false
+        },
+        {
+          "title": "Photo library EXIF data timeline",
+          "done": false
+        },
+        {
+          "title": "Map the geography \u2014 same roads, different meaning",
+          "done": false
+        },
+        {
+          "title": "Write chapter narratives",
+          "done": false
+        },
+        {
+          "title": "Choose format (web experience / photo essay / written / hybrid)",
+          "done": false
+        },
+        {
+          "title": "Build and publish",
+          "done": false
+        }
+      ],
+      "created": "2026-02-25",
+      "notes": "Born from late-night Twitter archaeology. Core insight: Adam's relationship to Brunswick tells the whole story \u2014 from 'Mordor' escape to city-dweller looking north. The Foursquare era (2010-2013) is richly documented. The quiet years (2013-2019) are the most interesting gap. Heraclitus: 'You cannot step into the same river twice.'"
+    },
+    {
+      "id": "intelligence-briefing-dashboard",
+      "title": "\ud83d\udd75\ufe0f Intelligence Briefing \u2014 Command Centre Dashboard",
+      "description": "A command centre view for the dashboard using intelligence community aesthetics and INT discipline framework. Agent output classified by HUMINT/SIGINT/OSINT/TECHINT/FININT. Daily brief as intelligence briefing format. Tactical-retro design (pizzint.watch inspiration). Offline-capable.",
+      "status": "planning",
+      "priority": "high",
+      "timeframe": "2026-Q2",
+      "tags": [
+        "project",
+        "capability"
+      ],
+      "subtasks": [
+        {
+          "title": "INT disciplines research deep dive",
+          "done": false
+        },
+        {
+          "title": "Colour theory research (design foundation)",
+          "done": false
+        },
+        {
+          "title": "Design library: tactical-retro extraction",
+          "done": true
+        },
+        {
+          "title": "Map agent outputs to INT disciplines",
+          "done": false
+        },
+        {
+          "title": "Design command centre layout (wireframe)",
+          "done": false
+        },
+        {
+          "title": "Build intelligence briefing page (Forge task)",
+          "done": false
+        },
+        {
+          "title": "Integrate live agent feeds into INT view",
+          "done": false
+        },
+        {
+          "title": "Alert level system (DOUGHCON-style)",
+          "done": false
+        },
+        {
+          "title": "Offline knowledge archive on NAS",
+          "done": false
+        }
+      ],
+      "created": "2026-03-08",
+      "updated": "2026-03-08"
+    },
+    {
+      "id": "offline-knowledge-archive",
+      "title": "\ud83d\udce6 Offline Knowledge Archive \u2014 Prepper KB + Product",
+      "description": "A curated offline-ready knowledge library stored on NAS. Practical survival, skills, intelligence tradecraft, and reference material in markdown format \u2014 readable without internet or special software. Built for personal use first, designed as a self-contained package from day one for future productisation. Think: downloadable offline knowledge kit (USB/ZIP/static site). Revenue model: one-time purchase + optional yearly update subscription. Prepper community is the market.",
+      "status": "active",
+      "priority": "medium",
+      "timeframe": "ongoing",
+      "tags": [
+        "project",
+        "capability"
+      ],
+      "subtasks": [
+        {
+          "title": "Define knowledge categories and folder structure on NAS",
+          "done": false
+        },
+        {
+          "title": "Research: survival basics (first aid, water, food preservation)",
+          "done": false
+        },
+        {
+          "title": "Research: practical skills (electronics, solar, repairs)",
+          "done": false
+        },
+        {
+          "title": "Research: intelligence tradecraft (OSINT, comms, analysis methods)",
+          "done": false
+        },
+        {
+          "title": "Research: radio/comms without internet (ham radio, frequencies)",
+          "done": false
+        },
+        {
+          "title": "Research: local knowledge (Melbourne maps, routes, resources)",
+          "done": false
+        },
+        {
+          "title": "Export KB topics as flat markdown to NAS",
+          "done": false
+        },
+        {
+          "title": "Curate offline medical reference",
+          "done": false
+        },
+        {
+          "title": "Set up periodic sync from workspace to NAS archive",
+          "done": false
+        },
+        {
+          "title": "Index/README for the archive (navigable without search)",
+          "done": false
+        },
+        {
+          "title": "Design self-contained package structure (works standalone)",
+          "done": false
+        },
+        {
+          "title": "Research prepper market \u2014 what people buy, price points, gaps",
+          "done": false
+        },
+        {
+          "title": "Brand/name the product (intelligence flavour)",
+          "done": false
+        },
+        {
+          "title": "Build static site generator (markdown \u2192 offline browsable HTML)",
+          "done": false
+        },
+        {
+          "title": "Landing page / sales page design",
+          "done": false
+        },
+        {
+          "title": "Distribution: USB drive, ZIP download, or both",
+          "done": false
+        },
+        {
+          "title": "Subscription model for yearly content updates",
+          "done": false
+        },
+        {
+          "title": "Build self-contained reader app (single HTML or tiny local server)",
+          "done": false
+        },
+        {
+          "title": "Tactical-retro UI for reader (pizzint.watch design library)",
+          "done": false
+        },
+        {
+          "title": "INT-classified navigation (SIGINT\u2192comms, TECHINT\u2192skills, etc)",
+          "done": false
+        },
+        {
+          "title": "Full-text search across all documents (client-side, no server needed)",
+          "done": false
+        },
+        {
+          "title": "Situation Board homepage with category status overview",
+          "done": false
+        },
+        {
+          "title": "Works from USB stick \u2014 just open index.html",
+          "done": false
+        },
+        {
+          "title": "Static site generator: markdown folder \u2192 styled offline web app",
+          "done": false
+        }
+      ],
+      "created": "2026-03-08",
+      "updated": "2026-03-08"
+    }
+  ],
+  "categories": {
+    "project": {
+      "label": "Project",
+      "emoji": "\ud83d\ude80",
+      "color": "#3b82f6"
+    },
+    "capability": {
+      "label": "Capability",
+      "emoji": "\u26a1",
+      "color": "#f59e0b"
+    },
+    "habit": {
+      "label": "Habit",
+      "emoji": "\ud83d\udd04",
+      "color": "#22c55e"
+    },
+    "learning": {
+      "label": "Learning",
+      "emoji": "\ud83d\udcda",
+      "color": "#a855f7"
+    }
+  },
+  "statuses": {
+    "planned": {
+      "label": "Planned",
+      "emoji": "\ud83d\udccb",
+      "color": "#6b7280"
+    },
+    "active": {
+      "label": "Active",
+      "emoji": "\ud83d\udd25",
+      "color": "#f59e0b"
+    },
+    "completed": {
+      "label": "Completed",
+      "emoji": "\u2705",
+      "color": "#22c55e"
+    },
+    "paused": {
+      "label": "Paused",
+      "emoji": "\u23f8\ufe0f",
+      "color": "#6b7280"
+    }
+  }
+}

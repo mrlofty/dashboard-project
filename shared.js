@@ -44,7 +44,6 @@
             label: 'Quinn',
             links: [
                 { id: 'quinn', label: 'Quinn', href: 'quinn.html', icon: '🔮' },
-                { id: 'memory', label: 'Memory', href: 'memory.html', icon: '🧠' },
                 { id: 'inbox', label: 'Inbox', href: 'inbox.html', icon: '📥' },
                 { id: 'editor', label: 'Editor', href: 'editor.html', icon: '📝' }
             ]
@@ -62,6 +61,7 @@
             icon: '📋',
             label: 'Projects',
             links: [
+                { id: 'board', label: 'Projects Board', href: 'board.html', icon: '📊' },
                 { id: 'goals', label: 'Goals / Kanban', href: 'goals.html', icon: '🎯' },
                 { id: 'workgraph', label: 'Work Graph', href: 'workgraph.html', icon: '🌳' },
                 { id: 'shoots', label: 'Shoots Pipeline', href: 'shoots.html', icon: '🎬' }
@@ -114,6 +114,7 @@
             icon: '🧠',
             label: 'Knowledge',
             links: [
+                { id: 'memory', label: 'Memory', href: 'memory.html', icon: '🧠' },
                 { id: 'topics', label: 'Topics', href: 'topics.html', icon: '🗂️' },
                 { id: 'knowledge-web', label: 'Knowledge Web', href: 'knowledge-web.html', icon: '🕸️' },
                 { id: 'research-threads', label: 'Research Threads', href: 'research.html', icon: '🧵' }

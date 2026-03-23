@@ -253,7 +253,10 @@
     <main class="main-content" style="max-width: 1400px; margin: 0 auto; padding: 1rem 1.5rem;">
         <div class="page-title-row">
             <h1 style="font-size: 1.5rem; color: var(--text-primary); margin: 0;">📊 Analytics</h1>
-            <div class="last-updated" id="lastUpdated"></div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="last-updated" id="lastUpdated"></div>
+                <button onclick="refreshAnalytics()" id="refreshBtn" style="padding: 0.3rem 0.8rem; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); border-radius: 6px; color: #a78bfa; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;">🔄 Refresh</button>
+            </div>
         </div>
 
         <div class="summary-bar" id="summaryBar"></div>
@@ -391,6 +394,23 @@
                 }
             } catch(e) {
                 document.getElementById('analyticsGrid').innerHTML = '<p style="color:var(--text-muted);">No analytics data yet. Run pull-analytics.py to populate.</p>';
+            }
+        }
+
+        async function refreshAnalytics() {
+            var btn = document.getElementById('refreshBtn');
+            btn.textContent = '⏳ Pulling...';
+            btn.disabled = true;
+            try {
+                await fetch('/api/analytics/refresh', { method: 'POST' });
+                await new Promise(function(r) { setTimeout(r, 3000); });
+                await loadData();
+                btn.textContent = '✅ Done';
+                setTimeout(function() { btn.textContent = '🔄 Refresh'; btn.disabled = false; }, 2000);
+            } catch(e) {
+                await loadData();
+                btn.textContent = '🔄 Refresh';
+                btn.disabled = false;
             }
         }
 

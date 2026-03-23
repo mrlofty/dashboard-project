@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inbox — Dashboard</title>
     <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="linked-items.css">
     <!-- Marked.js for markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
     <style>
@@ -278,7 +279,78 @@
             outline: none;
             border-color: var(--accent);
         }
-        
+
+        .stage-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .stage-pill {
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            border-radius: 999px;
+            padding: 0.6rem 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .stage-pill:hover {
+            border-color: rgba(167, 139, 250, 0.48);
+            background: rgba(167, 139, 250, 0.12);
+            color: var(--text-primary);
+        }
+
+        .stage-pill.selected {
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.28), rgba(212, 175, 55, 0.18));
+            border-color: rgba(167, 139, 250, 0.9);
+            color: #f8fafc;
+            font-weight: 700;
+            box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.16), 0 12px 28px rgba(76, 29, 149, 0.22);
+        }
+
+        .star-rating {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .star {
+            border: none;
+            background: transparent;
+            padding: 0.1rem;
+            font-size: 1.7rem;
+            line-height: 1;
+            cursor: pointer;
+            color: rgba(148, 163, 184, 0.5);
+            transition: transform 0.15s ease, color 0.15s ease, filter 0.15s ease;
+        }
+
+        .star:hover {
+            transform: scale(1.08);
+        }
+
+        .star.filled {
+            color: #f5c451;
+            filter: drop-shadow(0 0 8px rgba(245, 196, 81, 0.2));
+        }
+
+        .star-rating.is-hovering .star {
+            color: rgba(148, 163, 184, 0.38);
+        }
+
+        .star-rating.is-hovering .star.preview,
+        .star-rating .star.filled {
+            color: #f5c451;
+        }
+
+        .form-hidden-input {
+            display: none;
+        }
+
         .form-textarea {
             min-height: 200px;
             font-family: 'Monaco', 'Menlo', monospace;
@@ -654,18 +726,33 @@
                         </label>
                     </div>
                 </div>
-                
+
+                <div class="form-group">
+                    <label class="form-label">Stage</label>
+                    <div class="stage-selector" id="itemStageSelector">
+                        <button type="button" class="stage-pill" data-value="idea">💡 Idea</button>
+                        <button type="button" class="stage-pill" data-value="research">🔬 Research</button>
+                        <button type="button" class="stage-pill" data-value="brainstorm">📢 Brainstorm</button>
+                        <button type="button" class="stage-pill" data-value="tasks">📋 Tasks</button>
+                        <button type="button" class="stage-pill" data-value="building">🔨 Building</button>
+                        <button type="button" class="stage-pill" data-value="saved">📦 Saved</button>
+                        <button type="button" class="stage-pill" data-value="active">🚀 Active</button>
+                    </div>
+                    <input type="hidden" id="itemStage" class="form-hidden-input" value="idea">
+                </div>
+
                 <div class="form-group">
                     <label class="form-label">Priority</label>
-                    <select class="form-select" id="itemPriority">
-                        <option value="5">5 - Low</option>
-                        <option value="4">4</option>
-                        <option value="3" selected>3 - Medium</option>
-                        <option value="2">2</option>
-                        <option value="1">1 - High</option>
-                    </select>
+                    <div class="star-rating" id="itemPriorityRating" aria-label="Priority rating">
+                        <button type="button" class="star" data-value="1" aria-label="1 star">★</button>
+                        <button type="button" class="star" data-value="2" aria-label="2 stars">★</button>
+                        <button type="button" class="star" data-value="3" aria-label="3 stars">★</button>
+                        <button type="button" class="star" data-value="4" aria-label="4 stars">★</button>
+                        <button type="button" class="star" data-value="5" aria-label="5 stars">★</button>
+                    </div>
+                    <input type="hidden" id="itemPriority" class="form-hidden-input" value="3">
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">Assignee</label>
                     <select class="form-select" id="itemAssignee">
@@ -706,6 +793,7 @@
             <div id="viewMeta" style="margin-bottom: 2rem; color: var(--text-secondary); font-size: 0.9rem;"></div>
             
             <div class="markdown-content" id="viewBody"></div>
+            <div id="viewLinks"></div>
             
             <div class="form-actions">
                 <button class="btn btn-secondary" onclick="closeViewModal()">Close</button>
@@ -738,6 +826,111 @@
         let commandTagFilter = null;
         let ignoreTagFilterReset = false;
         let recentCommands = [];
+        const INBOX_STAGE_OPTIONS = [
+            { value: 'idea', label: 'Idea', emoji: '💡' },
+            { value: 'research', label: 'Research', emoji: '🔬' },
+            { value: 'brainstorm', label: 'Brainstorm', emoji: '📢' },
+            { value: 'tasks', label: 'Tasks', emoji: '📋' },
+            { value: 'building', label: 'Building', emoji: '🔨' },
+            { value: 'saved', label: 'Saved', emoji: '📦' },
+            { value: 'active', label: 'Active', emoji: '🚀' }
+        ];
+
+        function normalizeInboxId(itemId) {
+            return window.LinkedItems.ensureTypedId(decodeURIComponent(itemId || ''), 'inbox');
+        }
+
+        function ensureInboxShape(item) {
+            item.id = normalizeInboxId(item.id);
+            item.linkedItems = window.LinkedItems.normalizeLinkedItems(item.linkedItems);
+            item.stage = normalizeInboxStage(item.stage || inboxStatusToStage(item.status));
+            item.priority = normalizeInboxPriority(item.priority);
+            return item;
+        }
+
+        function normalizeInboxStage(value) {
+            const normalized = String(value || '').toLowerCase();
+            return INBOX_STAGE_OPTIONS.some(stage => stage.value === normalized) ? normalized : 'idea';
+        }
+
+        function normalizeInboxPriority(value) {
+            const numeric = Number(value);
+            return Math.min(5, Math.max(1, Number.isFinite(numeric) ? numeric : 3));
+        }
+
+        function inboxStatusToStage(status) {
+            const map = {
+                inbox: 'idea',
+                active: 'active',
+                done: 'saved',
+                archived: 'saved'
+            };
+            return map[status] || 'idea';
+        }
+
+        function inboxStageMeta(value) {
+            return INBOX_STAGE_OPTIONS.find(stage => stage.value === normalizeInboxStage(value)) || INBOX_STAGE_OPTIONS[0];
+        }
+
+        function setInboxStageValue(value) {
+            const stage = normalizeInboxStage(value);
+            const input = document.getElementById('itemStage');
+            if (input) input.value = stage;
+
+            document.querySelectorAll('#itemStageSelector .stage-pill').forEach(pill => {
+                const selected = pill.dataset.value === stage;
+                pill.classList.toggle('selected', selected);
+                pill.setAttribute('aria-pressed', String(selected));
+            });
+        }
+
+        function setInboxPriorityValue(value, previewValue = null) {
+            const priority = normalizeInboxPriority(value);
+            const activeValue = previewValue == null ? null : normalizeInboxPriority(previewValue);
+            const rating = document.getElementById('itemPriorityRating');
+            const input = document.getElementById('itemPriority');
+
+            if (input) input.value = String(priority);
+            if (rating) rating.classList.toggle('is-hovering', activeValue !== null);
+
+            document.querySelectorAll('#itemPriorityRating .star').forEach(star => {
+                const starValue = Number(star.dataset.value);
+                const filled = activeValue !== null ? starValue <= activeValue : starValue <= priority;
+                star.classList.toggle('filled', filled);
+                star.classList.toggle('preview', activeValue !== null && starValue <= activeValue);
+                star.setAttribute('aria-pressed', String(starValue === priority));
+            });
+        }
+
+        function initItemEditorControls() {
+            document.querySelectorAll('#itemStageSelector .stage-pill').forEach(pill => {
+                pill.addEventListener('click', () => setInboxStageValue(pill.dataset.value));
+            });
+
+            const rating = document.getElementById('itemPriorityRating');
+            rating.querySelectorAll('.star').forEach(star => {
+                star.addEventListener('mouseenter', () => {
+                    setInboxPriorityValue(document.getElementById('itemPriority').value, star.dataset.value);
+                });
+                star.addEventListener('click', () => setInboxPriorityValue(star.dataset.value));
+            });
+            rating.addEventListener('mouseleave', () => {
+                setInboxPriorityValue(document.getElementById('itemPriority').value);
+            });
+
+            setInboxStageValue('idea');
+            setInboxPriorityValue(3);
+        }
+
+        function getInboxItem(itemId) {
+            const normalized = normalizeInboxId(itemId);
+            return items.find(item => item.id === normalized);
+        }
+
+        function setInboxHash(itemId) {
+            history.pushState(null, '', `#${window.LinkedItems.stripType(itemId)}`);
+        }
+
         const commandHistoryLimit = 5;
         const paletteCommands = [
             {
@@ -813,21 +1006,29 @@
         async function loadInbox() {
             try {
                 const response = await fetch('data/inbox.json');
-                items = await response.json();
+                items = (await response.json()).map(ensureInboxShape);
             } catch (error) {
                 console.log('No inbox data found, starting fresh');
                 items = [];
             }
-            
+
+            window.LinkedItems.invalidateCache();
             renderItems();
+            const hash = window.location.hash.slice(1);
+            if (hash) viewItem(normalizeInboxId(hash));
         }
         
         // Save data
         function saveData() {
-            // In production, this would POST to an API
-            // For now, just log (manual file update needed)
-            console.log('Save inbox data:', items);
             localStorage.setItem('inbox-data', JSON.stringify(items));
+            window.LinkedItems.invalidateCache();
+            fetch(`http://${window.location.hostname}:8081/api/inbox`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: items })
+            }).catch(() => {
+                console.log('⚠️ Inbox API unavailable, saved to localStorage only');
+            });
         }
         
         // Render items
@@ -865,6 +1066,7 @@
         
         function renderItemCard(item) {
             const agentClass = item.source !== 'human' ? 'agent-created' : '';
+            const stage = inboxStageMeta(item.stage);
             
             return `
                 <div class="inbox-item ${agentClass}" onclick="viewItem('${item.id}')">
@@ -874,6 +1076,7 @@
                     </div>
                     <div class="item-meta">
                         <span>👤 ${item.assignee}</span>
+                        <span>${stage.emoji} ${stage.label}</span>
                         <span>📅 ${new Date(item.created).toLocaleDateString()}</span>
                         ${item.source !== 'human' ? `<span>🤖 ${item.source}</span>` : ''}
                     </div>
@@ -932,7 +1135,8 @@
             document.getElementById('itemId').value = '';
             document.getElementById('itemTitle').value = preset.title || '';
             document.getElementById('itemBody').value = preset.body || '';
-            document.getElementById('itemPriority').value = preset.priority || '3';
+            setInboxStageValue(preset.stage || 'idea');
+            setInboxPriorityValue(preset.priority || 3);
             document.getElementById('itemAssignee').value = preset.assignee || 'Adam';
             document.getElementById('itemStatus').value = preset.status || 'inbox';
             document.querySelectorAll('input[name="tags"]').forEach(cb => {
@@ -946,15 +1150,18 @@
         }
         
         function viewItem(id) {
-            const item = items.find(i => i.id === id);
+            const item = getInboxItem(id);
             if (!item) return;
-            
-            currentItemId = id;
+            const stage = inboxStageMeta(item.stage);
+
+            currentItemId = item.id;
+            setInboxHash(currentItemId);
             
             document.getElementById('viewTitle').textContent = item.title;
             document.getElementById('viewMeta').innerHTML = `
                 <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
                     <span>👤 ${item.assignee}</span>
+                    <span>${stage.emoji} ${stage.label}</span>
                     <span>⚡ Priority ${item.priority}</span>
                     <span>📅 ${new Date(item.created).toLocaleDateString()}</span>
                     ${item.source !== 'human' ? `<span>🤖 ${item.source}</span>` : ''}
@@ -968,19 +1175,47 @@
             
             const html = marked.parse(item.body || '');
             document.getElementById('viewBody').innerHTML = html;
+            renderInboxLinks(item);
             
             document.getElementById('viewModal').classList.add('active');
+        }
+
+        async function renderInboxLinks(item) {
+            const linked = await window.LinkedItems.loadAllLinkableItems();
+            document.getElementById('viewLinks').innerHTML = `
+                <div class="linked-section">
+                    <div class="linked-section-header">
+                        <div>
+                            <div class="linked-section-title">Linked Items</div>
+                            <div class="linked-section-meta">${item.linkedItems.length} linked item${item.linkedItems.length === 1 ? '' : 's'}</div>
+                        </div>
+                        <div class="linked-section-actions">
+                            <button type="button" class="link-add-btn" onclick="openInboxLinkPicker('${item.id}')">Link to...</button>
+                        </div>
+                    </div>
+                    <div id="inbox-linked-items">${window.LinkedItems.renderLinkedItems(item.linkedItems, linked.byId, { removable: true, emptyText: 'No linked items on this inbox item yet.' })}</div>
+                    <div id="inbox-reverse-links">${window.LinkedItems.renderReverseLinks(item.id, linked.items)}</div>
+                </div>
+            `;
+            document.getElementById('viewLinks').querySelectorAll('[data-remove-id]').forEach(button => {
+                button.addEventListener('click', event => {
+                    event.stopPropagation();
+                    removeInboxLink(item.id, button.dataset.removeId);
+                });
+            });
         }
         
         function closeViewModal() {
             document.getElementById('viewModal').classList.remove('active');
+            document.getElementById('viewLinks').innerHTML = '';
+            history.pushState(null, '', window.location.pathname);
             currentItemId = null;
         }
         
         function editCurrentItem() {
             if (!currentItemId) return;
             
-            const item = items.find(i => i.id === currentItemId);
+            const item = getInboxItem(currentItemId);
             if (!item) return;
             
             closeViewModal();
@@ -990,7 +1225,8 @@
             document.getElementById('itemId').value = item.id;
             document.getElementById('itemTitle').value = item.title;
             document.getElementById('itemBody').value = item.body || '';
-            document.getElementById('itemPriority').value = item.priority;
+            setInboxStageValue(item.stage || inboxStatusToStage(item.status));
+            setInboxPriorityValue(item.priority);
             document.getElementById('itemAssignee').value = item.assignee;
             document.getElementById('itemStatus').value = item.status;
             
@@ -1005,17 +1241,18 @@
         function saveItem(event) {
             event.preventDefault();
             
-            const id = document.getElementById('itemId').value || `item-${Date.now()}`;
+            const id = normalizeInboxId(document.getElementById('itemId').value || `item-${Date.now()}`);
             const title = document.getElementById('itemTitle').value;
             const body = document.getElementById('itemBody').value;
-            const priority = parseInt(document.getElementById('itemPriority').value);
+            const stage = normalizeInboxStage(document.getElementById('itemStage').value);
+            const priority = normalizeInboxPriority(document.getElementById('itemPriority').value);
             const assignee = document.getElementById('itemAssignee').value;
             const status = document.getElementById('itemStatus').value;
             
             const tags = Array.from(document.querySelectorAll('input[name="tags"]:checked'))
                 .map(cb => cb.value);
             
-            const existingItem = items.find(i => i.id === id);
+            const existingItem = getInboxItem(id);
             
             if (existingItem) {
                 // Update
@@ -1023,6 +1260,7 @@
                     title,
                     body,
                     tags,
+                    stage,
                     priority,
                     assignee,
                     status,
@@ -1035,9 +1273,11 @@
                     title,
                     body,
                     tags,
+                    stage,
                     priority,
                     assignee,
                     status,
+                    linkedItems: [],
                     source: 'human',
                     created: new Date().toISOString(),
                     updated: new Date().toISOString()
@@ -1123,6 +1363,38 @@
                 saveData();
                 renderItems();
             }
+        }
+
+        async function openInboxLinkPicker(itemId) {
+            const item = getInboxItem(itemId);
+            if (!item) return;
+            await window.LinkedItems.openPicker({
+                currentId: item.id,
+                currentType: 'inbox',
+                selectedIds: item.linkedItems,
+                onPick: linked => addInboxLink(item.id, linked.id)
+            });
+        }
+
+        function addInboxLink(itemId, linkedId) {
+            const item = getInboxItem(itemId);
+            const normalizedId = window.LinkedItems.ensureTypedId(linkedId);
+            if (!item || item.linkedItems.includes(normalizedId)) return;
+            item.linkedItems.push(normalizedId);
+            item.updated = new Date().toISOString();
+            saveData();
+            viewItem(item.id);
+            renderItems();
+        }
+
+        function removeInboxLink(itemId, linkedId) {
+            const item = getInboxItem(itemId);
+            if (!item) return;
+            item.linkedItems = item.linkedItems.filter(id => id !== linkedId);
+            item.updated = new Date().toISOString();
+            saveData();
+            viewItem(item.id);
+            renderItems();
         }
 
         function navigateToItem(itemId) {
@@ -1365,6 +1637,7 @@
         
         // Load on page load
         recentCommands = JSON.parse(localStorage.getItem('inbox-recent-commands') || '[]');
+        initItemEditorControls();
 
         document.addEventListener('keydown', (event) => {
             if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
@@ -1390,8 +1663,18 @@
             }
         });
 
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.slice(1);
+            if (hash) {
+                viewItem(normalizeInboxId(hash));
+            } else if (currentItemId) {
+                closeViewModal();
+            }
+        });
+
         loadInbox();
     </script>
+    <script src="link-picker.js"></script>
     <script src="shared.js"></script>
 </body>
 </html>

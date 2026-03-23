@@ -1,0 +1,223 @@
+{
+  "version": 1,
+  "updatedAt": "2026-03-21T06:22:26.994Z",
+  "items": [
+    {
+      "id": "idea-dashboard-board-unification",
+      "stage": "idea",
+      "title": "Unify board workflow into dashboard shell",
+      "summary": "Replace the split goals and research queue flows with a single board view.",
+      "body": "# Goal\nCreate one surface for idea capture, research, findings, tasks, and delivery.\n\n- Keep Quinn and Forge work visible\n- Support quick-add from any stage\n- Preserve markdown detail notes",
+      "tags": [
+        "AAD",
+        "Dashboard",
+        "Quinn"
+      ],
+      "assignee": "Adam",
+      "priority": 4,
+      "subtasks": [
+        {
+          "id": "s1",
+          "text": "Audit current dashboard flows",
+          "done": false
+        },
+        {
+          "id": "s2",
+          "text": "Map required stages",
+          "done": false
+        }
+      ],
+      "relatedItemIds": [
+        "research-nav-consistency"
+      ],
+      "createdAt": "2026-03-20T22:10:00.000Z",
+      "updatedAt": "2026-03-21T00:10:00.000Z",
+      "order": 0
+    },
+    {
+      "id": "research-nav-consistency",
+      "stage": "research",
+      "title": "Research dashboard nav consistency",
+      "summary": "Check how status bar, sidebar, and mobile behavior are shared across pages.",
+      "body": "## Research notes\nPull patterns from `shared.css` and `shared.js`.\n\n- Sticky status bar\n- Expandable project section\n- Mobile sidebar overlay",
+      "tags": [
+        "AAD",
+        "Dashboard",
+        "Research"
+      ],
+      "assignee": "Forge",
+      "priority": 3,
+      "subtasks": [
+        {
+          "id": "s3",
+          "text": "Review shared.js section config",
+          "done": true
+        },
+        {
+          "id": "s4",
+          "text": "Capture active states for new board page",
+          "done": false
+        },
+        {
+          "id": "s5",
+          "text": "Document mobile nav expectations",
+          "done": false
+        }
+      ],
+      "relatedItemIds": [
+        "idea-dashboard-board-unification",
+        "findings-photo-pipeline"
+      ],
+      "createdAt": "2026-03-20T21:00:00.000Z",
+      "updatedAt": "2026-03-21T07:10:06.628Z",
+      "order": 0
+    },
+    {
+      "id": "findings-photo-pipeline",
+      "stage": "findings",
+      "title": "Shoots pipeline findings for board tags",
+      "summary": "Photography cards need clearer tag chips for client, location, and edit state.",
+      "body": "## Findings\nShoots cards work better when tags distinguish project context from delivery status.\n\n- `Shoots` and `Photography` should always be visible\n- Add `Client` tag when booking is external\n- Keep assignee chip separate from tags",
+      "tags": [
+        "Shoots",
+        "Photography",
+        "Findings"
+      ],
+      "assignee": "Quinn",
+      "priority": 2,
+      "subtasks": [
+        {
+          "id": "s6",
+          "text": "Validate chip contrast on dark theme",
+          "done": true
+        },
+        {
+          "id": "s7",
+          "text": "Draft spawnable implementation task",
+          "done": true
+        }
+      ],
+      "relatedItemIds": [
+        "task-photo-board-template"
+      ],
+      "createdAt": "2026-03-19T19:40:00.000Z",
+      "updatedAt": "2026-03-21T02:05:00.000Z",
+      "order": 0
+    },
+    {
+      "id": "task-photo-board-template",
+      "stage": "task",
+      "title": "Template board cards for upcoming portrait shoots",
+      "summary": "Prepare reusable card structure for discovery, planning, shoot day, and edit handoff.",
+      "body": "### Deliverable\nCreate a repeatable card template for photo projects with subtasks and related findings.",
+      "tags": [
+        "Shoots",
+        "Photography",
+        "Ops"
+      ],
+      "assignee": "Forge",
+      "priority": 3,
+      "subtasks": [
+        {
+          "id": "s8",
+          "text": "Create portrait shoot checklist",
+          "done": false
+        },
+        {
+          "id": "s9",
+          "text": "Add retouch handoff subtasks",
+          "done": false
+        },
+        {
+          "id": "s10",
+          "text": "Link findings source card",
+          "done": false
+        }
+      ],
+      "relatedItemIds": [
+        "findings-photo-pipeline"
+      ],
+      "createdAt": "2026-03-21T03:10:00.000Z",
+      "updatedAt": "2026-03-21T03:10:00.000Z",
+      "order": 0
+    },
+    {
+      "id": "progress-board-ui-build",
+      "stage": "in-progress",
+      "title": "Build standalone projects board UI",
+      "summary": "Implement drag-drop columns, modal editor, filters, and POST saves without backend work.",
+      "body": "## Current scope\nFrontend only.\n\n- HTML5 drag-drop\n- Debounced save\n- Modal markdown editor\n- Queue button wiring",
+      "tags": [
+        "AAD",
+        "Dashboard",
+        "Automation"
+      ],
+      "assignee": "Adam",
+      "priority": 5,
+      "subtasks": [
+        {
+          "id": "s11",
+          "text": "Render six columns",
+          "done": true
+        },
+        {
+          "id": "s12",
+          "text": "Wire detail modal",
+          "done": true
+        },
+        {
+          "id": "s13",
+          "text": "Hook save debounce",
+          "done": true
+        },
+        {
+          "id": "s14",
+          "text": "Test drag stage updates",
+          "done": false
+        },
+        {
+          "id": "s15",
+          "text": "Polish mobile scroll behavior",
+          "done": false
+        }
+      ],
+      "relatedItemIds": [
+        "idea-dashboard-board-unification",
+        "research-nav-consistency"
+      ],
+      "createdAt": "2026-03-21T05:00:00.000Z",
+      "updatedAt": "2026-03-21T06:20:00.000Z",
+      "order": 0
+    },
+    {
+      "id": "done-agent-queue-pattern",
+      "stage": "done",
+      "title": "Define agent queue payload shape",
+      "summary": "Settled on `{ itemId, agent }` for board queue actions so backend can wire later.",
+      "body": "Backend endpoint will accept the board item id and target agent.\n\n- Keep button lightweight\n- Use current assignee as default agent\n- No extra modal needed",
+      "tags": [
+        "Dashboard",
+        "Ops",
+        "Quinn"
+      ],
+      "assignee": "Quinn",
+      "priority": 2,
+      "subtasks": [
+        {
+          "id": "s16",
+          "text": "Confirm payload fields",
+          "done": true
+        },
+        {
+          "id": "s17",
+          "text": "Document frontend expectation",
+          "done": true
+        }
+      ],
+      "relatedItemIds": [],
+      "createdAt": "2026-03-18T18:00:00.000Z",
+      "updatedAt": "2026-03-20T11:00:00.000Z",
+      "order": 0
+    }
+  ]
+}

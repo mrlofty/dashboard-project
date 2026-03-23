@@ -1153,6 +1153,73 @@
             color: var(--text-secondary);
         }
 
+        /* Agent Messages */
+        .agent-messages-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .agent-message-item {
+            padding: 0.625rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .agent-message-item.sent {
+            background: rgba(168, 85, 247, 0.12);
+            border-color: rgba(168, 85, 247, 0.35);
+        }
+
+        .agent-message-item.received {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.28);
+        }
+
+        .agent-message-item:hover {
+            background: rgba(168, 85, 247, 0.16);
+            border-color: rgba(168, 85, 247, 0.4);
+        }
+
+        .agent-message-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+            font-size: 0.72rem;
+        }
+
+        .agent-message-route {
+            color: var(--text-primary);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .agent-message-time {
+            color: var(--text-secondary);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .agent-message-preview {
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .agent-message-empty {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            padding: 0.5rem;
+        }
+
         /* Quinn's Corner */
         .quinn-corner {
             background: linear-gradient(135deg, var(--bg-card) 0%, rgba(168, 85, 247, 0.05) 100%);
@@ -1573,6 +1640,18 @@
                 </div>
                 <div id="completed-research" style="display: flex; flex-direction: column; gap: 0.75rem;">
                     <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Agent Messages -->
+            <div class="card dashboard-widget agent-messages-widget" data-widget-id="agent-messages" data-size="small">
+                <div class="card-header">
+                    <span class="card-icon">✉️</span>
+                    <span class="card-title">Inter-agent Communication</span>
+                    <span class="queue-count" id="agent-messages-count" style="margin-left: auto; background: var(--accent-purple); color: white; padding: 0.125rem 0.5rem; border-radius: 12px; font-size: 0.75rem;">0</span>
+                </div>
+                <div class="agent-messages-list" id="agent-messages-list">
+                    <div class="agent-message-empty">No messages logged yet.</div>
                 </div>
             </div>
 
@@ -2024,13 +2103,18 @@
                 const data = await response.json();
                 const preview = document.getElementById('topic-preview');
                 
-                // Show first 8 topic tags
-                const tags = data.topics.slice(0, 8).map(t => 
-                    `<span class="topic-tag">${t.icon} ${t.title}</span>`
-                ).join('');
-                preview.innerHTML = tags;
+                // Show first 8 topic tags with emoji from tags metadata
+                const tagsMetadata = data.tags || {};
+                const topics = data.topics.slice(0, 8).map(t => {
+                    const primaryTag = Array.isArray(t.tags) && t.tags.length > 0 ? t.tags[0] : null;
+                    const tagMeta = primaryTag ? tagsMetadata[primaryTag] : null;
+                    const emoji = tagMeta?.emoji || '📌';
+                    return `<span class="topic-tag" title="${t.summary || t.title}">${emoji} ${t.title}</span>`;
+                }).join('');
+                preview.innerHTML = topics;
             } catch (e) {
-                console.log('Topics not loaded');
+                console.error('Topics widget failed:', e);
+                document.getElementById('topic-preview').innerHTML = '<span style="color: var(--text-secondary); font-size: 0.85rem;">Topics unavailable</span>';
             }
         }
 
@@ -2650,61 +2734,243 @@
             return new Date(dateStr).toLocaleDateString([], { month: 'short', day: 'numeric' });
         }
 
-        async function loadActivityFeed() {
-            try {
-                const response = await fetch('data/agent-activity.json?t=' + Date.now(), { cache: 'no-store' });
-                const data = await response.json();
-                const feed = document.getElementById('activity-feed');
-                const countEl = document.getElementById('activity-count');
-                const filtersEl = document.getElementById('activity-filters');
+        // Unified Activity Feed — aggregates all event sources
+        const ACTIVITY_TYPE_META = {
+            BUILD: { icon: '🔨', color: CATEGORY_COLORS.BUILD || '#00e5ff', label: 'Build' },
+            DEPLOY: { icon: '🚀', color: CATEGORY_COLORS.DEPLOY || '#4ade80', label: 'Deploy' },
+            SCAN: { icon: '🔍', color: CATEGORY_COLORS.SCAN || '#c4b5fd', label: 'Scan' },
+            RESEARCH: { icon: '🧠', color: CATEGORY_COLORS.RESEARCH || '#60a5fa', label: 'Research' },
+            MESSAGE: { icon: '💬', color: '#a855f7', label: 'Message' },
+            ALERT: { icon: '🔔', color: '#ef4444', label: 'Alert' },
+            STATUS: { icon: '📝', color: '#22d3ee', label: 'Status' },
+            MODE: { icon: '🎯', color: '#eab308', label: 'Mode' },
+            BRIEFING: { icon: '📊', color: '#3b82f6', label: 'Briefing' },
+            CRON: { icon: '⏰', color: '#6b7280', label: 'Cron' }
+        };
 
-                const allEvents = Array.isArray(data) ? data : (data.events || []);
-                let events = allEvents
-                    .map(e => ({ ...e, _date: new Date(e.timestamp) }))
-                    .sort((a, b) => b._date - a._date);
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, (char) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[char]));
+        }
 
-                // Render filter chips
-                const agents = [...new Set(events.map(e => e.agent))];
-                filtersEl.innerHTML = `<button onclick="setActivityFilter('all')" style="padding: 0.25rem 0.625rem; border-radius: 999px; border: 1px solid ${activityFilter === 'all' ? '#d4af37' : 'rgba(255,255,255,0.08)'}; background: ${activityFilter === 'all' ? '#d4af37' : 'transparent'}; color: ${activityFilter === 'all' ? '#0d0d0d' : '#a0a0a0'}; font-size: 0.7rem; font-weight: 600; cursor: pointer; font-family: inherit;">All</button>` +
-                    agents.map(a => {
-                        const meta = getAgentMeta(a);
-                        const active = activityFilter === a;
-                        return `<button onclick="setActivityFilter('${a}')" style="padding: 0.25rem 0.625rem; border-radius: 999px; border: 1px solid ${active ? meta.color : 'rgba(255,255,255,0.08)'}; background: ${active ? meta.color : 'transparent'}; color: ${active ? '#0d0d0d' : '#a0a0a0'}; font-size: 0.7rem; font-weight: 600; cursor: pointer; font-family: inherit;">${meta.emoji} ${meta.label}</button>`;
-                    }).join('');
+        function normalizeTimestamp(value) {
+            if (!value) return null;
+            const date = new Date(value);
+            return Number.isNaN(date.getTime()) ? null : date.toISOString();
+        }
 
-                // Filter
-                if (activityFilter !== 'all') {
-                    events = events.filter(e => e.agent === activityFilter);
+        function toNormalizedEvent(event) {
+            if (!event || !event.timestamp) return null;
+            const type = String(event.type || event.category || 'BUILD').toUpperCase();
+            const typeMeta = ACTIVITY_TYPE_META[type] || { icon: '•', color: '#6b7280', label: type };
+            return {
+                type, timestamp: event.timestamp, agent: event.agent || 'System', category: event.category || type,
+                icon: event.icon || typeMeta.icon, color: event.color || typeMeta.color,
+                headline: event.headline || 'Untitled activity', details: event.details || '',
+                sourceId: event.sourceId || `${type.toLowerCase()}-${event.timestamp}`
+            };
+        }
+
+        function transformAgentActivity(payload) {
+            const items = Array.isArray(payload) ? payload : (payload?.events || []);
+            return items.map((item, index) => toNormalizedEvent({
+                type: item.category, timestamp: normalizeTimestamp(item.timestamp),
+                agent: item.agent, category: item.category || 'BUILD',
+                headline: item.headline, details: item.details,
+                sourceId: item.id || `agent-activity-${index}`
+            })).filter(Boolean);
+        }
+
+        function transformAgentMessages(payload) {
+            const messages = payload?.messages || [];
+            return messages.map((message, index) => {
+                const sender = message.sender || 'Unknown';
+                const recipient = message.recipient || 'Unknown';
+                const channel = message.channel ? ` via ${message.channel}` : '';
+                return toNormalizedEvent({
+                    type: 'MESSAGE', timestamp: normalizeTimestamp(message.timestamp),
+                    agent: sender, category: 'MESSAGE',
+                    headline: `${sender} → ${recipient}`,
+                    details: `${message.message || 'No message body'}${channel}`,
+                    sourceId: message.id || `agent-message-${index}`
+                });
+            }).filter(Boolean);
+        }
+
+        function transformAlerts(payload) {
+            const activeAlerts = payload?.alerts || [];
+            const resolvedAlerts = payload?.resolved || [];
+            const active = activeAlerts.map((alert, index) => toNormalizedEvent({
+                type: 'ALERT', timestamp: normalizeTimestamp(alert.created || alert.timestamp),
+                agent: 'System', category: 'ALERT',
+                headline: alert.title || `Alert ${index + 1}`,
+                details: alert.message || alert.details || '',
+                sourceId: alert.id || `alert-active-${index}`
+            }));
+            const resolved = resolvedAlerts.map((alert, index) => toNormalizedEvent({
+                type: 'ALERT', timestamp: normalizeTimestamp(alert.resolved || alert.created),
+                agent: 'System', category: 'ALERT',
+                headline: `${alert.title || `Resolved alert ${index + 1}`} resolved`,
+                details: alert.message || '',
+                sourceId: `${alert.id || `alert-resolved-${index}`}-resolved`
+            }));
+            return [...active, ...resolved].filter(Boolean);
+        }
+
+        function transformStatus(payload) {
+            const history = payload?.history || payload?.activityHistory || payload?.changes || [];
+            if (Array.isArray(history) && history.length) {
+                return history.map((entry, index) => {
+                    const activity = entry.activity || entry.value || entry.next || entry.text;
+                    const previous = entry.previous || entry.from;
+                    return toNormalizedEvent({
+                        type: 'STATUS',
+                        timestamp: normalizeTimestamp(entry.timestamp || entry.updated || entry.changedAt),
+                        agent: entry.agent || 'Quinn', category: 'STATUS',
+                        headline: activity ? `Status updated: ${activity}` : 'Status updated',
+                        details: previous ? `Previous: ${previous}` : payload?.note || '',
+                        sourceId: entry.id || `status-history-${index}`
+                    });
+                }).filter(Boolean);
+            }
+            if (!payload?.activity || !payload?.lastUpdated) return [];
+            return [toNormalizedEvent({
+                type: 'STATUS', timestamp: normalizeTimestamp(payload.lastUpdated),
+                agent: 'Quinn', category: 'STATUS',
+                headline: `Status updated: ${payload.activity}`,
+                details: payload.note || '', sourceId: 'status-current'
+            })].filter(Boolean);
+        }
+
+        function transformTeamFocus(payload) {
+            const history = payload?.history || payload?.changes || payload?.patternHistory || [];
+            if (Array.isArray(history) && history.length) {
+                return history.map((entry, index) => {
+                    const patternId = entry.activePatternId || entry.value || entry.next;
+                    const patternName = entry.activePatternName || entry.label || patternId;
+                    const previous = entry.previous || entry.from;
+                    return toNormalizedEvent({
+                        type: 'MODE',
+                        timestamp: normalizeTimestamp(entry.timestamp || entry.updated || entry.changedAt),
+                        agent: entry.agent || 'System', category: 'MODE',
+                        headline: `Mode switch: ${patternName || 'Unknown'}`,
+                        details: previous ? `Previous mode: ${previous}` : '',
+                        sourceId: entry.id || `mode-history-${index}`
+                    });
+                }).filter(Boolean);
+            }
+            if (!payload?.activePatternId || !payload?.updated) return [];
+            return [toNormalizedEvent({
+                type: 'MODE', timestamp: normalizeTimestamp(payload.updated),
+                agent: 'System', category: 'MODE',
+                headline: `Mode switch: ${payload.activePatternName || payload.activePatternId}`,
+                details: payload.activeRule || '', sourceId: 'team-focus-current'
+            })].filter(Boolean);
+        }
+
+        function transformAadBriefing(payload) {
+            const summary = payload?.brief_summary || '';
+            const topStories = Array.isArray(payload?.top_stories) ? payload.top_stories : [];
+            const timestamp = normalizeTimestamp(payload?.updated || payload?.timestamp || payload?.generatedAt || payload?.date);
+            if (!timestamp) return [];
+            const leadStories = topStories.slice(0, 3).map(story => story.title).filter(Boolean);
+            const details = [summary, leadStories.length ? `Top stories: ${leadStories.join(' | ')}` : ''].filter(Boolean).join(' ');
+            return [toNormalizedEvent({
+                type: 'BRIEFING', timestamp, agent: 'AAD Scanner', category: 'BRIEFING',
+                headline: `AAD briefing ready${payload?.date ? ` · ${payload.date}` : ''}`,
+                details, sourceId: `aad-briefing-${payload?.date || 'latest'}`
+            })].filter(Boolean);
+        }
+
+        function transformSchedule(payload) {
+            const completionSets = [payload?.completed, payload?.recentRuns, payload?.history, payload?.runs].filter(Array.isArray);
+            if (!completionSets.length) return [];
+            return completionSets.flat().map((run, index) => {
+                const timestamp = normalizeTimestamp(run.completed || run.completedAt || run.timestamp || run.finishedAt || run.lastRun);
+                return toNormalizedEvent({
+                    type: 'CRON', timestamp, agent: 'Cron', category: 'CRON',
+                    headline: `${run.name || run.jobName || run.id || 'Scheduled job'} completed`,
+                    details: run.message || run.description || run.status || '',
+                    sourceId: run.id || `cron-run-${index}`
+                });
+            }).filter(Boolean);
+        }
+
+        async function fetchJsonWithFallback(urls) {
+            for (const url of urls) {
+                try {
+                    const response = await fetch(url, { cache: 'no-store' });
+                    if (!response.ok) continue;
+                    return await response.json();
+                } catch (error) { }
+            }
+            return null;
+        }
+
+        function renderActivityFilters(events, filtersEl) {
+            const types = [...new Set(events.map(event => event.type))];
+            const filters = ['all', ...types];
+            filtersEl.innerHTML = filters.map(filter => {
+                const active = activityFilter === filter;
+                if (filter === 'all') {
+                    return `<button onclick="setActivityFilter('all')" style="padding: 0.25rem 0.625rem; border-radius: 999px; border: 1px solid ${active ? '#d4af37' : 'rgba(255,255,255,0.08)'}; background: ${active ? '#d4af37' : 'transparent'}; color: ${active ? '#0d0d0d' : '#a0a0a0'}; font-size: 0.7rem; font-weight: 600; cursor: pointer; font-family: inherit;">All</button>`;
                 }
+                const meta = ACTIVITY_TYPE_META[filter] || { icon: '•', color: '#6b7280', label: filter };
+                return `<button onclick="setActivityFilter('${escapeHtml(filter)}')" style="padding: 0.25rem 0.625rem; border-radius: 999px; border: 1px solid ${active ? meta.color : 'rgba(255,255,255,0.08)'}; background: ${active ? meta.color : 'transparent'}; color: ${active ? '#0d0d0d' : '#a0a0a0'}; font-size: 0.7rem; font-weight: 600; cursor: pointer; font-family: inherit;">${meta.icon} ${meta.label}</button>`;
+            }).join('');
+        }
 
-                // Show max 8 in compact mode
-                const display = events.slice(0, 8);
-                countEl.textContent = `${allEvents.length} events`;
-
-                if (display.length === 0) {
-                    feed.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.85rem; padding: 1rem; text-align: center;">No activity yet</div>';
-                    return;
-                }
-
-                feed.innerHTML = display.map(evt => {
-                    const agent = getAgentMeta(evt.agent);
-                    const catColor = CATEGORY_COLORS[evt.category] || '#6b7280';
-                    const isAdam = String(evt.agent || '').toLowerCase() === 'adam';
-                    return `
-                        <div style="display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.625rem 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; border-left: ${isAdam ? '2px solid #d4af37' : '2px solid transparent'}; background: ${isAdam ? 'rgba(212,175,55,0.08)' : 'transparent'};" onmouseover="this.style.background='${isAdam ? 'rgba(212,175,55,0.16)' : 'rgba(255,255,255,0.02)'}'" onmouseout="this.style.background='${isAdam ? 'rgba(212,175,55,0.08)' : 'transparent'}'">
-                            <span style="font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem;">${agent.emoji}</span>
-                            <div style="flex: 1; min-width: 0;">
-                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem;">
-                                    <span style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.125rem 0.5rem; border-radius: 999px; background: ${catColor}20; color: ${catColor};">${evt.category}</span>
-                                    <span style="font-size: 0.68rem; color: ${agent.color}; font-weight: 600;">${agent.emoji} ${agent.label}</span>
-                                    <span style="font-size: 0.7rem; color: var(--text-secondary); margin-left: auto; white-space: nowrap;">${formatTimeAgo(evt.timestamp)}</span>
-                                </div>
-                                <div style="font-size: 0.825rem; font-weight: 400; line-height: 1.4; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${evt.headline}</div>
+        function renderActivityFeed(events, feedEl) {
+            if (!events.length) {
+                feedEl.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.85rem; padding: 1rem; text-align: center;">No activity yet</div>';
+                return;
+            }
+            feedEl.innerHTML = events.map(event => {
+                const agent = getAgentMeta(event.agent);
+                const isAdam = String(event.agent || '').toLowerCase() === 'adam';
+                return `
+                    <div style="display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.625rem 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; border-left: ${isAdam ? '2px solid #d4af37' : `2px solid ${event.color}55`}; background: ${isAdam ? 'rgba(212,175,55,0.08)' : 'transparent'};" onmouseover="this.style.background='${isAdam ? 'rgba(212,175,55,0.16)' : 'rgba(255,255,255,0.02)'}'" onmouseout="this.style.background='${isAdam ? 'rgba(212,175,55,0.08)' : 'transparent'}'">
+                        <span style="font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem;">${event.icon}</span>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem;">
+                                <span style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.125rem 0.5rem; border-radius: 999px; background: ${event.color}20; color: ${event.color};">${escapeHtml(event.type)}</span>
+                                <span style="font-size: 0.68rem; color: ${agent.color}; font-weight: 600;">${escapeHtml(agent.emoji)} ${escapeHtml(agent.label)}</span>
+                                <span style="font-size: 0.7rem; color: var(--text-secondary); margin-left: auto; white-space: nowrap;">${formatTimeAgo(event.timestamp)}</span>
                             </div>
-                        </div>`;
-                }).join('');
-            } catch (e) {
-                document.getElementById('activity-feed').innerHTML = '<div style="color: var(--text-secondary); font-size: 0.85rem; padding: 1rem; text-align: center;">Could not load activity</div>';
+                            <div style="font-size: 0.825rem; font-weight: 500; line-height: 1.4; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(event.headline)}</div>
+                            ${event.details ? `<div style="font-size: 0.78rem; font-weight: 400; line-height: 1.45; color: var(--text-secondary); margin-top: 0.2rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${escapeHtml(event.details)}</div>` : ''}
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        async function loadActivityFeed() {
+            const feed = document.getElementById('activity-feed');
+            const countEl = document.getElementById('activity-count');
+            const filtersEl = document.getElementById('activity-filters');
+            try {
+                const cacheBust = `t=${Date.now()}`;
+                const dashboardHost = `http://${window.location.hostname}:8081`;
+                const [agentActivity, agentMessages, alerts, status, teamFocus, aadBriefing, schedule] = await Promise.all([
+                    fetchJsonWithFallback([`data/agent-activity.json?${cacheBust}`]),
+                    fetchJsonWithFallback([`data/agent-messages.json?${cacheBust}`]),
+                    fetchJsonWithFallback([`data/alerts.json?${cacheBust}`]),
+                    fetchJsonWithFallback([`data/status.json?${cacheBust}`]),
+                    fetchJsonWithFallback([`data/team-focus.json?${cacheBust}`]),
+                    fetchJsonWithFallback([`/api/file?path=memory/state/aad-briefing.json&${cacheBust}`, `${dashboardHost}/api/file?path=memory/state/aad-briefing.json&${cacheBust}`, `data/aad-briefing.json?${cacheBust}`]),
+                    fetchJsonWithFallback([`data/schedule.json?${cacheBust}`])
+                ]);
+                const allEvents = [
+                    ...transformAgentActivity(agentActivity), ...transformAgentMessages(agentMessages),
+                    ...transformAlerts(alerts), ...transformStatus(status), ...transformTeamFocus(teamFocus),
+                    ...transformAadBriefing(aadBriefing), ...transformSchedule(schedule)
+                ].filter(Boolean).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                renderActivityFilters(allEvents, filtersEl);
+                const filteredEvents = activityFilter === 'all' ? allEvents : allEvents.filter(event => event.type === activityFilter);
+                countEl.textContent = `${allEvents.length} events`;
+                renderActivityFeed(filteredEvents.slice(0, 12), feed);
+            } catch (error) {
+                console.error('Could not load unified activity feed:', error);
+                feed.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.85rem; padding: 1rem; text-align: center;">Could not load activity</div>';
             }
         }
 
@@ -2798,6 +3064,81 @@
             }
         }
 
+        // Agent Messages Widget
+        function truncateAgentMessage(text, maxLength = 80) {
+            if (!text) return '';
+            return text.length > maxLength ? `${text.slice(0, maxLength - 1)}…` : text;
+        }
+
+        function formatAgentTimestamp(timestamp) {
+            if (!timestamp) return 'Unknown time';
+            const date = new Date(timestamp);
+            if (Number.isNaN(date.getTime())) return timestamp;
+            return date.toLocaleString('en-AU', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function escapeAgentHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[char]));
+        }
+
+        async function loadAgentMessagesWidget() {
+            const listEl = document.getElementById('agent-messages-list');
+            const countEl = document.getElementById('agent-messages-count');
+            if (!listEl || !countEl) return;
+
+            try {
+                const response = await fetch(`/api/agent-messages?t=${Date.now()}`, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const payload = await response.json();
+                const messages = Array.isArray(payload?.messages) ? payload.messages : [];
+                const recentMessages = messages
+                    .slice()
+                    .sort((a, b) => new Date(b.timestamp || 0).getTime() - new Date(a.timestamp || 0).getTime())
+                    .slice(0, 10);
+
+                countEl.textContent = String(messages.length);
+
+                if (recentMessages.length === 0) {
+                    listEl.innerHTML = '<div class="agent-message-empty">No messages logged yet.</div>';
+                    return;
+                }
+
+                listEl.innerHTML = recentMessages.map((message) => {
+                    const sender = escapeAgentHtml(message.sender || 'Unknown');
+                    const recipient = escapeAgentHtml(message.recipient || 'Unknown');
+                    const preview = escapeAgentHtml(truncateAgentMessage(message.message || ''));
+                    const timestamp = escapeAgentHtml(formatAgentTimestamp(message.timestamp));
+                    const directionClass = String(message.channel || '').toLowerCase() === 'sent' ? 'sent' : 'received';
+
+                    return `
+                        <div class="agent-message-item ${directionClass}">
+                            <div class="agent-message-top">
+                                <div class="agent-message-route">${sender} → ${recipient}</div>
+                                <div class="agent-message-time">${timestamp}</div>
+                            </div>
+                            <div class="agent-message-preview">${preview}</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                listEl.innerHTML = '<div class="agent-message-empty">Agent messages unavailable.</div>';
+                countEl.textContent = '0';
+                console.error('Could not load agent messages', error);
+            }
+        }
+
         // Initialize - load initial data
         loadAgentStatus();
         loadHomeTaskQueue();
@@ -2813,10 +3154,12 @@
         loadAdamInboxWidget();
         loadTeamHeatmap();
         loadWorkGraphNav();
+        loadAgentMessagesWidget();
         
         // SSE removed polling - real-time updates via sse-init-index.js module
         // Activity feed still polls (not driven by JSON file changes)
         setInterval(loadActivityFeed, 60000);
+        setInterval(loadAgentMessagesWidget, 30000);
 
         // Team Heatmap
         let currentHeatmapView = 'team';

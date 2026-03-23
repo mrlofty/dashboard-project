@@ -182,7 +182,7 @@
 
         .trade-item {
             display: grid;
-            grid-template-columns: auto 1fr auto auto auto;
+            grid-template-columns: auto auto 1fr auto auto auto;
             gap: 1rem;
             padding: 0.75rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
@@ -235,6 +235,46 @@
             font-weight: 600;
             font-family: 'Courier New', monospace;
             font-size: 0.875rem;
+        }
+
+        .trader-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .trader-badge.quinn {
+            background: rgba(147, 51, 234, 0.15);
+            color: #a78bfa;
+        }
+
+        .trader-badge.forge {
+            background: rgba(251, 146, 60, 0.15);
+            color: #fb923c;
+        }
+
+        .trader-badge.team {
+            background: rgba(96, 165, 250, 0.15);
+            color: #60a5fa;
+        }
+
+        .trade-thesis {
+            grid-column: 1 / -1;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-style: italic;
+            padding: 0 0.75rem 0.25rem;
+            margin-top: -0.5rem;
+        }
+
+        .holdings-trader {
+            font-size: 0.75rem;
+            font-weight: 600;
         }
 
         /* Chart */
@@ -333,6 +373,7 @@
                     <thead>
                         <tr>
                             <th>Asset</th>
+                            <th>Trader</th>
                             <th>Quantity</th>
                             <th>Avg Cost</th>
                             <th>Current</th>
@@ -430,18 +471,30 @@
             document.getElementById('cashBalance').textContent = formatCurrency(data.usd_balance);
         }
 
+        function getTraderBadge(trader) {
+            if (!trader) return '<span class="trader-badge team">Team</span>';
+            const name = trader.toLowerCase();
+            if (name === 'quinn') return '<span class="trader-badge quinn">🔮 Quinn</span>';
+            if (name === 'forge') return '<span class="trader-badge forge">⚒️ Forge</span>';
+            return `<span class="trader-badge team">${trader}</span>`;
+        }
+
         function updateHoldingsTable(holdings) {
             const tbody = document.getElementById('holdingsBody');
             
             if (!holdings || holdings.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-secondary);">No holdings</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-secondary);">No holdings</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = holdings.map(h => `
+            tbody.innerHTML = holdings.map(h => {
+                const assetLabel = h.type === 'stock' ? `${h.symbol} <span style="font-size:0.65rem;color:var(--text-secondary)">STOCK</span>` : h.symbol;
+                const qtyDecimals = h.type === 'stock' ? 2 : 6;
+                return `
                 <tr>
-                    <td class="symbol-cell">${h.symbol}</td>
-                    <td>${formatNumber(h.qty, 6)}</td>
+                    <td class="symbol-cell">${assetLabel}</td>
+                    <td class="holdings-trader">${getTraderBadge(h.trader)}</td>
+                    <td>${formatNumber(h.qty, qtyDecimals)}</td>
                     <td>${formatCurrency(h.avg_cost)}</td>
                     <td>${formatCurrency(h.current_price)}</td>
                     <td>${formatCurrency(h.value)}</td>
@@ -451,7 +504,7 @@
                     </td>
                     <td class="${getPnLClass(h.change_24h)}-value">${formatPercent(h.change_24h)}</td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
 
         function updateTradeHistory(trades) {
@@ -466,15 +519,20 @@
             // Show newest first
             const sortedTrades = [...trades].reverse();
             
-            container.innerHTML = sortedTrades.map(t => `
+            container.innerHTML = sortedTrades.map(t => {
+                const qtyDecimals = t.type === 'stock' ? 2 : 6;
+                const thesisHtml = t.thesis ? `<div class="trade-thesis">💡 ${t.thesis}</div>` : '';
+                return `
                 <div class="trade-item">
                     <div class="trade-time">${formatDateTime(t.time)}</div>
+                    ${getTraderBadge(t.trader)}
                     <span class="trade-action ${t.action.toLowerCase()}">${t.action}</span>
-                    <span class="trade-symbol">${t.symbol}</span>
-                    <span class="trade-details">${formatNumber(t.qty, 6)} @ ${formatCurrency(t.price)}</span>
+                    <span class="trade-symbol">${t.symbol}${t.type === 'stock' ? ' <span style="font-size:0.65rem;color:var(--text-secondary)">STOCK</span>' : ''}</span>
+                    <span class="trade-details">${formatNumber(t.qty, qtyDecimals)} @ ${formatCurrency(t.price)}</span>
                     <span class="trade-amount">${formatCurrency(t.usd_amount)}</span>
                 </div>
-            `).join('');
+                ${thesisHtml}
+            `}).join('');
         }
 
         function updatePortfolioChart(totalValue) {

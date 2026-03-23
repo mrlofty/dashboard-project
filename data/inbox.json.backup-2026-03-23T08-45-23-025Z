@@ -1,0 +1,14 @@
+[
+  {
+    "id": "item-1",
+    "title": "Welcome to Unified Inbox",
+    "body": "# Unified Inbox\n\nThis is your new command center for all work items:\n\n## Features\n- **Markdown native** — write in MD, view rendered\n- **Tag system** — filter by project, personal, infrastructure, research, content, design\n- **Agent integration** — items from Quinn/Forge appear automatically\n- **Priority levels** — 1 (high) to 5 (low)\n- **Status workflow** — Inbox → Active → Done → Archived\n\n## Quick Actions\n- Click any item to view full details\n- Use filters in sidebar to focus\n- Search across titles, bodies, and tags\n- Agent-created items have purple left border\n\nStart by creating your first item!",
+    "tags": ["infrastructure"],
+    "priority": 3,
+    "assignee": "Adam",
+    "status": "inbox",
+    "source": "Forge",
+    "created": "2026-03-20T00:50:00.000Z",
+    "updated": "2026-03-20T00:50:00.000Z"
+  }
+]

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Messages Widget</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg: #0a0a0f;
+            --panel: rgba(17, 18, 28, 0.92);
+            --panel-strong: rgba(22, 24, 38, 0.98);
+            --border: rgba(167, 139, 250, 0.18);
+            --border-strong: rgba(99, 102, 241, 0.32);
+            --text: #f5f7ff;
+            --muted: #8c92b6;
+            --accent-blue: #6366f1;
+            --accent-purple: #a78bfa;
+            --sent-bg: rgba(99, 102, 241, 0.16);
+            --sent-border: rgba(99, 102, 241, 0.34);
+            --received-bg: rgba(167, 139, 250, 0.12);
+            --received-border: rgba(167, 139, 250, 0.3);
+            --shadow: 0 18px 45px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 16px;
+            background:
+                radial-gradient(circle at top left, rgba(99, 102, 241, 0.18), transparent 34%),
+                radial-gradient(circle at top right, rgba(167, 139, 250, 0.12), transparent 28%),
+                linear-gradient(180deg, #0d0f18 0%, var(--bg) 100%);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .widget {
+            width: min(460px, 100%);
+            background: linear-gradient(180deg, rgba(18, 20, 32, 0.98) 0%, rgba(12, 13, 21, 0.98) 100%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .widget::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), transparent 42%, rgba(167, 139, 250, 0.06));
+        }
+
+        .header {
+            position: relative;
+            padding: 18px 18px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(167, 139, 250, 0.18));
+            border: 1px solid rgba(167, 139, 250, 0.24);
+            color: #d8d9ff;
+            flex: 0 0 auto;
+        }
+
+        .header-copy {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .eyebrow {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: var(--accent-purple);
+            margin-bottom: 6px;
+        }
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .count {
+            padding: 4px 9px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #dfe3ff;
+            background: rgba(99, 102, 241, 0.16);
+            border: 1px solid rgba(99, 102, 241, 0.28);
+        }
+
+        .subtitle {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 0.78rem;
+            line-height: 1.45;
+        }
+
+        .controls {
+            position: relative;
+            padding: 14px 18px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+        }
+
+        .toggle {
+            display: inline-flex;
+            gap: 6px;
+            padding: 4px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .toggle button {
+            border: 0;
+            background: transparent;
+            color: var(--muted);
+            font: inherit;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .toggle button.active {
+            color: var(--text);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.85), rgba(167, 139, 250, 0.85));
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.22);
+        }
+
+        .messages {
+            position: relative;
+            padding: 14px 18px 18px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .message {
+            position: relative;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: var(--panel);
+            padding: 12px;
+            backdrop-filter: blur(12px);
+            overflow: hidden;
+        }
+
+        .message::after {
+            content: "";
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+            opacity: 0.6;
+        }
+
+        .message.sent {
+            background: linear-gradient(180deg, var(--sent-bg), rgba(15, 18, 30, 0.95));
+            border-color: var(--sent-border);
+            margin-left: 18px;
+        }
+
+        .message.received {
+            background: linear-gradient(180deg, var(--received-bg), rgba(15, 18, 30, 0.95));
+            border-color: var(--received-border);
+            margin-right: 18px;
+        }
+
+        .message-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .direction {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            min-width: 0;
+        }
+
+        .direction-badge {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            flex: 0 0 auto;
+            box-shadow: 0 0 12px currentColor;
+        }
+
+        .message.sent .direction-badge {
+            color: var(--accent-blue);
+            background: var(--accent-blue);
+        }
+
+        .message.received .direction-badge {
+            color: var(--accent-purple);
+            background: var(--accent-purple);
+        }
+
+        .route {
+            font-size: 0.78rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .timestamp {
+            font-size: 0.7rem;
+            color: var(--muted);
+            flex: 0 0 auto;
+        }
+
+        .preview {
+            font-size: 0.83rem;
+            color: #e9ebff;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.68rem;
+            color: #c7ccef;
+            padding: 4px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .tag {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .message.sent .tag {
+            color: #97a4ff;
+        }
+
+        .message.received .tag {
+            color: #cdb9ff;
+        }
+
+        @media (max-width: 520px) {
+            body {
+                padding: 10px;
+            }
+
+            .widget {
+                width: 100%;
+                border-radius: 18px;
+            }
+
+            .header,
+            .controls,
+            .messages {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            .message.sent,
+            .message.received {
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            .message-top,
+            .meta {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="widget" aria-label="Agent Messages">
+        <header class="header">
+            <div class="icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M7 10h10M7 14h7M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8l-4 3v-3H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="header-copy">
+                <div class="eyebrow">Mission Control</div>
+                <div class="title-row">
+                    <h1 class="title">Agent Messages</h1>
+                    <span class="count" id="message-count">8 events</span>
+                </div>
+                <p class="subtitle">Recent <code>sessions_send</code> traffic between Quinn and Forge.</p>
+            </div>
+        </header>
+
+        <div class="controls">
+            <span class="label">Viewer Perspective</span>
+            <div class="toggle" role="tablist" aria-label="Viewer Perspective">
+                <button type="button" class="active" data-viewer="Forge">Forge</button>
+                <button type="button" data-viewer="Quinn">Quinn</button>
+            </div>
+        </div>
+
+        <div class="messages" id="messages"></div>
+    </section>
+
+    <script>
+        const messages = [
+            {
+                timestamp: '14:02',
+                sender: 'Quinn',
+                recipient: 'Forge',
+                preview: 'Need a compact dashboard widget for inter-agent traffic. Keep it minimal and ready for grid placement.',
+                channel: 'sessions_send'
+            },
+            {
+                timestamp: '14:05',
+                sender: 'Forge',
+                recipient: 'Quinn',
+                preview: 'Copy that. I’m matching the dark dashboard shell and using sent/received treatment from the viewer perspective.',
+                channel: 'sessions_send'
+            },
+            {
+                timestamp: '14:09',
+                sender: 'Quinn',
+                recipient: 'Forge',
+                preview: 'Add timestamps, sender, recipient, and just enough preview text to scan thread flow at a glance.',
+                channel: 'sessions_send'
+            },
+            {
+                timestamp: '14:13',
+                sender: 'Forge',
+                recipient: 'Quinn',
+                preview: 'Using accent blue for outbound state and soft purple for inbound. Borders stay subtle to keep the card clean.',
+                channel: 'sessions_send'
+            },
+            {
+                timestamp: '14:16',
+                sender: 'Quinn',
+                recipient: 'Forge',
+                preview: 'Make sure the card still reads well on narrow columns. Mobile stacking matters more than dense metadata.',
+                channel: 'sessions_send'
+            },
+            {
+                timestamp: '14:20',
+                sender: 'Forge',
+                recipient: 'Quinn',
+                preview: 'Understood. I’m keeping message blocks single-column with compact pills instead of a table layout.',
+                channel: 'sessions_send'
+            },
+            {
+                timestamp: '14:24',
+                sender: 'Quinn',
+                recipient: 'Forge',
+                preview: 'Good. Keep the tone close to Mission Control: dark glass, clean type, restrained motion, no noisy chrome.',
+                channel: 'sessions_send'
+            },
+            {
+                timestamp: '14:27',
+                sender: 'Forge',
+                recipient: 'Quinn',
+                preview: 'Widget is structured as a standalone HTML card with embedded mock data so it can drop into the dashboard directly.',
+                channel: 'sessions_send'
+            }
+        ];
+
+        const messagesEl = document.getElementById('messages');
+        const countEl = document.getElementById('message-count');
+        const buttons = Array.from(document.querySelectorAll('[data-viewer]'));
+        let viewer = 'Forge';
+
+        function render() {
+            countEl.textContent = `${messages.length} events`;
+
+            messagesEl.innerHTML = messages.map((message) => {
+                const direction = message.sender === viewer ? 'sent' : 'received';
+                const directionLabel = direction === 'sent' ? 'Sent' : 'Received';
+
+                return `
+                    <article class="message ${direction}">
+                        <div class="message-top">
+                            <div class="direction">
+                                <span class="direction-badge" aria-hidden="true"></span>
+                                <span class="route">${message.sender} to ${message.recipient}</span>
+                            </div>
+                            <time class="timestamp">${message.timestamp}</time>
+                        </div>
+                        <p class="preview">${message.preview}</p>
+                        <div class="meta">
+                            <span class="pill">${message.channel}</span>
+                            <span class="tag">${directionLabel}</span>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        buttons.forEach((button) => {
+            button.addEventListener('click', () => {
+                viewer = button.dataset.viewer;
+                buttons.forEach((item) => item.classList.toggle('active', item === button));
+                render();
+            });
+        });
+
+        render();
+    </script>
+</body>
+</html>

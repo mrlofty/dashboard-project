@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory | Quinn & Adam</title>
+    <title>Memory — Quinn</title>
     <link rel="stylesheet" href="shared.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
@@ -17,15 +17,88 @@
             min-height: calc(100vh - 140px);
         }
 
+        .memory-toolbar {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.25rem 0;
+        }
+
+        .agent-tabs {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+        }
+
+        .agent-tab {
+            border: 0;
+            background: transparent;
+            color: var(--text-secondary);
+            padding: 0.55rem 0.9rem;
+            border-radius: 999px;
+            font: inherit;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .agent-tab:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .agent-tab.active {
+            background: rgba(168, 85, 247, 0.16);
+            color: var(--text-primary);
+            box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.25);
+        }
+
+        .agent-tab[title="Incubating"],
+        .agent-tab[title="Planned"] {
+            opacity: 0.6;
+        }
+
+        .agent-tab[title="Incubating"]:hover,
+        .agent-tab[title="Planned"]:hover {
+            opacity: 0.85;
+        }
+
+        .agent-tab[title="Incubating"].active,
+        .agent-tab[title="Planned"].active {
+            opacity: 1;
+            background: rgba(255, 193, 7, 0.12);
+            box-shadow: inset 0 0 0 1px rgba(255, 193, 7, 0.2);
+        }
+
+        .toolbar-search {
+            flex: 1 1 320px;
+            min-width: 220px;
+        }
+
         @media (max-width: 900px) {
             .memory-layout {
                 grid-template-columns: 1fr;
             }
-            .sidebar { display: none; }
-            .sidebar.mobile-open { display: block; position: fixed; left: 0; top: 60px; bottom: 0; width: 280px; z-index: 100; background: var(--bg-primary); padding: 1rem; overflow-y: auto; }
+
+            .sidebar {
+                position: static;
+                max-height: none;
+            }
+
+            .memory-toolbar {
+                align-items: stretch;
+            }
+
+            .toolbar-search {
+                flex-basis: 100%;
+            }
         }
 
-        /* Sidebar */
         .sidebar {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -51,6 +124,18 @@
             letter-spacing: 0.5px;
         }
 
+        .month-group + .month-group {
+            margin-top: 0.9rem;
+        }
+
+        .month-label {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            margin: 0 0 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
         .file-list {
             list-style: none;
             padding: 0;
@@ -59,7 +144,7 @@
 
         .file-item {
             padding: 0.5rem 0.75rem;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 0.85rem;
             color: var(--text-secondary);
@@ -70,12 +155,12 @@
         }
 
         .file-item:hover {
-            background: rgba(168, 85, 247, 0.1);
+            background: rgba(168, 85, 247, 0.08);
             color: var(--text-primary);
         }
 
         .file-item.active {
-            background: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.2);
             color: white;
         }
 
@@ -86,10 +171,9 @@
         }
 
         .file-item.active .file-date {
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.72);
         }
 
-        /* Main content */
         .memory-main {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -102,6 +186,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 1rem;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
             border-bottom: 1px solid var(--border);
@@ -122,7 +207,7 @@
             font-size: 0.7rem;
             text-transform: uppercase;
             padding: 0.25rem 0.5rem;
-            border-radius: 4px;
+            border-radius: 999px;
             font-weight: 600;
         }
 
@@ -136,7 +221,6 @@
             font-family: monospace;
         }
 
-        /* Markdown content styling */
         .memory-content {
             line-height: 1.8;
             color: var(--text-secondary);
@@ -193,7 +277,7 @@
             background: rgba(168, 85, 247, 0.15);
             padding: 0.2rem 0.4rem;
             border-radius: 4px;
-            font-family: 'Monaco', 'Menlo', monospace;
+            font-family: "Monaco", "Menlo", monospace;
             font-size: 0.85em;
             color: var(--accent-purple);
         }
@@ -253,7 +337,6 @@
             color: var(--text-primary);
         }
 
-        /* Welcome state */
         .welcome-state {
             text-align: center;
             padding: 3rem;
@@ -270,41 +353,128 @@
             margin-bottom: 0.5rem;
         }
 
-        /* Search */
         .search-box {
-            margin-bottom: 1rem;
+            margin-bottom: 0;
         }
 
         .search-input {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.8rem 0.9rem;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 10px;
             color: var(--text-primary);
-            font-size: 0.9rem;
+            font-size: 0.92rem;
         }
 
         .search-input:focus {
             outline: none;
-            border-color: var(--accent-purple);
+            border-color: rgba(168, 85, 247, 0.6);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.12);
         }
 
-        /* Loading */
-        .loading {
+        .search-meta {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            margin-top: 0.45rem;
+        }
+
+        .search-results {
+            display: none;
+            margin-bottom: 1.25rem;
+            padding: 0.9rem;
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+        }
+
+        .search-results.visible {
+            display: block;
+        }
+
+        .search-results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .search-result-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 0.8rem 0.9rem;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+        }
+
+        .search-result-item:hover {
+            border-color: rgba(168, 85, 247, 0.28);
+            background: rgba(168, 85, 247, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .search-result-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .search-result-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .search-result-type {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 999px;
+            padding: 0.2rem 0.5rem;
+            white-space: nowrap;
+        }
+
+        .search-result-snippet {
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        .loading,
+        .empty-state {
             text-align: center;
-            padding: 2rem;
+            padding: 1rem;
             color: var(--text-secondary);
         }
     </style>
 </head>
 <body>
     <div id="shared-header"></div>
-    
+
     <div class="memory-layout">
+        <div class="memory-toolbar">
+            <div class="agent-tabs" id="agent-tabs">
+                <button class="agent-tab" data-agent="quinn" type="button">Quinn 🔮</button>
+                <button class="agent-tab" data-agent="forge" type="button">Forge ⚒️</button>
+                <button class="agent-tab" data-agent="scout" type="button" title="Incubating">Scout 🥚</button>
+                <button class="agent-tab" data-agent="hunter" type="button" title="Planned">Hunter 🥚</button>
+                <button class="agent-tab" data-agent="designer" type="button" title="Planned">Designer 🥚</button>
+                <button class="agent-tab" data-agent="business" type="button" title="Planned">Business 🥚</button>
+            </div>
+            <div class="search-box toolbar-search">
+                <input type="text" class="search-input" placeholder="Search this agent's memory..." id="file-search" autocomplete="off">
+                <div class="search-meta" id="search-meta">Filename and content search for the selected agent.</div>
+            </div>
+        </div>
+
         <div class="sidebar" id="sidebar">
-            <div class="search-box">
-                <input type="text" class="search-input" placeholder="Search files..." id="file-search">
+            <div class="search-results" id="search-results">
+                <div class="sidebar-title">Search Results</div>
+                <div class="search-results-list" id="search-results-list"></div>
             </div>
 
             <div class="sidebar-section">
@@ -314,7 +484,7 @@
 
             <div class="sidebar-section">
                 <div class="sidebar-title">📅 Daily Memory</div>
-                <ul class="file-list" id="daily-files"></ul>
+                <div id="daily-files"></div>
             </div>
 
             <div class="sidebar-section">
@@ -326,7 +496,7 @@
         <div class="memory-main" id="memory-main">
             <div class="welcome-state" id="welcome-state">
                 <div class="icon">🧠</div>
-                <h2>Quinn's Memory</h2>
+                <h2 id="welcome-title">Quinn's Memory</h2>
                 <p>Select a file from the sidebar to view its contents.</p>
                 <p style="margin-top: 1rem; font-size: 0.85rem;">Daily memories, topics, and core identity files — all rendered in markdown.</p>
             </div>
@@ -342,68 +512,228 @@
             </div>
         </div>
     </div>
-    
+
     <div id="shared-footer"></div>
 
     <script>
         const API_BASE = `http://${window.location.hostname}:8081`;
+        const AGENTS = {
+            quinn: { label: "Quinn", welcome: "Quinn's Memory", status: "active" },
+            forge: { label: "Forge", welcome: "Forge's Memory", status: "active" },
+            scout: { label: "Scout", welcome: "Scout's Memory 🥚", status: "incubating" },
+            hunter: { label: "Hunter", welcome: "Hunter's Memory 🥚", status: "planned" },
+            designer: { label: "Designer", welcome: "Designer's Memory 🥚", status: "planned" },
+            business: { label: "Business", welcome: "Business's Memory 🥚", status: "planned" }
+        };
+
         let allFiles = [];
         let currentFile = null;
+        let currentAgent = getAgentFromUrl();
+        let searchAbortController = null;
+        let searchDebounce = null;
 
-        // Load file list
-        async function loadFileList() {
-            try {
-                const response = await fetch(`${API_BASE}/api/memory`);
-                const data = await response.json();
-                allFiles = data.files;
-                renderFileList(allFiles);
-            } catch (err) {
-                console.error('Failed to load files:', err);
-            }
+        function getAgentFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const agent = (params.get("agent") || "quinn").toLowerCase();
+            return AGENTS[agent] ? agent : "quinn";
         }
 
-        // Render file list in sidebar
-        function renderFileList(files) {
-            const coreList = document.getElementById('core-files');
-            const dailyList = document.getElementById('daily-files');
-            const topicList = document.getElementById('topic-files');
+        function getCurrentAgentMeta() {
+            return AGENTS[currentAgent] || AGENTS.quinn;
+        }
 
-            coreList.innerHTML = '';
-            dailyList.innerHTML = '';
-            topicList.innerHTML = '';
-
-            files.forEach(file => {
-                const li = document.createElement('li');
-                li.className = 'file-item';
-                li.dataset.id = file.id;
-
-                const icon = file.type === 'core' ? '📄' : file.type === 'daily' ? '📅' : '🏷️';
-                const displayName = file.name.replace('.md', '');
-                
-                if (file.type === 'daily') {
-                    const date = new Date(file.date + 'T00:00:00');
-                    const formatted = date.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
-                    li.innerHTML = `${icon} ${formatted}`;
-                } else {
-                    li.innerHTML = `${icon} ${displayName}`;
-                }
-
-                li.onclick = () => loadFile(file.id);
-
-                if (file.type === 'core') coreList.appendChild(li);
-                else if (file.type === 'daily') dailyList.appendChild(li);
-                else topicList.appendChild(li);
+        function updateDocumentState() {
+            const meta = getCurrentAgentMeta();
+            document.title = `Memory — ${meta.label}`;
+            document.getElementById("welcome-title").textContent = meta.welcome;
+            document.querySelectorAll(".agent-tab").forEach((tab) => {
+                tab.classList.toggle("active", tab.dataset.agent === currentAgent);
             });
         }
 
-        // Load and render a file
+        function updateUrl({ fileId = window.location.hash.slice(1), replace = true } = {}) {
+            const params = new URLSearchParams(window.location.search);
+            params.set("agent", currentAgent);
+            const query = `?${params.toString()}`;
+            const hash = fileId ? `#${encodeURIComponent(fileId)}` : "";
+            const url = `${window.location.pathname}${query}${hash}`;
+            history[replace ? "replaceState" : "pushState"](null, "", url);
+        }
+
+        function getFileHash() {
+            const hash = window.location.hash.slice(1);
+            return hash ? decodeURIComponent(hash) : "";
+        }
+
+        function formatDailyLabel(file) {
+            const date = new Date(`${file.date}T00:00:00`);
+            return date.toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short" });
+        }
+
+        function groupDailyFiles(files) {
+            return files.reduce((groups, file) => {
+                const date = new Date(`${file.date}T00:00:00`);
+                const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+                if (!groups[key]) {
+                    groups[key] = [];
+                }
+                groups[key].push(file);
+                return groups;
+            }, {});
+        }
+
+        function createFileItem(file) {
+            const li = document.createElement("li");
+            li.className = "file-item";
+            li.dataset.id = file.id;
+
+            const icon = file.type === "core" ? "📄" : file.type === "daily" ? "📅" : "🏷️";
+            if (file.type === "daily") {
+                li.innerHTML = `${icon} ${formatDailyLabel(file)}`;
+            } else {
+                li.innerHTML = `${icon} ${file.name.replace(/\.md$/i, "")}`;
+            }
+
+            li.onclick = () => loadFile(file.id);
+            return li;
+        }
+
+        function renderFileList(files) {
+            const coreList = document.getElementById("core-files");
+            const dailyList = document.getElementById("daily-files");
+            const topicList = document.getElementById("topic-files");
+
+            coreList.innerHTML = "";
+            dailyList.innerHTML = "";
+            topicList.innerHTML = "";
+
+            const coreFiles = files.filter((file) => file.type === "core");
+            const dailyFiles = files.filter((file) => file.type === "daily");
+            const topicFiles = files.filter((file) => file.type !== "core" && file.type !== "daily");
+
+            coreFiles.forEach((file) => coreList.appendChild(createFileItem(file)));
+            topicFiles.forEach((file) => topicList.appendChild(createFileItem(file)));
+
+            const dailyGroups = groupDailyFiles(dailyFiles);
+            Object.keys(dailyGroups)
+                .sort((a, b) => b.localeCompare(a))
+                .forEach((groupKey) => {
+                    const date = new Date(`${groupKey}-01T00:00:00`);
+                    const wrapper = document.createElement("div");
+                    wrapper.className = "month-group";
+
+                    const label = document.createElement("div");
+                    label.className = "month-label";
+                    label.textContent = date.toLocaleDateString("en-AU", { month: "long", year: "numeric" });
+                    wrapper.appendChild(label);
+
+                    const list = document.createElement("ul");
+                    list.className = "file-list";
+                    dailyGroups[groupKey]
+                        .sort((a, b) => (a.date < b.date ? 1 : -1))
+                        .forEach((file) => list.appendChild(createFileItem(file)));
+                    wrapper.appendChild(list);
+                    dailyList.appendChild(wrapper);
+                });
+
+            if (currentFile?.id) {
+                document.querySelector(`[data-id="${CSS.escape(currentFile.id)}"]`)?.classList.add("active");
+            }
+        }
+
+        function showSearchResults(results, query) {
+            const panel = document.getElementById("search-results");
+            const list = document.getElementById("search-results-list");
+            const meta = document.getElementById("search-meta");
+
+            list.innerHTML = "";
+
+            if (!query) {
+                panel.classList.remove("visible");
+                meta.textContent = "Filename and content search for the selected agent.";
+                return;
+            }
+
+            panel.classList.add("visible");
+            meta.textContent = `${results.length} result${results.length === 1 ? "" : "s"} for "${query}" in ${getCurrentAgentMeta().label}.`;
+
+            if (!results.length) {
+                list.innerHTML = '<div class="empty-state">No matches found.</div>';
+                return;
+            }
+
+            results.forEach((result) => {
+                const item = document.createElement("div");
+                item.className = "search-result-item";
+                item.onclick = () => loadFile(result.id);
+
+                const name = result.filename || result.name || result.id;
+                const matchType = result.match_type || result.matchType || "content";
+                const snippet = result.snippet || result.preview || result.match || "Open file";
+
+                item.innerHTML = `
+                    <div class="search-result-head">
+                        <div class="search-result-name">${escapeHtml(name.replace(/\.md$/i, ""))}</div>
+                        <div class="search-result-type">${escapeHtml(matchType)}</div>
+                    </div>
+                    <div class="search-result-snippet">${escapeHtml(snippet)}</div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        async function loadFileList({ preferredFileId } = {}) {
+            try {
+                const response = await fetch(`${API_BASE}/api/memory?agent=${encodeURIComponent(currentAgent)}`);
+                const data = await response.json();
+                allFiles = Array.isArray(data.files) ? data.files : [];
+                renderFileList(allFiles);
+
+                const fileId = preferredFileId || getFileHash();
+                if (fileId) {
+                    await loadFile(fileId);
+                } else {
+                    currentFile = null;
+                    const welcomeState = document.getElementById("welcome-state");
+                    const welcomeTitle = document.getElementById("welcome-title");
+                    const agentMeta = getCurrentAgentMeta();
+                    
+                    welcomeState.style.display = "block";
+                    document.getElementById("memory-content").style.display = "none";
+                    
+                    if (allFiles.length === 0 && agentMeta.status === "planned") {
+                        welcomeTitle.textContent = `${agentMeta.label} — Not Yet Created`;
+                        welcomeState.querySelector("p").textContent = "This agent's workspace has not been initialized yet.";
+                    } else if (allFiles.length === 0 && agentMeta.status === "incubating") {
+                        welcomeTitle.textContent = `${agentMeta.label} — Incubating 🥚`;
+                        welcomeState.querySelector("p").textContent = "Core files are being prepared. Check back soon.";
+                    } else {
+                        welcomeTitle.textContent = agentMeta.welcome;
+                        welcomeState.querySelector("p").textContent = "Select a file from the sidebar to view its contents.";
+                    }
+                    
+                    updateUrl({ fileId: "", replace: true });
+                }
+            } catch (err) {
+                console.error("Failed to load files:", err);
+            }
+        }
+
         async function loadFile(fileId) {
-            // Update active state
-            document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
-            document.querySelector(`[data-id="${fileId}"]`)?.classList.add('active');
+            document.querySelectorAll(".file-item").forEach((el) => el.classList.remove("active"));
+            document.querySelector(`[data-id="${CSS.escape(fileId)}"]`)?.classList.add("active");
 
             try {
-                const response = await fetch(`${API_BASE}/api/memory/read?id=${encodeURIComponent(fileId)}`);
+                const response = await fetch(`${API_BASE}/api/memory/read?id=${encodeURIComponent(fileId)}&agent=${encodeURIComponent(currentAgent)}`);
                 const data = await response.json();
 
                 if (data.error) {
@@ -411,58 +741,96 @@
                     return;
                 }
 
-                currentFile = data;
-
-                // Show content, hide welcome
-                document.getElementById('welcome-state').style.display = 'none';
-                document.getElementById('memory-content').style.display = 'block';
-
-                // Update header
-                document.getElementById('file-title').textContent = data.name.replace('.md', '');
-                document.getElementById('file-type').textContent = data.type;
-                document.getElementById('file-type').className = `memory-type ${data.type}`;
-                document.getElementById('file-path').textContent = fileId;
-
-                // Render markdown
-                const html = marked.parse(data.content);
-                document.getElementById('markdown-content').innerHTML = html;
-
-                // Update URL
-                history.replaceState(null, '', `memory.html#${fileId}`);
-
+                currentFile = { ...data, id: data.id || fileId };
+                document.getElementById("welcome-state").style.display = "none";
+                document.getElementById("memory-content").style.display = "block";
+                document.getElementById("file-title").textContent = data.name.replace(/\.md$/i, "");
+                document.getElementById("file-type").textContent = data.type;
+                document.getElementById("file-type").className = `memory-type ${data.type}`;
+                document.getElementById("file-path").textContent = fileId;
+                document.getElementById("markdown-content").innerHTML = marked.parse(data.content);
+                updateUrl({ fileId, replace: true });
             } catch (err) {
-                console.error('Failed to load file:', err);
+                console.error("Failed to load file:", err);
             }
         }
 
-        // Search files
-        document.getElementById('file-search').addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
+        async function runSearch(query) {
+            if (searchAbortController) {
+                searchAbortController.abort();
+            }
+
             if (!query) {
+                showSearchResults([], "");
                 renderFileList(allFiles);
                 return;
             }
-            const filtered = allFiles.filter(f => 
-                f.name.toLowerCase().includes(query) || 
-                f.id.toLowerCase().includes(query)
+
+            const filtered = allFiles.filter((file) =>
+                file.name.toLowerCase().includes(query.toLowerCase()) ||
+                file.id.toLowerCase().includes(query.toLowerCase())
             );
             renderFileList(filtered);
-        });
 
-        // Handle deep linking
+            const panel = document.getElementById("search-results-list");
+            document.getElementById("search-results").classList.add("visible");
+            panel.innerHTML = '<div class="loading">Searching…</div>';
+
+            searchAbortController = new AbortController();
+
+            try {
+                const response = await fetch(
+                    `${API_BASE}/api/memory/search?agent=${encodeURIComponent(currentAgent)}&q=${encodeURIComponent(query)}`,
+                    { signal: searchAbortController.signal }
+                );
+                const data = await response.json();
+                const results = Array.isArray(data.results) ? data.results : [];
+                showSearchResults(results, query);
+            } catch (err) {
+                if (err.name === "AbortError") {
+                    return;
+                }
+                console.error("Search failed:", err);
+                showSearchResults([], query);
+            }
+        }
+
+        function handleSearchInput(event) {
+            const query = event.target.value.trim();
+            clearTimeout(searchDebounce);
+            searchDebounce = setTimeout(() => runSearch(query), 180);
+        }
+
+        function switchAgent(agent) {
+            if (!AGENTS[agent] || agent === currentAgent) {
+                return;
+            }
+
+            currentAgent = agent;
+            currentFile = null;
+            document.getElementById("file-search").value = "";
+            showSearchResults([], "");
+            updateDocumentState();
+            updateUrl({ fileId: "", replace: false });
+            loadFileList();
+        }
+
         function handleHash() {
-            const hash = window.location.hash.slice(1);
+            const hash = getFileHash();
             if (hash) {
                 loadFile(hash);
             }
         }
 
-        // Initialize
-        loadFileList().then(() => {
-            handleHash();
+        document.getElementById("file-search").addEventListener("input", handleSearchInput);
+        document.querySelectorAll(".agent-tab").forEach((tab) => {
+            tab.addEventListener("click", () => switchAgent(tab.dataset.agent));
         });
 
-        window.addEventListener('hashchange', handleHash);
+        updateDocumentState();
+        updateUrl({ replace: true });
+        loadFileList();
+        window.addEventListener("hashchange", handleHash);
     </script>
     <script src="shared.js"></script>
 </body>

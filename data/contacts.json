@@ -302,7 +302,8 @@
         "model",
         "collaborator"
       ],
-      "notes": "Portrait/street model. Wabi-sabi minimalist noir aesthetic (@yldpn_01). Special \ud83d\udc9c"
+      "notes": "Portrait/street model. Wabi-sabi minimalist noir aesthetic (@yldpn_01). Shoots: Summer StreetStyle Collab (Metro Tunnel), Chapters (State Library). Special \ud83d\udc9c",
+      "pronouns": "he/him"
     },
     {
       "id": "emilio",
@@ -417,7 +418,7 @@
         "mcc",
         "tfp"
       ],
-      "notes": "Met at MCC photowalk (Mar 8, 2026). Adam directed specific shots with him. Strong presence, confident style. Has modelling website (hhjt.avelinomodelling.com). 129 posts on IG. Graduated from modelling school. Keen to shoot TFP \u2014 to be scheduled.",
+      "notes": "Model. Shot at Ink Walk and Brunswick Life walks. Green shirt triptych series. Regular collaborator.",
       "added": "2026-03-09",
       "lastContact": "2026-03-08",
       "location": "Melbourne",
@@ -497,6 +498,18 @@
       "instagramUrl": "https://www.instagram.com/nagham.ayyash/",
       "notes": "Model from Ink Walk shoot (March 2026). Green dress portrait.",
       "addedDate": "2026-03-20"
+    },
+    {
+      "id": "contact_1774146965",
+      "name": "Avelino Guterres",
+      "type": "model",
+      "tier": "contact",
+      "circle": "photography",
+      "instagram": "@avelino_guterres91modelling",
+      "instagramUrl": "https://www.instagram.com/avelino_guterres91modelling/",
+      "pronouns": "he/him",
+      "notes": "Model. Shot at Ink Walk and Brunswick Life walks. Green shirt triptych series. Regular collaborator.",
+      "addedDate": "2026-03-22"
     }
   ],
   "circles": [

@@ -1,396 +1,1110 @@
 {
   "goals": [
     {
-      "id": "fqsd",
-      "title": "FQSD - Quinn's blog live",
-      "description": "Get quinn.adamdunstan.com live with autonomous publishing capability",
+      "id": "goal:forge-agent",
+      "title": "\u2692\ufe0f Forge \u2014 First Builder Agent Live",
       "status": "completed",
-      "completedDate": "2026-02-11",
+      "stage": "saved",
+      "priority": 1,
       "category": "project",
-      "priority": "high",
+      "description": "Born March 1, 2026. Full agent with own workspace, identity, heartbeat, memory. Running on Sonnet. Execute \u2192 Advise \u2192 Initiate growth trajectory.",
+      "summary": "",
       "subtasks": [
         {
+          "id": "subtask-0-ud2k78yv",
+          "text": "Workspace prepared (SOUL.md, AGENTS.md, LEARNING.md, TOOLS.md)",
+          "done": true
+        },
+        {
+          "id": "subtask-1-wh1rug9z",
+          "text": "Agent config in OpenClaw (multi-agent mode)",
+          "done": true
+        },
+        {
+          "id": "subtask-2-82q876bk",
+          "text": "Forge chose name and created IDENTITY.md",
+          "done": true
+        },
+        {
+          "id": "subtask-3-79rjr79h",
+          "text": "First memory written",
+          "done": true
+        },
+        {
+          "id": "subtask-4-b5mbadau",
+          "text": "Dashboard activity feed live",
+          "done": true
+        },
+        {
+          "id": "subtask-5-tnh343a1",
+          "text": "Ops channel posting verified",
+          "done": false
+        },
+        {
+          "id": "subtask-6-ikhgqrbe",
+          "text": "First real build task completed",
+          "done": false
+        }
+      ],
+      "assignee": "Unassigned",
+      "linkedItems": [],
+      "created": "2026-03-23",
+      "updated": "2026-03-23",
+      "notes": "",
+      "tags": [],
+      "order": 0,
+      "queuedAgent": "",
+      "queuedAt": ""
+    },
+    {
+      "id": "goal:fqsd",
+      "title": "FQSD - Quinn's blog live",
+      "status": "completed",
+      "stage": "saved",
+      "priority": 1,
+      "category": "project",
+      "description": "Get quinn.adamdunstan.com live with autonomous publishing capability",
+      "summary": "",
+      "subtasks": [
+        {
+          "id": "subtask-0-ik7wrsjh",
           "text": "Set up domain/hosting",
           "done": true
         },
         {
+          "id": "subtask-1-0vet4erj",
           "text": "Configure GitHub Actions deploy",
           "done": true
         },
         {
+          "id": "subtask-2-7ekqjt9p",
           "text": "First blog post published",
           "done": true
         }
       ],
-      "notes": "Full autonomous publishing achieved. Adam built the infrastructure, Quinn got the keys.",
+      "assignee": "Unassigned",
+      "linkedItems": [],
       "created": "2026-02-01",
-      "updated": "2026-02-11"
+      "updated": "2026-02-11",
+      "notes": "Full autonomous publishing achieved. Adam built the infrastructure, Quinn got the keys.",
+      "tags": [],
+      "order": 1,
+      "queuedAgent": "",
+      "queuedAt": ""
     },
     {
-      "id": "voice-calling",
+      "id": "goal:voice-calling",
       "title": "Voice calling capability",
-      "description": "Enable Quinn to make and receive voice calls via ElevenLabs integration",
       "status": "active",
+      "stage": "active",
+      "priority": 1,
       "category": "capability",
-      "priority": "high",
+      "description": "Enable Quinn to make and receive voice calls via ElevenLabs integration",
+      "summary": "",
       "subtasks": [
         {
+          "id": "subtask-0-qwj9g3jq",
           "text": "Research ElevenLabs conversational API",
           "done": true
         },
         {
+          "id": "subtask-1-39b6sb02",
           "text": "Design security model (inbound restrictions)",
           "done": true
         },
         {
+          "id": "subtask-2-w3rdwlih",
           "text": "Implement OpenClaw integration",
           "done": false
         },
         {
+          "id": "subtask-3-xx74vz8p",
           "text": "Test outbound calls",
           "done": false
         }
       ],
-      "notes": "Security model: outbound open, inbound Adam-only to prevent voice prompt injection",
+      "assignee": "Unassigned",
+      "linkedItems": [],
       "created": "2026-02-10",
       "updated": "2026-02-19",
-      "completedDate": null
+      "notes": "Security model: outbound open, inbound Adam-only to prevent voice prompt injection",
+      "tags": [],
+      "order": 2,
+      "queuedAgent": "",
+      "queuedAt": ""
     },
     {
-      "id": "crm-v1",
+      "id": "goal:crm-v1",
       "title": "CRM v1 functional",
-      "description": "Build a working contact relationship manager for tracking people and connections",
       "status": "active",
+      "stage": "active",
+      "priority": 3,
       "category": "project",
-      "priority": "medium",
+      "description": "Build a working contact relationship manager for tracking people and connections",
+      "summary": "",
       "subtasks": [
         {
+          "id": "subtask-0-95kibxjq",
           "text": "Contact data structure",
           "done": true
         },
         {
+          "id": "subtask-1-tlnp04sp",
           "text": "List view with tiers",
           "done": true
         },
         {
+          "id": "subtask-2-4jccbpti",
           "text": "Detail view",
           "done": true
         },
         {
+          "id": "subtask-3-xhpac0l0",
           "text": "Search functionality",
           "done": true
         },
         {
+          "id": "subtask-4-dvq9dtd9",
           "text": "Edit capability",
           "done": true
         },
         {
+          "id": "subtask-5-uc3gtjip",
           "text": "Add 'Circles' as another layer - e.g. in the photograpy scene, Evelyn, Adam, Alex have a group chat, and hang out. we are a circle or click.",
           "done": true
         },
         {
+          "id": "subtask-6-u9xlt67r",
           "text": "add birthday for each person - and their age.",
           "done": true
         },
         {
+          "id": "subtask-7-xfk1ssvd",
           "text": "Add \"Intimate\" as a TYPE e.g. people i have dated or hooked up with are in this.",
           "done": true
         },
         {
+          "id": "subtask-8-pjrqs400",
           "text": "Add a google maps view embedded (?) to the page showing the locations of friends. will be zoomed thanks to haydon lol",
           "done": false
         }
       ],
-      "notes": "Getting close! Edit capability is the final piece.",
+      "assignee": "Unassigned",
+      "linkedItems": [],
       "created": "2026-02-08",
-      "updated": "2026-02-14"
+      "updated": "2026-02-14",
+      "notes": "Getting close! Edit capability is the final piece.",
+      "tags": [],
+      "order": 3,
+      "queuedAgent": "",
+      "queuedAt": ""
     },
     {
-      "id": "kofi-immaculatevibes",
+      "id": "goal:kofi-immaculatevibes",
       "title": "Ko-fi for immaculatevibes.art",
-      "description": "Set up Ko-fi integration for the AI art site to accept support/commissions",
       "status": "planned",
+      "stage": "idea",
+      "priority": 5,
       "category": "project",
-      "priority": "low",
+      "description": "Set up Ko-fi integration for the AI art site to accept support/commissions",
+      "summary": "",
       "subtasks": [],
-      "notes": "Funding for better tools for us!",
+      "assignee": "Unassigned",
+      "linkedItems": [],
       "created": "2026-02-12",
-      "updated": "2026-02-14"
+      "updated": "2026-02-14",
+      "notes": "Funding for better tools for us!",
+      "tags": [],
+      "order": 4,
+      "queuedAgent": "",
+      "queuedAt": ""
     },
     {
-      "id": "whichbatman",
+      "id": "goal:whichbatman",
       "title": "whichbatman.com build",
-      "description": "Build the Batman comparison site - research complete, ready to develop",
       "status": "planned",
+      "stage": "idea",
+      "priority": 3,
       "category": "project",
-      "priority": "medium",
+      "description": "Build the Batman comparison site - research complete, ready to develop",
+      "summary": "",
       "subtasks": [
         {
+          "id": "subtask-0-9rqmdujr",
           "text": "Domain secured",
           "done": true
         },
         {
+          "id": "subtask-1-dvzbrylg",
           "text": "Research/content prep",
           "done": true
         },
         {
+          "id": "subtask-2-l5mdsj97",
           "text": "Design mockup",
           "done": false
         },
         {
+          "id": "subtask-3-rwsff2tp",
           "text": "Build site",
           "done": false
         },
         {
+          "id": "subtask-4-qcgguenw",
           "text": "Launch",
           "done": false
         },
         {
+          "id": "subtask-5-b530anvt",
           "text": "draft quiz copy",
           "done": false
         },
         {
+          "id": "subtask-6-pmpndr7j",
           "text": "research requirements for privacy policy / legal requirements given reference to batman IP",
           "done": false
         },
         {
+          "id": "subtask-7-rdpshf79",
           "text": "research requirements for google adsense - create subtasks for google adsense qualifiecation",
           "done": false
         },
         {
+          "id": "subtask-8-un7qjpx5",
           "text": "Decide on web site /app framework and hosting - ensuring key requirement of adsense will be supported",
           "done": false
         }
       ],
-      "notes": "Fun project in the queue",
+      "assignee": "Unassigned",
+      "linkedItems": [],
       "created": "2026-02-10",
-      "updated": "2026-02-14"
+      "updated": "2026-02-14",
+      "notes": "Fun project in the queue",
+      "tags": [],
+      "order": 5,
+      "queuedAgent": "",
+      "queuedAt": ""
     },
     {
-      "id": "dashboard-v1",
+      "id": "goal:dashboard-v1",
       "title": "Dashboard v1 complete",
-      "description": "Finish the Quinn & Adam dashboard with all core features",
       "status": "active",
+      "stage": "active",
+      "priority": 1,
       "category": "project",
-      "priority": "high",
+      "description": "Finish the Quinn & Adam dashboard with all core features",
+      "summary": "",
       "subtasks": [
         {
+          "id": "subtask-0-8z8r4l2u",
           "text": "Home page with widgets",
           "done": true
         },
         {
+          "id": "subtask-1-bnyslayn",
           "text": "Topics page",
           "done": true
         },
         {
+          "id": "subtask-2-hmvdamfn",
           "text": "CRM page",
           "done": true
         },
         {
+          "id": "subtask-3-8tbp0zw5",
           "text": "Memory page",
           "done": true
         },
         {
+          "id": "subtask-4-4cgo4qtb",
           "text": "System page",
           "done": true
         },
         {
+          "id": "subtask-5-a3kurtba",
           "text": "Goals page",
           "done": false
         },
         {
+          "id": "subtask-6-w5dhpxpl",
           "text": "Edit capability",
           "done": false
         }
       ],
-      "notes": "Valentine's Day gift to Adam \ud83d\udc9c",
+      "assignee": "Unassigned",
+      "linkedItems": [],
       "created": "2026-02-13",
-      "updated": "2026-02-14"
+      "updated": "2026-02-14",
+      "notes": "Valentine's Day gift to Adam \ud83d\udc9c",
+      "tags": [],
+      "order": 6,
+      "queuedAgent": "",
+      "queuedAt": ""
     },
     {
-      "id": "cheeselandslide-com",
+      "id": "goal:cheeselandslide-com",
       "title": "Cheeselandslide.com",
+      "status": "planned",
+      "stage": "idea",
+      "priority": 5,
+      "category": "project",
       "description": "Create concept for this brand, intended as original as fashion t-shirt / accessories brand.",
-      "category": "project",
-      "priority": "low",
-      "status": "planned",
+      "summary": "",
       "subtasks": [],
+      "assignee": "Unassigned",
+      "linkedItems": [],
+      "created": "2026-02-14",
+      "updated": "2026-02-14",
       "notes": "Domain is owned.",
-      "created": "2026-02-14",
-      "updated": "2026-02-14"
+      "tags": [],
+      "order": 7,
+      "queuedAgent": "",
+      "queuedAt": ""
     },
     {
-      "id": "deploy-ollama-on-a-new-machine",
+      "id": "goal:deploy-ollama-on-a-new-machine",
       "title": "Deploy ollama on a new machine running local LLM",
-      "description": "Add a new local AI agent (would only be a small / simple model) that can assist with basic tasks with no external API fees.",
+      "status": "planned",
+      "stage": "idea",
+      "priority": 5,
       "category": "capability",
-      "priority": "low",
-      "status": "planned",
+      "description": "Add a new local AI agent (would only be a small / simple model) that can assist with basic tasks with no external API fees.",
+      "summary": "",
       "subtasks": [],
+      "assignee": "Unassigned",
+      "linkedItems": [],
+      "created": "2026-02-14",
+      "updated": "2026-02-14",
       "notes": "This is a longer term goal.  Over time, hardware and models make the goal more effective the longer we wait.",
-      "created": "2026-02-14",
-      "updated": "2026-02-14"
+      "tags": [],
+      "order": 8,
+      "queuedAgent": "",
+      "queuedAt": ""
     },
     {
-      "id": "enhance-dashboard-goals-page",
+      "id": "goal:enhance-dashboard-goals-page",
       "title": "Enhance dashboard goals page",
+      "status": "active",
+      "stage": "active",
+      "priority": 3,
+      "category": "project",
       "description": "Create the current view as 'category' view and then introduce kanban style column view for active, planned, completed.",
-      "category": "project",
-      "priority": "medium",
-      "status": "planned",
+      "summary": "",
       "subtasks": [],
+      "assignee": "Unassigned",
+      "linkedItems": [],
+      "created": "2026-02-14",
+      "updated": "2026-02-28",
       "notes": "",
-      "created": "2026-02-14",
-      "updated": "2026-02-14"
+      "tags": [],
+      "order": 9,
+      "queuedAgent": "",
+      "queuedAt": ""
     },
     {
-      "id": "let-s-add-a-weekly-security-ch",
+      "id": "goal:let-s-add-a-weekly-security-ch",
       "title": "Let's add a weekly security check & discussion",
-      "description": "Add to schedule. Chat about security, what have we added that might need security consideration, where could we be vunerable.",
-      "category": "habit",
-      "priority": "medium",
       "status": "planned",
+      "stage": "idea",
+      "priority": 3,
+      "category": "habit",
+      "description": "Add to schedule. Chat about security, what have we added that might need security consideration, where could we be vunerable.",
+      "summary": "",
       "subtasks": [],
-      "notes": "For internal scheduling.",
+      "assignee": "Unassigned",
+      "linkedItems": [],
       "created": "2026-02-14",
-      "updated": "2026-02-14"
+      "updated": "2026-02-14",
+      "notes": "For internal scheduling.",
+      "tags": [],
+      "order": 10,
+      "queuedAgent": "",
+      "queuedAt": ""
     },
     {
-      "id": "build-content-and-deploy-after",
+      "id": "goal:build-content-and-deploy-after",
       "title": "Build content and deploy afteraliendisclosure.com",
-      "description": "Add content for this static site. Publish live via oracle host and point DNS.",
-      "category": "project",
-      "priority": "medium",
       "status": "completed",
+      "stage": "saved",
+      "priority": 3,
+      "category": "project",
+      "description": "Add content for this static site. Publish live via oracle host and point DNS.",
+      "summary": "",
       "subtasks": [],
-      "notes": "done in one day",
+      "assignee": "Unassigned",
+      "linkedItems": [],
       "created": "2026-02-21",
       "updated": "2026-02-21",
-      "completedDate": "2026-02-21"
+      "notes": "done in one day",
+      "tags": [],
+      "order": 11,
+      "queuedAgent": "",
+      "queuedAt": ""
     },
     {
-      "id": "digital-modelling-agency",
+      "id": "goal:digital-modelling-agency",
       "title": "\ud83c\udfe2 Digital Modelling Agency",
+      "status": "planned",
+      "stage": "idea",
+      "priority": 1,
+      "category": "project",
       "description": "Evolve the photography CRM/management platform into a full digital modelling agency. Book models, manage portfolios, handle payments, publish shoot pages \u2014 all from one system.",
-      "status": "planning",
-      "priority": "high",
-      "timeframe": "3-5 years",
+      "summary": "",
+      "subtasks": [
+        {
+          "id": "subtask-0-28hjc8v2",
+          "text": "",
+          "done": true
+        },
+        {
+          "id": "subtask-1-x65f9u6t",
+          "text": "",
+          "done": true
+        },
+        {
+          "id": "subtask-2-2b6xcf32",
+          "text": "",
+          "done": true
+        },
+        {
+          "id": "subtask-3-82upb1cd",
+          "text": "",
+          "done": true
+        },
+        {
+          "id": "subtask-4-l0nfcguc",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-5-sih5bd6c",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-6-bkjpqwrs",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-7-x8hov7mb",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-8-9gy9b4sx",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-9-skgj8rye",
+          "text": "",
+          "done": false
+        }
+      ],
+      "assignee": "Unassigned",
+      "linkedItems": [],
+      "created": "2026-02-21",
+      "updated": "2026-03-23",
+      "notes": "Foundation already built: models CRM, shoots pipeline, locations, routes, payment schema. Next: publish flow, then Stripe, then client-facing features.",
       "tags": [
         "photography",
         "business",
         "long-term"
       ],
+      "order": 12,
+      "queuedAgent": "",
+      "queuedAt": ""
+    },
+    {
+      "id": "goal:melbourne-photo-cards",
+      "title": "\ud83d\udcf8 Melbourne Photography Card Set",
+      "status": "planned",
+      "stage": "idea",
+      "priority": 3,
+      "category": "project",
+      "description": "Original Melbourne-themed photography challenge card set. Combines locations, shot details, photographic styles, and times of day. Physical deck + potential digital companion.",
+      "summary": "",
       "subtasks": [
         {
-          "title": "Photography CRM on dashboard",
-          "done": true
-        },
-        {
-          "title": "Shoots pipeline with drag & drop",
-          "done": true
-        },
-        {
-          "title": "Model profiles with inline editing",
-          "done": true
-        },
-        {
-          "title": "Events vs Shoots distinction",
-          "done": true
-        },
-        {
-          "title": "Publish flow \u2014 CRM generates shoot pages on shoots.adamdunstan.com",
+          "id": "subtask-0-lxbfrben",
+          "text": "",
           "done": false
         },
         {
-          "title": "Stripe payment integration",
+          "id": "subtask-1-opccejwp",
+          "text": "",
           "done": false
         },
         {
-          "title": "Model self-service portal (booking requests)",
+          "id": "subtask-2-f6lhj6p4",
+          "text": "",
           "done": false
         },
         {
-          "title": "Portfolio generation from shoots",
+          "id": "subtask-3-p1wjbsgv",
+          "text": "",
           "done": false
         },
         {
-          "title": "Client-facing booking page",
+          "id": "subtask-4-n46xm2e2",
+          "text": "",
           "done": false
         },
         {
-          "title": "Agency branding & public presence",
+          "id": "subtask-5-oghyhvyz",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-6-hxgtj7nm",
+          "text": "",
           "done": false
         }
       ],
+      "assignee": "Unassigned",
+      "linkedItems": [],
       "created": "2026-02-21",
-      "notes": "Foundation already built: models CRM, shoots pipeline, locations, routes, payment schema. Next: publish flow, then Stripe, then client-facing features."
-    },
-    {
-      "id": "melbourne-photo-cards",
-      "title": "\ud83d\udcf8 Melbourne Photography Card Set",
-      "description": "Original Melbourne-themed photography challenge card set. Combines locations, shot details, photographic styles, and times of day. Physical deck + potential digital companion.",
-      "status": "planning",
-      "priority": "medium",
-      "timeframe": "2026",
+      "updated": "2026-03-23",
+      "notes": "Ties into existing locations database (20 spots). Could connect to melbournephotobook.com. Discuss vision in detail next week.",
       "tags": [
         "photography",
         "creative",
         "product"
       ],
+      "order": 13,
+      "queuedAgent": "",
+      "queuedAt": ""
+    },
+    {
+      "id": "goal:life-chapters",
+      "title": "\ud83d\udcd6 Life Chapters \u2014 Personal Timeline Project",
+      "status": "planned",
+      "stage": "idea",
+      "priority": 3,
+      "category": "project",
+      "description": "A personal timeline/memoir exploring Adam's life through place, identity, and change. Not a chronological list \u2014 a reflection on how geography shapes who we are. 'The man and the river both have changed.'",
+      "summary": "",
       "subtasks": [
         {
-          "title": "Define card categories (location, style, time, challenge)",
+          "id": "subtask-0-p6lt8i35",
+          "text": "",
+          "done": true
+        },
+        {
+          "id": "subtask-1-ozjbzash",
+          "text": "",
           "done": false
         },
         {
-          "title": "Curate Melbourne locations list",
+          "id": "subtask-2-94ru4nj9",
+          "text": "",
           "done": false
         },
         {
-          "title": "Design card template/visual style",
+          "id": "subtask-3-feb9z8c1",
+          "text": "",
           "done": false
         },
         {
-          "title": "Write challenge prompts",
+          "id": "subtask-4-fl9qrqbc",
+          "text": "",
           "done": false
         },
         {
-          "title": "Test with photo walk group",
+          "id": "subtask-5-0zwk1s2k",
+          "text": "",
           "done": false
         },
         {
-          "title": "Print production research",
+          "id": "subtask-6-pk8zku7i",
+          "text": "",
           "done": false
         },
         {
-          "title": "Digital companion (web/app)",
+          "id": "subtask-7-iagvj8vo",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-8-nws6z13t",
+          "text": "",
           "done": false
         }
       ],
-      "created": "2026-02-21",
-      "notes": "Ties into existing locations database (20 spots). Could connect to melbournephotobook.com. Discuss vision in detail next week."
+      "assignee": "Unassigned",
+      "linkedItems": [],
+      "created": "2026-02-25",
+      "updated": "2026-03-23",
+      "notes": "Born from late-night Twitter archaeology. Core insight: Adam's relationship to Brunswick tells the whole story \u2014 from 'Mordor' escape to city-dweller looking north. The Foursquare era (2010-2013) is richly documented. The quiet years (2013-2019) are the most interesting gap. Heraclitus: 'You cannot step into the same river twice.'",
+      "tags": [
+        "personal",
+        "creative",
+        "memoir"
+      ],
+      "order": 14,
+      "queuedAgent": "",
+      "queuedAt": ""
     },
     {
-      "id": "life-chapters",
-      "title": "📖 Life Chapters — Personal Timeline Project",
-      "description": "A personal timeline/memoir exploring Adam's life through place, identity, and change. Not a chronological list — a reflection on how geography shapes who we are. 'The man and the river both have changed.'",
-      "status": "planning",
-      "priority": "medium",
-      "timeframe": "2026",
-      "tags": ["personal", "creative", "memoir"],
+      "id": "goal:intelligence-briefing-dashboard",
+      "title": "\ud83d\udd75\ufe0f Intelligence Briefing \u2014 Command Centre Dashboard",
+      "status": "planned",
+      "stage": "idea",
+      "priority": 1,
+      "category": "project",
+      "description": "A command centre view for the dashboard using intelligence community aesthetics and INT discipline framework. Agent output classified by HUMINT/SIGINT/OSINT/TECHINT/FININT. Daily brief as intelligence briefing format. Tactical-retro design (pizzint.watch inspiration). Offline-capable.",
+      "summary": "",
       "subtasks": [
-        {"title": "Twitter/X archaeology (2009-2019) — Foursquare check-ins mapped", "done": true},
-        {"title": "Define life chapters with Adam (fill in blurry bits)", "done": false},
-        {"title": "Cross-reference Instagram timeline", "done": false},
-        {"title": "Google Maps location history (if available)", "done": false},
-        {"title": "Photo library EXIF data timeline", "done": false},
-        {"title": "Map the geography — same roads, different meaning", "done": false},
-        {"title": "Write chapter narratives", "done": false},
-        {"title": "Choose format (web experience / photo essay / written / hybrid)", "done": false},
-        {"title": "Build and publish", "done": false}
+        {
+          "id": "subtask-0-i56o1udq",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-1-pyvajpay",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-2-eyhysbpk",
+          "text": "",
+          "done": true
+        },
+        {
+          "id": "subtask-3-gddrkgle",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-4-h3toa40j",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-5-9vdr80w4",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-6-wdnocwzc",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-7-xxl7f67j",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-8-sdzvk89t",
+          "text": "",
+          "done": false
+        }
       ],
-      "created": "2026-02-25",
-      "notes": "Born from late-night Twitter archaeology. Core insight: Adam's relationship to Brunswick tells the whole story — from 'Mordor' escape to city-dweller looking north. The Foursquare era (2010-2013) is richly documented. The quiet years (2013-2019) are the most interesting gap. Heraclitus: 'You cannot step into the same river twice.'"
+      "assignee": "Unassigned",
+      "linkedItems": [],
+      "created": "2026-03-08",
+      "updated": "2026-03-08",
+      "notes": "",
+      "tags": [
+        "project",
+        "capability"
+      ],
+      "order": 15,
+      "queuedAgent": "",
+      "queuedAt": ""
+    },
+    {
+      "id": "goal:offline-knowledge-archive",
+      "title": "\ud83d\udce6 Offline Knowledge Archive \u2014 Prepper KB + Product",
+      "status": "active",
+      "stage": "active",
+      "priority": 3,
+      "category": "project",
+      "description": "A curated offline-ready knowledge library stored on NAS. Practical survival, skills, intelligence tradecraft, and reference material in markdown format \u2014 readable without internet or special software. Built for personal use first, designed as a self-contained package from day one for future productisation. Think: downloadable offline knowledge kit (USB/ZIP/static site). Revenue model: one-time purchase + optional yearly update subscription. Prepper community is the market.",
+      "summary": "",
+      "subtasks": [
+        {
+          "id": "subtask-0-jax0qq64",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-1-jmja043v",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-2-pw0p00xf",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-3-301r2gs9",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-4-weymumah",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-5-hvvti8r2",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-6-urvkytwh",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-7-9k2ur8ig",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-8-ozipt54n",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-9-3hjc9b5n",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-10-3vb8vtac",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-11-h6uxhxlk",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-12-37z5yxx0",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-13-wahwhjqe",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-14-cn0bi52p",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-15-p51mhbtx",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-16-5xijgv0j",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-17-mzh8piu4",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-18-8diveenv",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-19-ntxugtea",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-20-maswikh1",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-21-9y66zdmz",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-22-miv523dr",
+          "text": "",
+          "done": false
+        },
+        {
+          "id": "subtask-23-36yeaa04",
+          "text": "",
+          "done": false
+        }
+      ],
+      "assignee": "Unassigned",
+      "linkedItems": [],
+      "created": "2026-03-08",
+      "updated": "2026-03-08",
+      "notes": "",
+      "tags": [
+        "project",
+        "capability"
+      ],
+      "order": 16,
+      "queuedAgent": "",
+      "queuedAt": ""
+    },
+    {
+      "id": "goal:idea-dashboard-board-unification",
+      "title": "Unify board workflow into dashboard shell",
+      "status": "planned",
+      "stage": "idea",
+      "priority": 4,
+      "category": "project",
+      "description": "# Goal\nCreate one surface for idea capture, research, findings, tasks, and delivery.\n\n- Keep Quinn and Forge work visible\n- Support quick-add from any stage\n- Preserve markdown detail notes",
+      "summary": "Replace the split goals and research queue flows with a single board view.",
+      "subtasks": [
+        {
+          "id": "s1",
+          "text": "Audit current dashboard flows",
+          "done": false
+        },
+        {
+          "id": "s2",
+          "text": "Map required stages",
+          "done": false
+        }
+      ],
+      "assignee": "Adam",
+      "linkedItems": [
+        "goal:research-nav-consistency"
+      ],
+      "created": "2026-03-20T22:10:00.000Z",
+      "updated": "2026-03-21T07:46:23.589Z",
+      "notes": "",
+      "tags": [
+        "AAD",
+        "Dashboard",
+        "Quinn"
+      ],
+      "order": 0,
+      "queuedAgent": "",
+      "queuedAt": ""
+    },
+    {
+      "id": "goal:research-nav-consistency",
+      "title": "Research dashboard nav consistency",
+      "status": "planned",
+      "stage": "research",
+      "priority": 3,
+      "category": "project",
+      "description": "## Research notes\nPull patterns from `shared.css` and `shared.js`.\n\n- Sticky status bar\n- Expandable project section\n- Mobile sidebar overlay",
+      "summary": "Check how status bar, sidebar, and mobile behavior are shared across pages.",
+      "subtasks": [
+        {
+          "id": "s3",
+          "text": "Review shared.js section config",
+          "done": true
+        },
+        {
+          "id": "s4",
+          "text": "Capture active states for new board page",
+          "done": false
+        },
+        {
+          "id": "s5",
+          "text": "Document mobile nav expectations",
+          "done": false
+        }
+      ],
+      "assignee": "Forge",
+      "linkedItems": [
+        "goal:idea-dashboard-board-unification",
+        "goal:findings-photo-pipeline"
+      ],
+      "created": "2026-03-20T21:00:00.000Z",
+      "updated": "2026-03-21T07:10:06.628Z",
+      "notes": "",
+      "tags": [
+        "AAD",
+        "Dashboard",
+        "Research"
+      ],
+      "order": 0,
+      "queuedAgent": "",
+      "queuedAt": ""
+    },
+    {
+      "id": "goal:findings-photo-pipeline",
+      "title": "Shoots pipeline findings for board tags",
+      "status": "planned",
+      "stage": "brainstorm",
+      "priority": 2,
+      "category": "project",
+      "description": "## Findings\nShoots cards work better when tags distinguish project context from delivery status.\n\n- `Shoots` and `Photography` should always be visible\n- Add `Client` tag when booking is external\n- Keep assignee chip separate from tags",
+      "summary": "Photography cards need clearer tag chips for client, location, and edit state.",
+      "subtasks": [
+        {
+          "id": "s6",
+          "text": "Validate chip contrast on dark theme",
+          "done": true
+        },
+        {
+          "id": "s7",
+          "text": "Draft spawnable implementation task",
+          "done": true
+        }
+      ],
+      "assignee": "Quinn",
+      "linkedItems": [
+        "goal:task-photo-board-template"
+      ],
+      "created": "2026-03-19T19:40:00.000Z",
+      "updated": "2026-03-21T02:05:00.000Z",
+      "notes": "",
+      "tags": [
+        "Shoots",
+        "Photography",
+        "Findings"
+      ],
+      "order": 0,
+      "queuedAgent": "",
+      "queuedAt": ""
+    },
+    {
+      "id": "goal:task-photo-board-template",
+      "title": "Template board cards for upcoming portrait shoots",
+      "status": "planned",
+      "stage": "tasks",
+      "priority": 3,
+      "category": "project",
+      "description": "### Deliverable\nCreate a repeatable card template for photo projects with subtasks and related findings.",
+      "summary": "Prepare reusable card structure for discovery, planning, shoot day, and edit handoff.",
+      "subtasks": [
+        {
+          "id": "s8",
+          "text": "Create portrait shoot checklist",
+          "done": false
+        },
+        {
+          "id": "s9",
+          "text": "Add retouch handoff subtasks",
+          "done": false
+        },
+        {
+          "id": "s10",
+          "text": "Link findings source card",
+          "done": false
+        }
+      ],
+      "assignee": "Forge",
+      "linkedItems": [
+        "goal:findings-photo-pipeline"
+      ],
+      "created": "2026-03-21T03:10:00.000Z",
+      "updated": "2026-03-21T03:10:00.000Z",
+      "notes": "",
+      "tags": [
+        "Shoots",
+        "Photography",
+        "Ops"
+      ],
+      "order": 0,
+      "queuedAgent": "",
+      "queuedAt": ""
+    },
+    {
+      "id": "goal:progress-board-ui-build",
+      "title": "Build standalone projects board UI",
+      "status": "active",
+      "stage": "building",
+      "priority": 4,
+      "category": "project",
+      "description": "## Current scope\nFrontend only.\n\n- HTML5 drag-drop\n- Debounced save\n- Modal markdown editor\n- Queue button wiring",
+      "summary": "Implement drag-drop columns, modal editor, filters, and POST saves without backend work.",
+      "subtasks": [
+        {
+          "id": "s11",
+          "text": "Render six columns",
+          "done": true
+        },
+        {
+          "id": "s12",
+          "text": "Wire detail modal",
+          "done": true
+        },
+        {
+          "id": "s13",
+          "text": "Hook save debounce",
+          "done": true
+        },
+        {
+          "id": "s14",
+          "text": "Test drag stage updates",
+          "done": false
+        },
+        {
+          "id": "s15",
+          "text": "Polish mobile scroll behavior",
+          "done": false
+        }
+      ],
+      "assignee": "Adam",
+      "linkedItems": [
+        "goal:idea-dashboard-board-unification",
+        "goal:research-nav-consistency"
+      ],
+      "created": "2026-03-21T05:00:00.000Z",
+      "updated": "2026-03-23",
+      "notes": "",
+      "tags": [
+        "AAD",
+        "Dashboard",
+        "Automation"
+      ],
+      "order": 0,
+      "queuedAgent": "",
+      "queuedAt": ""
+    },
+    {
+      "id": "goal:done-agent-queue-pattern",
+      "title": "Define agent queue payload shape",
+      "status": "completed",
+      "stage": "saved",
+      "priority": 2,
+      "category": "project",
+      "description": "Backend endpoint will accept the board item id and target agent.\n\n- Keep button lightweight\n- Use current assignee as default agent\n- No extra modal needed",
+      "summary": "Settled on `{ itemId, agent }` for board queue actions so backend can wire later.",
+      "subtasks": [
+        {
+          "id": "s16",
+          "text": "Confirm payload fields",
+          "done": true
+        },
+        {
+          "id": "s17",
+          "text": "Document frontend expectation",
+          "done": true
+        }
+      ],
+      "assignee": "Quinn",
+      "linkedItems": [],
+      "created": "2026-03-18T18:00:00.000Z",
+      "updated": "2026-03-20T11:00:00.000Z",
+      "notes": "",
+      "tags": [
+        "Dashboard",
+        "Ops",
+        "Quinn"
+      ],
+      "order": 0,
+      "queuedAgent": "",
+      "queuedAt": ""
     }
   ],
   "categories": {

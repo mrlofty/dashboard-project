@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Topics | Quinn & Adam</title>
     <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="linked-items.css">
     <style>
         :root {
             --bg-primary: #0f0f14;
@@ -424,6 +425,31 @@
         let topicsData = null;
         let activeFilters = new Set();
 
+        function normalizeTopicId(topicId) {
+            return window.LinkedItems.ensureTypedId(decodeURIComponent(topicId || ''), 'topic');
+        }
+
+        function ensureTopicShape(topic) {
+            topic.id = normalizeTopicId(topic.id);
+            topic.linkedItems = window.LinkedItems.normalizeLinkedItems(topic.linkedItems);
+            return topic;
+        }
+
+        function normalizeTopicsData(payload) {
+            if (!payload || !Array.isArray(payload.topics)) return payload;
+            payload.topics = payload.topics.map(ensureTopicShape);
+            return payload;
+        }
+
+        function getTopic(topicId) {
+            const normalized = normalizeTopicId(topicId);
+            return topicsData.topics.find(topic => topic.id === normalized);
+        }
+
+        function setTopicHash(topicId) {
+            history.pushState(null, '', `#${window.LinkedItems.stripType(topicId)}`);
+        }
+
         // Load topics data
         async function loadTopics() {
             try {
@@ -431,7 +457,8 @@
                 if (!response.ok) {
                     throw new Error('HTTP ' + response.status + ' ' + response.statusText);
                 }
-                topicsData = await response.json();
+                topicsData = normalizeTopicsData(await response.json());
+                window.LinkedItems.invalidateCache();
                 renderTagFilters();
                 renderTopics();
                 return true;
@@ -468,15 +495,51 @@
             });
         }
 
+        // Helper: get topic fields with schema compatibility
+        function getOverview(topic) { return topic.overview || topic.summary || ''; }
+        function getIcon(topic) { 
+            if (topic.icon) return topic.icon;
+            // Derive icon from first tag
+            const firstTag = topic.tags?.[0];
+            if (firstTag && topicsData.tags[firstTag]) return topicsData.tags[firstTag].emoji;
+            return '📄';
+        }
+        function getUpdated(topic) { 
+            const raw = topic.updated || topic.lastUpdated || topic.dateAdded || '';
+            if (!raw) return '—';
+            try { return new Date(raw).toLocaleDateString(); } catch(e) { return raw; }
+        }
+        function getCreated(topic) {
+            const raw = topic.created || topic.dateAdded || '';
+            if (!raw) return '—';
+            try { return new Date(raw).toLocaleDateString(); } catch(e) { return raw; }
+        }
+
+        function saveTopics() {
+            localStorage.setItem('topicsData', JSON.stringify(topicsData));
+            window.LinkedItems.invalidateCache();
+            fetch(`http://${window.location.hostname}:8081/api/topics`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: topicsData })
+            }).catch(() => {
+                console.log('⚠️ Topics API unavailable, saved to localStorage only');
+            });
+        }
+
         // Render topic cards
         function renderTopics() {
             const container = document.getElementById('topics-grid');
             container.innerHTML = topicsData.topics.map(topic => {
+                const overview = getOverview(topic);
+                const icon = getIcon(topic);
                 // Build searchable content from all fields
                 const searchableContent = [
                     topic.title,
-                    topic.overview,
+                    overview,
                     topic.notes || '',
+                    topic.source || '',
+                    ...(topic.links?.map(l => l.label + ' ' + l.url) || []),
                     ...(topic.subtopics?.map(st => st.title + ' ' + st.description) || []),
                     ...(topic.references?.map(r => r.author + ' ' + r.work + ' ' + (r.notes || '')) || []),
                     ...(topic.examples?.map(e => e.title + ' ' + e.description) || [])
@@ -485,20 +548,21 @@
                 return `
                 <div class="topic-card" data-id="${topic.id}" data-tags="${topic.tags.join(',')}" data-searchable="${searchableContent.replace(/"/g, '&quot;')}">
                     <div class="topic-header">
-                        <span class="topic-icon">${topic.icon}</span>
+                        <span class="topic-icon">${icon}</span>
                         <span class="topic-title">${topic.title}</span>
                     </div>
-                    <p class="topic-overview">${topic.overview}</p>
+                    <p class="topic-overview">${overview}</p>
                     <div class="match-snippet"></div>
                     <div class="topic-tags">
                         ${topic.tags.map(tagId => {
                             const tag = topicsData.tags[tagId];
+                            if (!tag) return `<span class="topic-tag" style="background: #6b728022; color: #6b7280;">${tagId}</span>`;
                             return `<span class="topic-tag" style="background: ${tag.color}22; color: ${tag.color};">${tag.emoji} ${tag.label}</span>`;
                         }).join('')}
                     </div>
                     <div class="topic-meta">
-                        <span>Updated: ${topic.updated}</span>
-                        <span>${topic.examples?.length || 0} examples</span>
+                        <span>Updated: ${getUpdated(topic)}</span>
+                        <span>${topic.examples?.length || topic.links?.length || 0} ${topic.examples ? 'examples' : 'links'}</span>
                     </div>
                 </div>
             `}).join('');
@@ -529,11 +593,12 @@
                     // Show match context when searching
                     if (searchTerm && searchTerm.length >= 2) {
                         const topic = topicsData.topics.find(t => t.id === card.dataset.id);
+                        const overview = getOverview(topic);
                         const titleEl = card.querySelector('.topic-title');
                         const overviewEl = card.querySelector('.topic-overview');
                         
                         const titleMatch = topic.title.toLowerCase().includes(searchTerm);
-                        const overviewMatch = topic.overview.toLowerCase().includes(searchTerm);
+                        const overviewMatch = overview.toLowerCase().includes(searchTerm);
                         const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
                         
                         // Highlight in title if match
@@ -544,14 +609,14 @@
                         }
                         
                         // Check if match is visible in overview (first ~120 chars roughly)
-                        const overviewIdx = topic.overview.toLowerCase().indexOf(searchTerm);
+                        const overviewIdx = overview.toLowerCase().indexOf(searchTerm);
                         const matchVisibleInOverview = overviewMatch && overviewIdx < 120;
                         
                         // Highlight in overview if match
                         if (overviewMatch) {
-                            overviewEl.innerHTML = topic.overview.replace(regex, '<span class="match-highlight">$1</span>');
+                            overviewEl.innerHTML = overview.replace(regex, '<span class="match-highlight">$1</span>');
                         } else {
-                            overviewEl.textContent = topic.overview;
+                            overviewEl.textContent = overview;
                         }
                         
                         // Show snippet if match is hidden (in truncated overview or other fields)
@@ -562,7 +627,7 @@
                                 snippetEl.classList.add('visible');
                             } else if (overviewMatch && !matchVisibleInOverview) {
                                 // Match is in overview but truncated
-                                const ctx = getOverviewContext(topic.overview, searchTerm);
+                                const ctx = getOverviewContext(overview, searchTerm);
                                 snippetEl.innerHTML = `<div class="match-label">📝 Found in overview</div>${ctx}`;
                                 snippetEl.classList.add('visible');
                             } else {
@@ -575,7 +640,7 @@
                         // Reset highlighting when not searching
                         const topic = topicsData.topics.find(t => t.id === card.dataset.id);
                         card.querySelector('.topic-title').textContent = topic.title;
-                        card.querySelector('.topic-overview').textContent = topic.overview;
+                        card.querySelector('.topic-overview').textContent = getOverview(topic);
                         snippetEl.classList.remove('visible');
                     }
                 } else {
@@ -591,6 +656,8 @@
         function findMatchContext(topic, term) {
             const fields = [
                 { text: topic.notes, location: 'notes' },
+                { text: topic.source, location: 'source' },
+                ...(topic.links?.map(l => ({ text: l.label + ' ' + l.url, location: 'links' })) || []),
                 ...(topic.subtopics?.map(st => ({ text: st.title + ' - ' + st.description, location: 'subtopics' })) || []),
                 ...(topic.references?.map(r => ({ text: r.author + ' - ' + r.work + (r.notes ? ': ' + r.notes : ''), location: 'references' })) || []),
                 ...(topic.examples?.map(e => ({ text: e.title + ' - ' + e.description, location: 'examples' })) || [])
@@ -641,31 +708,54 @@
         }
 
         // Open topic detail (inline view)
-        function openTopic(topicId) {
-            const topic = topicsData.topics.find(t => t.id === topicId);
+        async function openTopic(topicId) {
+            const topic = getTopic(topicId);
             if (!topic) return;
-            
-            // Update URL hash for direct linking
-            history.pushState(null, '', '#' + topicId);
+
+            setTopicHash(topic.id);
 
             const detail = document.getElementById('topic-detail');
+            const overview = getOverview(topic);
+            const icon = getIcon(topic);
+            const linked = await window.LinkedItems.loadAllLinkableItems();
             detail.innerHTML = `
                 <div class="detail-header">
-                    <span class="topic-icon">${topic.icon}</span>
+                    <span class="topic-icon">${icon}</span>
                     <h2>${topic.title}</h2>
                 </div>
 
                 <div class="topic-tags" style="margin-bottom: 2rem;">
                     ${topic.tags.map(tagId => {
                         const tag = topicsData.tags[tagId];
+                        if (!tag) return `<span class="topic-tag" style="background: #6b728022; color: #6b7280;">${tagId}</span>`;
                         return `<span class="topic-tag" style="background: ${tag.color}22; color: ${tag.color};">${tag.emoji} ${tag.label}</span>`;
                     }).join('')}
                 </div>
 
                 <div class="detail-section">
                     <h3>Overview</h3>
-                    <p>${topic.overview}</p>
+                    <p>${overview}</p>
                 </div>
+
+                ${topic.source ? `
+                <div class="detail-section">
+                    <h3>Source</h3>
+                    <p>${topic.source}</p>
+                </div>
+                ` : ''}
+
+                ${topic.links?.length ? `
+                <div class="detail-section">
+                    <h3>Links</h3>
+                    <ul class="reference-list">
+                        ${topic.links.map(link => `
+                            <li class="reference-item">
+                                <a href="${link.url}" target="_blank" rel="noopener" style="color: var(--accent-purple); text-decoration: none;">${link.label || link.url}</a>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                ` : ''}
 
                 ${topic.subtopics?.length ? `
                 <div class="detail-section">
@@ -717,11 +807,32 @@
                 </div>
                 ` : ''}
 
+                <div class="detail-section linked-section">
+                    <div class="linked-section-header">
+                        <div>
+                            <div class="linked-section-title">Linked Items</div>
+                            <div class="linked-section-meta">${topic.linkedItems.length} linked item${topic.linkedItems.length === 1 ? '' : 's'}</div>
+                        </div>
+                        <div class="linked-section-actions">
+                            <button type="button" class="link-add-btn" onclick="openTopicLinkPicker('${topic.id}')">Link to...</button>
+                        </div>
+                    </div>
+                    <div id="topic-linked-items">${window.LinkedItems.renderLinkedItems(topic.linkedItems, linked.byId, { removable: true, emptyText: 'No linked items on this topic yet.' })}</div>
+                    <div id="topic-reverse-links">${window.LinkedItems.renderReverseLinks(topic.id, linked.items)}</div>
+                </div>
+
                 <div class="detail-meta">
-                    <span>Created: ${topic.created}</span>
-                    <span>Updated: ${topic.updated}</span>
+                    <span>Created: ${getCreated(topic)}</span>
+                    <span>Updated: ${getUpdated(topic)}</span>
                 </div>
             `;
+
+            detail.querySelectorAll('[data-remove-id]').forEach(button => {
+                button.addEventListener('click', event => {
+                    event.stopPropagation();
+                    removeTopicLink(topic.id, button.dataset.removeId);
+                });
+            });
 
             // Show detail view, hide grid
             document.getElementById('main-content').classList.add('viewing-detail');
@@ -738,6 +849,38 @@
             history.pushState(null, '', window.location.pathname);
         }
 
+        async function openTopicLinkPicker(topicId) {
+            const topic = getTopic(topicId);
+            if (!topic) return;
+            await window.LinkedItems.openPicker({
+                currentId: topic.id,
+                currentType: 'topic',
+                selectedIds: topic.linkedItems,
+                onPick: linked => addTopicLink(topic.id, linked.id)
+            });
+        }
+
+        function addTopicLink(topicId, linkedId) {
+            const topic = getTopic(topicId);
+            const normalizedId = window.LinkedItems.ensureTypedId(linkedId);
+            if (!topic || topic.linkedItems.includes(normalizedId)) return;
+            topic.linkedItems.push(normalizedId);
+            topic.updated = new Date().toISOString();
+            saveTopics();
+            openTopic(topic.id);
+            renderTopics();
+        }
+
+        function removeTopicLink(topicId, linkedId) {
+            const topic = getTopic(topicId);
+            if (!topic) return;
+            topic.linkedItems = topic.linkedItems.filter(id => id !== linkedId);
+            topic.updated = new Date().toISOString();
+            saveTopics();
+            openTopic(topic.id);
+            renderTopics();
+        }
+
         // Event listeners
         document.getElementById('search-input').addEventListener('input', filterTopics);
         
@@ -745,7 +888,7 @@
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.slice(1);
             if (hash && topicsData) {
-                openTopic(hash);
+                openTopic(normalizeTopicId(hash));
             } else {
                 closeTopic();
             }
@@ -756,10 +899,11 @@
             // Check for direct link to topic
             const hash = window.location.hash.slice(1);
             if (hash) {
-                openTopic(hash);
+                openTopic(normalizeTopicId(hash));
             }
         });
     </script>
+    <script src="link-picker.js"></script>
     <script src="shared.js"></script>
     <script type="module" src="js/sse-init-topics.js"></script>
 </body>

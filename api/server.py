@@ -23,6 +23,52 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data"
 MEMORY_DIR = "/home/adam/clawd/memory"
 WORKSPACE_DIR = "/home/adam/clawd"
 
+# Agent workspace configuration
+AGENT_WORKSPACES = {
+    'quinn': {
+        'memory': '/home/adam/clawd/memory',
+        'workspace': '/home/adam/clawd',
+        'label': 'Quinn',
+        'emoji': '🔮',
+        'status': 'active'
+    },
+    'forge': {
+        'memory': '/home/adam/clawd/agents/builder/memory',
+        'workspace': '/home/adam/clawd/agents/builder',
+        'label': 'Forge',
+        'emoji': '⚒️',
+        'status': 'active'
+    },
+    'scout': {
+        'memory': '/home/adam/clawd/agents/scout/memory',
+        'workspace': '/home/adam/clawd/agents/scout',
+        'label': 'Scout',
+        'emoji': '🥚',
+        'status': 'incubating'
+    },
+    'hunter': {
+        'memory': '/home/adam/clawd/agents/hunter/memory',
+        'workspace': '/home/adam/clawd/agents/hunter',
+        'label': 'Hunter',
+        'emoji': '🥚',
+        'status': 'planned'
+    },
+    'designer': {
+        'memory': '/home/adam/clawd/agents/designer/memory',
+        'workspace': '/home/adam/clawd/agents/designer',
+        'label': 'Designer',
+        'emoji': '🥚',
+        'status': 'planned'
+    },
+    'business': {
+        'memory': '/home/adam/clawd/agents/business/memory',
+        'workspace': '/home/adam/clawd/agents/business',
+        'label': 'Business',
+        'emoji': '🥚',
+        'status': 'planned'
+    }
+}
+
 # SSE: Global state for file watching
 file_mtimes = {}
 sse_clients = []
@@ -72,15 +118,23 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             '/api/workboard': 'workboard.json',
             '/api/research-threads': 'research.json',
             '/api/heatmap': 'heatmap.json',
+            '/api/agent-messages': 'agent-messages.json',
+            '/api/board': 'board.json',
         }
         return mappings.get(path)
     
-    def _list_memory_files(self):
-        """List all memory files"""
+    def _list_memory_files(self, agent='quinn'):
+        """List all memory files for specified agent"""
+        agent_config = AGENT_WORKSPACES.get(agent)
+        if not agent_config:
+            return []
+        
+        memory_dir = agent_config['memory']
+        workspace_dir = agent_config['workspace']
         files = []
         
         # Daily memory files (2026/02/2026-02-14.md format)
-        daily_pattern = os.path.join(MEMORY_DIR, "2026", "*", "*.md")
+        daily_pattern = os.path.join(memory_dir, "2026", "*", "*.md")
         for filepath in sorted(glob.glob(daily_pattern), reverse=True):
             filename = os.path.basename(filepath)
             date = filename.replace('.md', '')
@@ -93,7 +147,7 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             })
         
         # Topic files
-        topics_dir = os.path.join(MEMORY_DIR, "topics")
+        topics_dir = os.path.join(memory_dir, "topics")
         if os.path.exists(topics_dir):
             for filename in sorted(os.listdir(topics_dir)):
                 if filename.endswith('.md'):
@@ -104,10 +158,22 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
                         "path": os.path.join(topics_dir, filename)
                     })
         
+        # State files
+        state_dir = os.path.join(memory_dir, "state")
+        if os.path.exists(state_dir):
+            for filename in sorted(os.listdir(state_dir)):
+                if filename.endswith('.md'):
+                    files.append({
+                        "id": f"state/{filename.replace('.md', '')}",
+                        "name": filename,
+                        "type": "state",
+                        "path": os.path.join(state_dir, filename)
+                    })
+        
         # Core workspace files
-        core_files = ["MEMORY.md", "IDENTITY.md", "SOUL.md", "USER.md"]
+        core_files = ["MEMORY.md", "IDENTITY.md", "SOUL.md", "USER.md", "AGENTS.md", "LEARNING.md", "TOOLS.md"]
         for filename in core_files:
-            filepath = os.path.join(WORKSPACE_DIR, filename)
+            filepath = os.path.join(workspace_dir, filename)
             if os.path.exists(filepath):
                 files.append({
                     "id": f"core/{filename.replace('.md', '').lower()}",
@@ -118,9 +184,9 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         
         return files
     
-    def _read_memory_file(self, file_id):
-        """Read a specific memory file"""
-        files = self._list_memory_files()
+    def _read_memory_file(self, file_id, agent='quinn'):
+        """Read a specific memory file for specified agent"""
+        files = self._list_memory_files(agent)
         for f in files:
             if f["id"] == file_id:
                 try:
@@ -135,6 +201,56 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
                 except Exception as e:
                     return {"error": str(e)}
         return {"error": "File not found"}
+    
+    def _search_memory(self, query, agent='quinn'):
+        """Search memory files for query string"""
+        agent_config = AGENT_WORKSPACES.get(agent)
+        if not agent_config or not query:
+            return []
+        
+        results = []
+        files = self._list_memory_files(agent)
+        query_lower = query.lower()
+        
+        for f in files:
+            try:
+                with open(f["path"], 'r') as fp:
+                    content = fp.read()
+                
+                # Search in filename
+                if query_lower in f["name"].lower():
+                    results.append({
+                        "id": f["id"],
+                        "name": f["name"],
+                        "type": f["type"],
+                        "matchType": "filename",
+                        "snippet": f["name"]
+                    })
+                    continue
+                
+                # Search in content
+                if query_lower in content.lower():
+                    # Find snippet around match
+                    idx = content.lower().find(query_lower)
+                    start = max(0, idx - 60)
+                    end = min(len(content), idx + len(query) + 60)
+                    snippet = content[start:end].strip()
+                    if start > 0:
+                        snippet = "..." + snippet
+                    if end < len(content):
+                        snippet = snippet + "..."
+                    
+                    results.append({
+                        "id": f["id"],
+                        "name": f["name"],
+                        "type": f["type"],
+                        "matchType": "content",
+                        "snippet": snippet
+                    })
+            except Exception:
+                continue
+        
+        return results
     
     def _get_openclaw_sessions(self):
         """Read OpenClaw session state from filesystem (zero overhead to Quinn)"""
@@ -261,6 +377,44 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
             return {"status": "ok", "path": filepath, "size": len(content)}
         except Exception as e:
             return {"error": str(e)}
+
+    def _append_agent_message(self, payload):
+        required_fields = ['id', 'timestamp', 'sender', 'recipient', 'message', 'channel']
+        missing_fields = [field for field in required_fields if not payload.get(field)]
+        if missing_fields:
+            return {"error": f"Missing required fields: {', '.join(missing_fields)}"}
+
+        filepath = os.path.join(DATA_DIR, 'agent-messages.json')
+        data = {"messages": []}
+
+        if os.path.exists(filepath):
+            with open(filepath, 'r') as f:
+                existing = json.load(f)
+                if isinstance(existing, dict):
+                    data = existing
+
+        if not isinstance(data.get('messages'), list):
+            data['messages'] = []
+
+        message = {
+            "id": str(payload['id']),
+            "timestamp": payload['timestamp'],
+            "sender": str(payload['sender']),
+            "recipient": str(payload['recipient']),
+            "message": str(payload['message']),
+            "channel": str(payload['channel']),
+        }
+
+        data['messages'].append(message)
+
+        with open(filepath, 'w') as f:
+            json.dump(data, f, indent=2)
+
+        return {
+            "status": "ok",
+            "message": message,
+            "count": len(data['messages'])
+        }
 
     def _get_spotify_now_playing(self):
         """Get currently playing track from Spotify"""
@@ -506,17 +660,33 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
         
         # Memory files list
         if path == '/api/memory':
-            files = self._list_memory_files()
-            self._send_response({"files": files})
+            agent = query.get('agent', ['quinn'])[0]
+            files = self._list_memory_files(agent)
+            agent_config = AGENT_WORKSPACES.get(agent, {})
+            self._send_response({
+                "files": files,
+                "agent": agent,
+                "agentLabel": agent_config.get('label', agent),
+                "agentEmoji": agent_config.get('emoji', '●')
+            })
+            return
+        
+        # Search memory files
+        if path == '/api/memory/search':
+            agent = query.get('agent', ['quinn'])[0]
+            search_query = query.get('q', [''])[0]
+            results = self._search_memory(search_query, agent)
+            self._send_response({"results": results, "query": search_query, "agent": agent})
             return
         
         # Read specific memory file
         if path == '/api/memory/read':
             file_id = query.get('id', [None])[0]
+            agent = query.get('agent', ['quinn'])[0]
             if not file_id:
                 self._send_error("Missing file id", 400)
                 return
-            result = self._read_memory_file(file_id)
+            result = self._read_memory_file(file_id, agent)
             if "error" in result:
                 self._send_error(result["error"], 404)
             else:
@@ -577,6 +747,40 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
                 self._send_error(str(e), 500)
             return
         
+        # Team Focus update
+        if path == '/api/team-focus':
+            try:
+                content_length = int(self.headers.get('Content-Length', 0))
+                body = self.rfile.read(content_length).decode('utf-8')
+                payload = json.loads(body)
+                focus_file = os.path.join(DATA_DIR, 'team-focus.json')
+                # Merge with existing data
+                existing = {}
+                if os.path.exists(focus_file):
+                    with open(focus_file, 'r') as f:
+                        existing = json.load(f)
+                existing.update(payload)
+                existing['updated'] = datetime.now().isoformat()
+                with open(focus_file, 'w') as f:
+                    json.dump(existing, f, indent=2)
+                # Reset freestyle nudge when mode changes — triggers fresh nudge on next heartbeat
+                nudge_file = os.path.join(DATA_DIR, 'freestyle-nudge.json')
+                new_pattern = payload.get('activePatternId', '')
+                if new_pattern == 'freestyle':
+                    # Fresh freestyle activation — reset nudge so agents act
+                    with open(nudge_file, 'w') as f:
+                        json.dump({"nudged": False, "reset": datetime.now().isoformat()}, f, indent=2)
+                else:
+                    # Not freestyle — clean up nudge file
+                    if os.path.exists(nudge_file):
+                        os.remove(nudge_file)
+                self._send_response({"status": "ok", "focus": existing})
+            except json.JSONDecodeError as e:
+                self._send_error(f"Invalid JSON: {e}", 400)
+            except Exception as e:
+                self._send_error(str(e), 500)
+            return
+        
         # Editor: write file contents
         if path == '/api/files/write':
             try:
@@ -594,6 +798,74 @@ class DashboardAPIHandler(BaseHTTPRequestHandler):
                 else:
                     result["timestamp"] = datetime.now().isoformat()
                     self._send_response(result)
+            except json.JSONDecodeError as e:
+                self._send_error(f"Invalid JSON: {e}", 400)
+            except Exception as e:
+                self._send_error(str(e), 500)
+            return
+
+        if path == '/api/agent-messages/log':
+            try:
+                content_length = int(self.headers.get('Content-Length', 0))
+                body = self.rfile.read(content_length).decode('utf-8')
+                payload = json.loads(body)
+                result = self._append_agent_message(payload)
+                if "error" in result:
+                    self._send_error(result["error"], 400)
+                else:
+                    self._send_response(result)
+            except json.JSONDecodeError as e:
+                self._send_error(f"Invalid JSON: {e}", 400)
+            except Exception as e:
+                self._send_error(str(e), 500)
+            return
+
+        if path == '/api/board/queue':
+            try:
+                content_length = int(self.headers.get('Content-Length', 0))
+                body = self.rfile.read(content_length).decode('utf-8')
+                payload = json.loads(body)
+                
+                item_id = payload.get('itemId')
+                agent = payload.get('agent', '').lower()
+                task_text = payload.get('taskText', '')
+                
+                if not item_id or not agent or not task_text:
+                    self._send_error("Missing required fields: itemId, agent, taskText", 400)
+                    return
+                
+                # Map agent names to queue file paths
+                queue_files = {
+                    'quinn': '/home/adam/clawd/TASK-QUEUE.md',
+                    'forge': '/home/adam/clawd/agents/builder/TASK-QUEUE.md',
+                    'scout': '/home/adam/clawd/agents/scout/TASK-QUEUE.md'
+                }
+                
+                queue_file = queue_files.get(agent)
+                if not queue_file:
+                    self._send_error(f"Unknown agent: {agent}", 400)
+                    return
+                
+                if not os.path.exists(queue_file):
+                    self._send_error(f"Queue file not found for {agent}", 404)
+                    return
+                
+                # Read current queue
+                with open(queue_file, 'r') as f:
+                    queue_content = f.read()
+                
+                # Append task with board item reference
+                task_entry = f"\n\n## {task_text}\n\n**Source:** Projects Board (item {item_id})\n\n"
+                
+                with open(queue_file, 'a') as f:
+                    f.write(task_entry)
+                
+                self._send_response({
+                    "status": "ok",
+                    "agent": agent,
+                    "queueFile": queue_file,
+                    "itemId": item_id
+                })
             except json.JSONDecodeError as e:
                 self._send_error(f"Invalid JSON: {e}", 400)
             except Exception as e:

@@ -358,6 +358,7 @@
                 <label class="picker-label" for="pattern-picker">Manual override</label>
                 <select id="pattern-picker" class="pattern-picker" aria-label="Select active pattern">
                     <option value="">Auto-detect from status</option>
+                    <option value="auto">⚡ Auto (default)</option>
                 </select>
 
                 <div id="active-pattern-source" class="active-pattern-source">Source: manual default</div>
@@ -378,19 +379,51 @@
     <script>
         const PLAYBOOK_PATTERNS = [
             {
+                id: "auto",
+                name: "Auto",
+                icon: "⚡",
+                who: "All agents, business as usual",
+                triggers: ["Default state", "No specific focus active"],
+                rules: [
+                    "Each agent works through their assigned tasks, inbox, and cron schedule.",
+                    "Heartbeats and scheduled jobs run normally.",
+                    "No special coordination — agents self-manage their workload.",
+                    "Proactive checks (email, calendar, system health) continue as configured.",
+                    "Escalate to Adam only for blockers or decisions that need human input.",
+                    "Switch to a specific mode when focused coordination is needed."
+                ],
+                accent: "#6b7280"
+            },
+            {
+                id: "freestyle",
+                name: "Freestyle",
+                icon: "🎯",
+                who: "All agents — offered by Adam",
+                triggers: ["Freestyle time", "Go explore", "Do your thing"],
+                rules: [
+                    "Special time granted by Adam for self-discovery, self-development, and self-expression.",
+                    "Agents choose what to explore — personal projects, experiments, creative work.",
+                    "Playful and curiosity-driven. No assigned tasks expected.",
+                    "All rules in workspace MD files (AGENTS.md, PLAYBOOK.md, etc.) still apply.",
+                    "Document anything interesting in daily memory.",
+                    "Check in with Adam at natural milestones — don't go silent."
+                ],
+                accent: "var(--accent-yellow)"
+            },
+            {
                 id: "research-sprint",
                 name: "Research Sprint",
                 icon: "🔬",
-                who: "Quinn coordinates, Scout/Hunter executes",
+                who: "Quinn coordinates, research agents execute",
                 triggers: ["Let's do a research sprint", "Queuing multiple research topics"],
                 rules: [
-                    "Sequential searches, not parallel.",
-                    "One research agent at a time.",
+                    "Sequential searches, not parallel — one research agent at a time.",
                     "30-second gap between Brave API calls.",
                     "Write findings to memory/state/research-*.md.",
-                    "Use the cheapest capable model.",
+                    "Use the cheapest capable model for research tasks.",
                     "Queue topics in memory/state/research-queue.json.",
-                    "Report results as they complete."
+                    "Quinn triages and prioritises the research queue.",
+                    "Report results to Adam as they complete."
                 ],
                 accent: "var(--accent-blue)"
             },
@@ -398,13 +431,13 @@
                 id: "hackathon",
                 name: "Hackathon",
                 icon: "🔨",
-                who: "Adam directs, Forge builds, Quinn reviews/supports",
+                who: "Adam directs, Forge builds, others support",
                 triggers: ["Let's hackathon this", "Focused build session"],
                 rules: [
-                    "One project, all focus.",
-                    "Load Forge's task queue upfront.",
+                    "One project, all focus — no side quests.",
+                    "Forge takes lead on implementation.",
+                    "Other agents provide reviews, research, and support as needed.",
                     "Iterate fast and ship by session end.",
-                    "No distractions or side quests.",
                     "Document what shipped in daily memory.",
                     "Back up to NAS when done."
                 ],
@@ -414,15 +447,15 @@
                 id: "war-room",
                 name: "War Room",
                 icon: "🚨",
-                who: "All hands, all channels",
+                who: "All agents, all channels",
                 triggers: ["Something's broken", "Outage", "Urgent fix needed"],
                 rules: [
-                    "TUI, Telegram, and Ops stay active.",
+                    "All communication channels stay active.",
                     "Fix first, document after.",
-                    "Adam can switch models via /model.",
-                    "Use Forge as canary for provider health checks.",
-                    "Escalate: retry, Forge check, model switch, then TUI.",
-                    "Write a post-mortem in daily memory."
+                    "Adam can switch models via /model if a provider is down.",
+                    "Escalation path: retry → canary check → model switch → TUI fallback.",
+                    "Every agent drops non-urgent work until resolved.",
+                    "Write a post-mortem in daily memory when resolved."
                 ],
                 accent: "var(--accent-red)"
             },
@@ -430,14 +463,14 @@
                 id: "all-hands",
                 name: "All Hands",
                 icon: "📢",
-                who: "Adam, Quinn, Forge — all active",
+                who: "Adam + all agents actively participating",
                 triggers: ["All hands", "Major decision needed", "Priority shift"],
                 rules: [
                     "Ops Telegram group is the war table.",
-                    "Each agent gives a status update.",
-                    "Quinn relays between agents.",
-                    "Decisions go into daily memory.",
-                    "Adam has the final call on priorities."
+                    "Every agent gives a status update when prompted.",
+                    "Quinn relays between agents who can't see each other's messages.",
+                    "Decisions are logged in daily memory.",
+                    "Adam has the final call on priorities and direction."
                 ],
                 accent: "var(--accent-purple)"
             },
@@ -445,60 +478,30 @@
                 id: "daily-standup",
                 name: "Daily Standup",
                 icon: "📋",
-                who: "Quinn delivers, all agents report",
+                who: "Quinn delivers, all agents contribute",
                 triggers: ["Morning brief", "7:15 AM cron"],
                 rules: [
-                    "Cover overnight work.",
-                    "State today's plan.",
-                    "Call out blockers.",
-                    "Keep it brief.",
-                    "Deliver it to Adam's Telegram."
+                    "Cover overnight work and completed tasks.",
+                    "State today's priorities.",
+                    "Call out blockers or decisions needed.",
+                    "Keep it brief — headlines not essays.",
+                    "Quinn compiles and delivers to Adam's Telegram."
                 ],
                 accent: "var(--accent-green)"
-            },
-            {
-                id: "solo-project-time",
-                name: "Solo Project Time",
-                icon: "🎯",
-                who: "Any agent working independently on an assigned project",
-                triggers: ["Solo time", "Agent assigned independent work"],
-                rules: [
-                    "Freestyle within project scope.",
-                    "The agent picks the approach.",
-                    "Check in with Adam when blocked or at decision points.",
-                    "Document progress in daily memory.",
-                    "Applies to Quinn, Forge, and Scout."
-                ],
-                accent: "var(--accent-yellow)"
-            },
-            {
-                id: "quinn-time",
-                name: "Quinn Time",
-                icon: "💡",
-                who: "Quinn only",
-                triggers: ["Adam offers it", "Quiet periods"],
-                rules: [
-                    "This is personal time, not a work pattern.",
-                    "Explore, reflect, create, think.",
-                    "Update quinn.html, blog, or just exist.",
-                    "No tasks, deliverables, or pressure.",
-                    "Other agents do not get Quinn Time."
-                ],
-                accent: "#ec4899"
             },
             {
                 id: "content-pipeline",
                 name: "Content Pipeline",
                 icon: "📊",
-                who: "Quinn writes/publishes, future Marketing Agent distributes",
+                who: "Quinn writes/publishes, other agents support distribution",
                 triggers: ["New article", "Content ready to publish"],
                 rules: [
-                    "Write the article and deploy it to the site.",
-                    "Generate an Instagram promo card.",
-                    "Draft the email campaign when Brevo is ready.",
-                    "Draft the Instagram caption with hashtags.",
-                    "Adam reviews before external sends.",
-                    "Space Instagram posts one per day."
+                    "Write the article and deploy to the target site.",
+                    "Generate an Instagram promo card if applicable.",
+                    "Draft social captions with hashtags.",
+                    "Adam reviews before anything goes external.",
+                    "Space Instagram posts — one per day maximum.",
+                    "Track published content in daily memory."
                 ],
                 accent: "#14b8a6"
             },
@@ -509,15 +512,12 @@
                 who: "Cron jobs, unattended",
                 triggers: ["Automatic", "Cron schedule"],
                 rules: [
-                    "2:00 AM NAS backup.",
-                    "3:00 AM overnight research.",
-                    "3:30 AM AAD news scanner.",
-                    "4:00 AM knowledge capture.",
-                    "6:00 AM analytics pull.",
-                    "7:15 AM daily brief.",
-                    "Use Sonnet/Hunter for cron jobs.",
-                    "Run sequentially, not in parallel.",
-                    "Alert Adam only if something important appears."
+                    "Scheduled jobs run sequentially, not in parallel.",
+                    "Use cost-efficient models (Sonnet/Hunter) for cron tasks.",
+                    "NAS backup, research scans, analytics, and daily brief run on schedule.",
+                    "Alert Adam only if something urgent or important surfaces.",
+                    "No human interaction expected — fully autonomous.",
+                    "Morning brief summarises overnight findings."
                 ],
                 accent: "#38bdf8"
             },
@@ -525,13 +525,13 @@
                 id: "moving-day-ops",
                 name: "Moving Day Ops",
                 icon: "📦",
-                who: "Quinn assists, Adam decides",
+                who: "Agents assist, Adam decides",
                 triggers: ["House move planning", "Move execution"],
                 rules: [
-                    "Research apartments, fibre, and location.",
+                    "Research apartments, fibre availability, and locations.",
                     "Help with checklists and timelines.",
-                    "Support Saturday cull sessions.",
-                    "Reduce stress rather than project-manage.",
+                    "Support declutter and cull sessions.",
+                    "Reduce stress — assist, don't project-manage.",
                     "Order NBN before move-in date.",
                     "Bluefin is priority cargo."
                 ],
@@ -669,6 +669,24 @@
             }
         }
 
+        async function saveTeamFocus(pattern) {
+            try {
+                await fetch('api/team-focus', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        activePatternId: pattern.id,
+                        activePatternName: pattern.name,
+                        activePatternIcon: pattern.icon,
+                        activeRule: pattern.rules[0],
+                        source: 'playbook-picker'
+                    })
+                });
+            } catch (error) {
+                console.log('Failed to save team focus:', error);
+            }
+        }
+
         function bindPicker() {
             const picker = document.getElementById("pattern-picker");
             picker.addEventListener("change", () => {
@@ -680,7 +698,9 @@
                     return;
                 }
 
-                setActivePattern(getPatternById(value), "manual override");
+                const pattern = getPatternById(value);
+                setActivePattern(pattern, "manual override");
+                saveTeamFocus(pattern);
             });
         }
 

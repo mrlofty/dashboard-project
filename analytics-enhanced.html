@@ -229,7 +229,10 @@
     <div class="container">
         <div class="analytics-header">
             <h1>📊 Analytics</h1>
-            <div class="last-updated" id="lastUpdated">Loading...</div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="last-updated" id="lastUpdated">Loading...</div>
+                <button onclick="refreshAnalytics()" id="refreshBtn" style="padding: 0.4rem 1rem; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); border-radius: 8px; color: #a78bfa; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;">🔄 Refresh</button>
+            </div>
         </div>
         
         <div class="analytics-grid" id="analyticsGrid">
@@ -629,6 +632,25 @@
                 }).join('');
         }
         
+        // Manual refresh - triggers GA pull script then reloads data
+        async function refreshAnalytics() {
+            const btn = document.getElementById('refreshBtn');
+            btn.textContent = '⏳ Pulling...';
+            btn.disabled = true;
+            try {
+                await fetch('/api/analytics/refresh', { method: 'POST' });
+                await new Promise(r => setTimeout(r, 3000)); // Wait for pull to complete
+                await loadAnalytics();
+                btn.textContent = '✅ Done';
+                setTimeout(() => { btn.textContent = '🔄 Refresh'; btn.disabled = false; }, 2000);
+            } catch(e) {
+                // Fallback: just reload the data file
+                await loadAnalytics();
+                btn.textContent = '🔄 Refresh';
+                btn.disabled = false;
+            }
+        }
+
         // Load on page load
         loadAnalytics();
         

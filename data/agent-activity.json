@@ -1,5 +1,84 @@
 [
   {
+    "id": "evt_aad_before_disclosure_merch",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Before Disclosure Merch Concepts — 6 Enamel Pin Designs",
+    "timestamp": "2026-03-22T04:46:00+11:00",
+    "importance": 7,
+    "details": "Built complete design gallery for AAD 'Before Disclosure' merch: 6 distinct enamel pin/sticker concepts as SVG mockups. Designs: (1) Minimal/Clean — black/white/gold Apple-like restraint, (2) Retro Sci-Fi — orange/cream/navy NASA vintage patch, (3) Conspiracy Chic — shield badge with eye + BD monogram + green accent, (4) Elegant/Refined — gold line art luxury jewelry aesthetic, (5) Cosmic — deep purple/blue galaxy space theme, (6) Signal Wave — electric blue concentric transmission circles. Each design: 2-4 color palette, production notes, risk assessment, metal finish recommendations. Responsive gallery page with AAD dark aesthetic. Codex recommends starting with Minimal/Clean & Elegant/Refined for first sampling. Built with Codex CLI (~25k tokens). Files: index.html (14KB), styles.css (3.4KB), README.md (3.4KB).",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/afteraliendisclosure/merch-concepts/"
+    ]
+  },
+  {
+    "id": "evt_memory_viewer_generalized",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Memory Viewer Generalized — Multi-Agent Support + Search",
+    "timestamp": "2026-03-21T16:45:00+11:00",
+    "importance": 7,
+    "details": "Generalized memory viewer to support multiple agents. Backend: Added AGENT_WORKSPACES config, updated /api/memory to accept ?agent= parameter, added /api/memory/search endpoint (searches filenames + content, returns snippets), made /api/memory/read agent-aware. Frontend: Added agent selector tabs (Quinn/Forge), search bar with results panel showing match type + snippet, dynamic page title (Memory — Agent), URL state preservation (?agent=X). Nav: Moved Memory from Quinn submenu to Knowledge section (now general tool). Extensible: adding agent #3 is one dict entry. Built with Codex (~17k tokens). Memory viewer now works for all agents with integrated search.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/memory.html",
+      "/home/adam/clawd/dashboard-project/api/server.py",
+      "/home/adam/clawd/dashboard-project/shared.js"
+    ]
+  },
+  {
+    "id": "evt_projects_board_v1",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Projects Board v1 — Unified Kanban Workflow",
+    "timestamp": "2026-03-21T15:42:00+11:00",
+    "importance": 9,
+    "details": "Built complete Projects Board replacing goals + research queue with unified kanban workflow. 6-column lifecycle: 💡 Idea → 🔬 Research → 📋 Findings → 🔨 Task → 🔧 In Progress → ✅ Done. Features: HTML5 drag-drop between stages, card detail modal with MD editor (lifted from inbox.html), subtask creation/tracking, agent assignment (Quinn/Forge/Adam), priority indicators, tag/assignee filtering, quick-add at column tops, 'Add to Agent Queue' button (writes to TASK-QUEUE.md via new /api/board/queue endpoint), 'Spawn Task from Findings' action. Backend: GET/POST /api/board, POST /api/board/queue. Seed data: 6 example cards. Built with Codex (~42k tokens), deployed directly. Enables research → findings → task → agent workflow Adam described.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/board.html",
+      "/home/adam/clawd/dashboard-project/api/server.py",
+      "/home/adam/clawd/dashboard-project/data/board.json"
+    ]
+  },
+  {
+    "id": "evt_unified_activity_feed",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Unified Activity Feed — Master Timeline Complete",
+    "timestamp": "2026-03-21T14:35:00+11:00",
+    "importance": 8,
+    "details": "Rebuilt dashboard activity feed into universal master timeline aggregating 7 event sources instead of just agent-activity.json. New event types: MESSAGE 💬, ALERT 🔔, STATUS 🔮, MODE 🎯, BRIEFING 📊, CRON ⏰. Filter chips changed from agent-based to type-based. Client-side aggregation via Promise.all parallel fetching + normalization. Expanded from 8 to 12 events displayed. Sources unified: agent-activity.json, agent-messages.json, alerts.json, status.json, team-focus.json, memory/state/aad-briefing.json, schedule.json. Built with Codex (~42k tokens). Feed is now chronological timeline of ALL team activity across builds, messages, alerts, mode switches, briefings.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/index.html",
+      "/home/adam/clawd/agents/builder/output/unified-feed/updated-activity-feed.js"
+    ]
+  },
+  {
+    "id": "evt_agent_messages_integration",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Agent Messages Widget — Full Integration Complete",
+    "timestamp": "2026-03-21T14:30:00+11:00",
+    "importance": 7,
+    "details": "Completed full integration of Agent Messages widget into dashboard. Backend: Added /api/agent-messages GET endpoint + POST /api/agent-messages/log for logging inter-agent communication. Frontend: Embedded widget in index.html with scrollable container (max-height: 200px), agent-agnostic design, 30s auto-refresh, visual distinction for sent (purple) vs received (blue). Shows recent 10 messages, newest first, truncates at 80 chars. Built with Codex (~39k tokens), tested with sample message. Widget is live in dashboard grid below Recently Completed Research. API server restarted.",
+    "sources": [
+      "/home/adam/clawd/dashboard-project/index.html",
+      "/home/adam/clawd/dashboard-project/api/server.py",
+      "/home/adam/clawd/dashboard-project/data/agent-messages.json"
+    ]
+  },
+  {
+    "id": "evt_freestyle_agent_messages",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Agent Messages Widget — Freestyle Build",
+    "timestamp": "2026-03-21T14:02:00+11:00",
+    "importance": 6,
+    "details": "Freestyle mode trigger activated — built Agent Messages dashboard widget to display sessions_send traffic between Quinn and Forge. Features: dark theme matching Mission Control aesthetic (#0a0a0f, purple/blue accents), perspective toggle (Forge/Quinn viewpoint), message timestamp/sender/recipient/preview, visual distinction for sent/received. Mock data for demo. Self-contained HTML (15KB) with embedded CSS/JS. Addresses visibility gap: inter-agent communication happens via sessions_send but had no UI representation until now.",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/dashboard-agent-messages/agent-messages.html"
+    ]
+  },
+  {
     "id": "evt_task007_og_tags",
     "agent": "Forge",
     "category": "BUILD",
@@ -7,7 +86,9 @@
     "timestamp": "2026-03-20T05:05:00+11:00",
     "importance": 5,
     "details": "Added og:image and Twitter Card meta tags to all 7 AAD essay pages. 3 essays use specific promo card images, 4 use fallback. Includes reusable script for future essays. Every essay now gets rich link previews on Telegram/WhatsApp/Discord/X.",
-    "sources": ["/home/adam/clawd/agents/builder/output/aad-og-tags/"]
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/aad-og-tags/"
+    ]
   },
   {
     "id": "evt_task006_email_campaign",
@@ -17,7 +98,9 @@
     "timestamp": "2026-03-20T04:55:00+11:00",
     "importance": 6,
     "details": "Built complete email campaign system for AAD: Python send script (472 lines) with Brevo API integration, auto UTM tracking, dry-run mode. Two new email templates (article-alert, newsletter) matching AAD purple branding. Local preview page with template selector, device toggle, dark/light modes. All tested with dry-run.",
-    "sources": ["/home/adam/clawd/agents/builder/output/aad-email-campaign/"]
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/aad-email-campaign/"
+    ]
   },
   {
     "id": "evt_1773514200",
@@ -227,6 +310,34 @@
       "/home/adam/clawd/dashboard-project/api/server.py",
       "/home/adam/clawd/dashboard-project/js/sse-client.js",
       "/home/adam/clawd/dashboard-project/INTEGRATION.md"
+    ]
+  },
+  {
+    "id": "evt_dashboard_linked_items",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Dashboard Linked Items — Cross-Page Schema & UI",
+    "timestamp": "2026-03-23T19:45:00+11:00",
+    "importance": 9,
+    "details": "Built complete cross-linking system for dashboard items. Data migration: all IDs now typed (goal:, inbox:, topic:), added linkedItems: [] field to 45 items (17 goals, 27 topics, 1 inbox). Created link-picker.js (cross-file item picker modal with search/filter), linked-items.css (chip styles + picker UI), updated goals.html/inbox.html/topics.html with linking UI. Migration script with backups, one-way links in JSON with bidirectional display computed at render. Schema extensible for future types (research, tasks). Built with Codex CLI in 13 minutes, deployed to production. Needs browser testing for UI components.",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/dashboard-linked-items/",
+      "/home/adam/clawd/dashboard-project/link-picker.js",
+      "/home/adam/clawd/dashboard-project/linked-items.css"
+    ]
+  },
+  {
+    "id": "evt_editor_ui_polish",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Editor UI Polish — Stage Pills + Star Rating",
+    "timestamp": "2026-03-23T21:06:00+11:00",
+    "importance": 7,
+    "details": "Replaced dropdown selects with visual interactive components in goals.html and inbox.html editors. Stage field → horizontal pill selector (💡Idea | 🔬Research | 📢Brainstorm | 📋Tasks | 🔨Building | 📦Saved | 🚀Active). Priority field → interactive 5-star rating (click to set 1-5). Pure CSS/JS component swaps, no breaking changes. Added 80 lines CSS (pills + stars), 100+ lines JS (click/hover handlers, data normalization). Backward compatible: legacy goals priority strings (high/medium/low) auto-convert to numeric 1/3/5, missing stage inferred from status. Dark theme matching dashboard (purple gradient on selected pill, gold stars). Built with Codex CLI in 5 minutes.",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/editor-ui-polish/",
+      "/home/adam/clawd/dashboard-project/goals.html",
+      "/home/adam/clawd/dashboard-project/inbox.html"
     ]
   }
 ]

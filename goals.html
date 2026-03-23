@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Goals | Quinn & Adam</title>
     <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="linked-items.css">
     <style>
         .goals-container {
             display: flex;
@@ -686,6 +687,87 @@
             border-color: var(--accent-purple);
         }
 
+        .stage-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .stage-pill {
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            border-radius: 999px;
+            padding: 0.6rem 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .stage-pill:hover {
+            border-color: rgba(168, 85, 247, 0.45);
+            background: rgba(168, 85, 247, 0.12);
+            color: var(--text-primary);
+        }
+
+        .stage-pill.selected {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.28), rgba(99, 102, 241, 0.22));
+            border-color: rgba(168, 85, 247, 0.8);
+            color: #f5f3ff;
+            font-weight: 700;
+            box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.18), 0 10px 24px rgba(76, 29, 149, 0.22);
+        }
+
+        .star-rating {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .star {
+            border: none;
+            background: transparent;
+            padding: 0.1rem;
+            font-size: 1.6rem;
+            line-height: 1;
+            cursor: pointer;
+            color: rgba(148, 163, 184, 0.5);
+            transition: transform 0.15s ease, color 0.15s ease, filter 0.15s ease;
+        }
+
+        .star:hover {
+            transform: scale(1.08);
+        }
+
+        .star.filled {
+            color: #f5c451;
+            filter: drop-shadow(0 0 8px rgba(245, 196, 81, 0.18));
+        }
+
+        .star-rating.is-hovering .star {
+            color: rgba(148, 163, 184, 0.38);
+        }
+
+        .star-rating.is-hovering .star.preview,
+        .star-rating .star.filled {
+            color: #f5c451;
+        }
+
+        .form-hidden-input {
+            display: none;
+        }
+
+        .priority-stars {
+            color: #f5c451;
+            letter-spacing: 0.08em;
+        }
+
+        .stage-badge {
+            background: rgba(168, 85, 247, 0.14);
+            color: #c4b5fd;
+        }
+
         .modal-actions {
             display: flex;
             gap: 0.75rem;
@@ -828,12 +910,28 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Stage</label>
+                    <div class="stage-selector" id="goal-stage-selector">
+                        <button type="button" class="stage-pill" data-value="idea">💡 Idea</button>
+                        <button type="button" class="stage-pill" data-value="research">🔬 Research</button>
+                        <button type="button" class="stage-pill" data-value="brainstorm">📢 Brainstorm</button>
+                        <button type="button" class="stage-pill" data-value="tasks">📋 Tasks</button>
+                        <button type="button" class="stage-pill" data-value="building">🔨 Building</button>
+                        <button type="button" class="stage-pill" data-value="saved">📦 Saved</button>
+                        <button type="button" class="stage-pill" data-value="active">🚀 Active</button>
+                    </div>
+                    <input type="hidden" id="form-stage" class="form-hidden-input" value="idea">
+                </div>
+                <div class="form-group">
                     <label>Priority</label>
-                    <select id="form-priority">
-                        <option value="high">High</option>
-                        <option value="medium">Medium</option>
-                        <option value="low">Low</option>
-                    </select>
+                    <div class="star-rating" id="goal-priority-rating" aria-label="Priority rating">
+                        <button type="button" class="star" data-value="1" aria-label="1 star">★</button>
+                        <button type="button" class="star" data-value="2" aria-label="2 stars">★</button>
+                        <button type="button" class="star" data-value="3" aria-label="3 stars">★</button>
+                        <button type="button" class="star" data-value="4" aria-label="4 stars">★</button>
+                        <button type="button" class="star" data-value="5" aria-label="5 stars">★</button>
+                    </div>
+                    <input type="hidden" id="form-priority" class="form-hidden-input" value="3">
                 </div>
                 <div class="form-group">
                     <label>Notes</label>
@@ -854,16 +952,137 @@
         let currentFilter = 'all';
         let currentView = localStorage.getItem('goalsView') || 'list';
         let draggedCard = null;
+        const GOAL_STAGE_OPTIONS = [
+            { value: 'idea', label: 'Idea', emoji: '💡' },
+            { value: 'research', label: 'Research', emoji: '🔬' },
+            { value: 'brainstorm', label: 'Brainstorm', emoji: '📢' },
+            { value: 'tasks', label: 'Tasks', emoji: '📋' },
+            { value: 'building', label: 'Building', emoji: '🔨' },
+            { value: 'saved', label: 'Saved', emoji: '📦' },
+            { value: 'active', label: 'Active', emoji: '🚀' }
+        ];
+
+        function normalizeGoalId(goalId) {
+            return window.LinkedItems.ensureTypedId(decodeURIComponent(goalId || ''), 'goal');
+        }
+
+        function goalHashToId(hash) {
+            if (!hash) return '';
+            const raw = decodeURIComponent(hash.replace(/^#/, ''));
+            return raw.startsWith('goal:') ? raw : `goal:${raw}`;
+        }
+
+        function setGoalHash(goalId) {
+            history.pushState(null, '', `#${window.LinkedItems.stripType(goalId)}`);
+        }
+
+        function ensureGoalShape(goal) {
+            goal.id = normalizeGoalId(goal.id);
+            goal.linkedItems = window.LinkedItems.normalizeLinkedItems(goal.linkedItems);
+            goal.stage = normalizeGoalStage(goal.stage || statusToStage(goal.status));
+            goal.priority = normalizeGoalPriority(goal.priority);
+            return goal;
+        }
+
+        function statusToStage(status) {
+            const map = {
+                planned: 'tasks',
+                active: 'active',
+                paused: 'building',
+                completed: 'saved'
+            };
+            return map[status] || 'idea';
+        }
+
+        function normalizeGoalStage(value) {
+            const normalized = String(value || '').toLowerCase();
+            return GOAL_STAGE_OPTIONS.some(stage => stage.value === normalized) ? normalized : 'idea';
+        }
+
+        function normalizeGoalPriority(value) {
+            const legacyMap = { high: 1, medium: 3, low: 5 };
+            const numeric = legacyMap[String(value || '').toLowerCase()] || Number(value);
+            return Math.min(5, Math.max(1, Number.isFinite(numeric) ? numeric : 3));
+        }
+
+        function goalStageMeta(value) {
+            return GOAL_STAGE_OPTIONS.find(stage => stage.value === normalizeGoalStage(value)) || GOAL_STAGE_OPTIONS[0];
+        }
+
+        function renderPriorityStars(priority) {
+            const count = normalizeGoalPriority(priority);
+            return `<span class="priority-stars" aria-label="Priority ${count}">${'★'.repeat(count)}${'☆'.repeat(5 - count)}</span>`;
+        }
+
+        function setGoalStageValue(value) {
+            const stage = normalizeGoalStage(value);
+            const input = document.getElementById('form-stage');
+            if (input) input.value = stage;
+            document.querySelectorAll('#goal-stage-selector .stage-pill').forEach(pill => {
+                const selected = pill.dataset.value === stage;
+                pill.classList.toggle('selected', selected);
+                pill.setAttribute('aria-pressed', String(selected));
+            });
+        }
+
+        function setGoalPriorityValue(value, previewValue = null) {
+            const priority = normalizeGoalPriority(value);
+            const activeValue = previewValue == null ? null : normalizeGoalPriority(previewValue);
+            const rating = document.getElementById('goal-priority-rating');
+            const input = document.getElementById('form-priority');
+
+            if (input) input.value = String(priority);
+            if (rating) rating.classList.toggle('is-hovering', activeValue !== null);
+
+            document.querySelectorAll('#goal-priority-rating .star').forEach(star => {
+                const starValue = Number(star.dataset.value);
+                const filled = activeValue !== null ? starValue <= activeValue : starValue <= priority;
+                star.classList.toggle('filled', filled);
+                star.classList.toggle('preview', activeValue !== null && starValue <= activeValue);
+                star.setAttribute('aria-pressed', String(starValue === priority));
+            });
+        }
+
+        function initGoalFormControls() {
+            document.querySelectorAll('#goal-stage-selector .stage-pill').forEach(pill => {
+                pill.addEventListener('click', () => setGoalStageValue(pill.dataset.value));
+            });
+
+            const rating = document.getElementById('goal-priority-rating');
+            rating.querySelectorAll('.star').forEach(star => {
+                star.addEventListener('mouseenter', () => {
+                    setGoalPriorityValue(document.getElementById('form-priority').value, star.dataset.value);
+                });
+                star.addEventListener('click', () => setGoalPriorityValue(star.dataset.value));
+            });
+            rating.addEventListener('mouseleave', () => {
+                setGoalPriorityValue(document.getElementById('form-priority').value);
+            });
+
+            setGoalStageValue('idea');
+            setGoalPriorityValue(3);
+        }
+
+        function normalizeGoalsData(payload) {
+            if (!payload || !Array.isArray(payload.goals)) return payload;
+            payload.goals = payload.goals.map(ensureGoalShape);
+            return payload;
+        }
+
+        function getGoal(goalId) {
+            const normalized = normalizeGoalId(goalId);
+            return goalsData.goals.find(goal => goal.id === normalized);
+        }
 
         async function loadGoals() {
             try {
                 const response = await fetch('data/goals.json');
-                goalsData = await response.json();
+                goalsData = normalizeGoalsData(await response.json());
+                window.LinkedItems.invalidateCache();
                 renderGoals();
-                
-                // Check for hash
+
                 const hash = window.location.hash.slice(1);
-                if (hash) openGoal(hash);
+                if (hash) openGoal(goalHashToId(hash));
             } catch (e) {
                 console.error('Failed to load goals:', e);
             }
@@ -925,6 +1144,7 @@
         function renderGoalCard(goal) {
             const cat = goalsData.categories[goal.category] || {};
             const status = goalsData.statuses[goal.status] || {};
+            const stage = goalStageMeta(goal.stage);
             const isCompleted = goal.status === 'completed';
             
             // Calculate progress
@@ -945,7 +1165,8 @@
                     <div class="goal-meta">
                         <span class="goal-tag" style="background: ${cat.color}22; color: ${cat.color};">${cat.emoji || ''} ${cat.label || goal.category}</span>
                         <span class="goal-tag" style="background: ${status.color}22; color: ${status.color};">${status.emoji || ''} ${status.label || goal.status}</span>
-                        ${goal.priority === 'high' ? '<span class="goal-tag" style="background: #ef444422; color: #ef4444;">⚡ High</span>' : ''}
+                        <span class="goal-tag stage-badge">${stage.emoji} ${stage.label}</span>
+                        <span class="goal-tag">${renderPriorityStars(goal.priority)}</span>
                     </div>
                     ${total > 0 ? `
                         <div class="goal-progress">
@@ -959,16 +1180,19 @@
             `;
         }
 
-        function openGoal(goalId) {
-            const goal = goalsData.goals.find(g => g.id === goalId);
+        async function openGoal(goalId) {
+            const goal = getGoal(goalId);
             if (!goal) return;
-            
-            history.pushState(null, '', '#' + goalId);
-            
+
+            setGoalHash(goal.id);
+
             const cat = goalsData.categories[goal.category] || {};
             const status = goalsData.statuses[goal.status] || {};
+            const stage = goalStageMeta(goal.stage);
             const isCompleted = goal.status === 'completed';
-            
+            const linked = await window.LinkedItems.loadAllLinkableItems();
+            const linkedMeta = `${goal.linkedItems.length} linked item${goal.linkedItems.length === 1 ? '' : 's'}`;
+
             const detail = document.getElementById('goal-detail');
             detail.innerHTML = `
                 <div class="detail-header">
@@ -999,8 +1223,12 @@
                         <div class="meta-value">${status.emoji || ''} ${status.label || goal.status}</div>
                     </div>
                     <div class="meta-item">
+                        <div class="meta-label">Stage</div>
+                        <div class="meta-value">${stage.emoji} ${stage.label}</div>
+                    </div>
+                    <div class="meta-item">
                         <div class="meta-label">Priority</div>
-                        <div class="meta-value" style="text-transform: capitalize;">${goal.priority || 'Medium'}</div>
+                        <div class="meta-value">${renderPriorityStars(goal.priority)}</div>
                     </div>
                     <div class="meta-item">
                         <div class="meta-label">Created</div>
@@ -1032,11 +1260,36 @@
                         <p>${goal.notes}</p>
                     </div>
                 ` : ''}
+
+                <div class="detail-section linked-section">
+                    <div class="linked-section-header">
+                        <div>
+                            <div class="linked-section-title">Linked Items</div>
+                            <div class="linked-section-meta">${linkedMeta}</div>
+                        </div>
+                        <div class="linked-section-actions">
+                            <button type="button" class="link-add-btn" onclick="openGoalLinkPicker('${goal.id}')">Link to...</button>
+                        </div>
+                    </div>
+                    <div id="goal-linked-items">${window.LinkedItems.renderLinkedItems(goal.linkedItems, linked.byId, { removable: true, emptyText: 'No linked items on this goal yet.' })}</div>
+                    <div id="goal-reverse-links">${window.LinkedItems.renderReverseLinks(goal.id, linked.items)}</div>
+                </div>
             `;
-            
+
+            bindGoalLinkActions(goal.id);
             document.getElementById('main-content').classList.add('viewing-detail');
             detail.classList.add('active');
             window.scrollTo(0, 0);
+        }
+
+        function bindGoalLinkActions(goalId) {
+            const container = document.getElementById('goal-detail');
+            container.querySelectorAll('[data-remove-id]').forEach(button => {
+                button.addEventListener('click', event => {
+                    event.stopPropagation();
+                    removeGoalLink(goalId, button.dataset.removeId);
+                });
+            });
         }
 
         function closeGoal() {
@@ -1046,7 +1299,7 @@
         }
 
         function toggleGoalComplete(goalId) {
-            const goal = goalsData.goals.find(g => g.id === goalId);
+            const goal = getGoal(goalId);
             if (!goal) return;
             
             goal.status = goal.status === 'completed' ? 'active' : 'completed';
@@ -1063,7 +1316,7 @@
         }
 
         function toggleSubtask(goalId, subtaskIdx) {
-            const goal = goalsData.goals.find(g => g.id === goalId);
+            const goal = getGoal(goalId);
             if (!goal || !goal.subtasks[subtaskIdx]) return;
             
             goal.subtasks[subtaskIdx].done = !goal.subtasks[subtaskIdx].done;
@@ -1079,7 +1332,7 @@
             const text = input.value.trim();
             if (!text) return;
             
-            const goal = goalsData.goals.find(g => g.id === goalId);
+            const goal = getGoal(goalId);
             if (!goal) return;
             
             goal.subtasks = goal.subtasks || [];
@@ -1097,13 +1350,14 @@
             document.getElementById('form-title').value = '';
             document.getElementById('form-description').value = '';
             document.getElementById('form-category').value = 'project';
-            document.getElementById('form-priority').value = 'medium';
+            setGoalStageValue('idea');
+            setGoalPriorityValue(3);
             document.getElementById('form-notes').value = '';
             document.getElementById('modal-overlay').classList.add('active');
         }
 
         function openEditModal(goalId) {
-            const goal = goalsData.goals.find(g => g.id === goalId);
+            const goal = getGoal(goalId);
             if (!goal) return;
             
             document.getElementById('modal-title').textContent = 'Edit Goal';
@@ -1111,7 +1365,8 @@
             document.getElementById('form-title').value = goal.title;
             document.getElementById('form-description').value = goal.description || '';
             document.getElementById('form-category').value = goal.category || 'project';
-            document.getElementById('form-priority').value = goal.priority || 'medium';
+            setGoalStageValue(goal.stage || statusToStage(goal.status));
+            setGoalPriorityValue(goal.priority || 3);
             document.getElementById('form-notes').value = goal.notes || '';
             document.getElementById('modal-overlay').classList.add('active');
         }
@@ -1127,31 +1382,35 @@
             const title = document.getElementById('form-title').value;
             const description = document.getElementById('form-description').value;
             const category = document.getElementById('form-category').value;
-            const priority = document.getElementById('form-priority').value;
+            const stage = normalizeGoalStage(document.getElementById('form-stage').value);
+            const priority = normalizeGoalPriority(document.getElementById('form-priority').value);
             const notes = document.getElementById('form-notes').value;
             
             if (id) {
                 // Edit existing
-                const goal = goalsData.goals.find(g => g.id === id);
+                const goal = getGoal(id);
                 if (goal) {
                     goal.title = title;
                     goal.description = description;
                     goal.category = category;
+                    goal.stage = stage;
                     goal.priority = priority;
                     goal.notes = notes;
                     goal.updated = new Date().toISOString().slice(0, 10);
                 }
             } else {
                 // Add new
-                const newId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30);
+                const newId = `goal:${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 30) || Date.now()}`;
                 goalsData.goals.push({
                     id: newId,
                     title,
                     description,
                     category,
+                    stage,
                     priority,
                     status: 'planned',
                     subtasks: [],
+                    linkedItems: [],
                     notes,
                     created: new Date().toISOString().slice(0, 10),
                     updated: new Date().toISOString().slice(0, 10)
@@ -1167,10 +1426,43 @@
             }
         });
 
+        async function openGoalLinkPicker(goalId) {
+            const goal = getGoal(goalId);
+            if (!goal) return;
+            await window.LinkedItems.openPicker({
+                currentId: goal.id,
+                currentType: 'goal',
+                selectedIds: goal.linkedItems,
+                onPick: item => addGoalLink(goal.id, item.id)
+            });
+        }
+
+        function addGoalLink(goalId, linkedId) {
+            const goal = getGoal(goalId);
+            const normalizedId = window.LinkedItems.ensureTypedId(linkedId);
+            if (!goal || !normalizedId || goal.linkedItems.includes(normalizedId)) return;
+            goal.linkedItems.push(normalizedId);
+            goal.updated = new Date().toISOString().slice(0, 10);
+            saveGoals();
+            openGoal(goal.id);
+            renderGoals();
+        }
+
+        function removeGoalLink(goalId, linkedId) {
+            const goal = getGoal(goalId);
+            if (!goal) return;
+            goal.linkedItems = goal.linkedItems.filter(id => id !== linkedId);
+            goal.updated = new Date().toISOString().slice(0, 10);
+            saveGoals();
+            openGoal(goal.id);
+            renderGoals();
+        }
+
         function deleteGoal(goalId) {
             if (!confirm('Delete this goal?')) return;
-            
-            goalsData.goals = goalsData.goals.filter(g => g.id !== goalId);
+
+            const normalizedId = normalizeGoalId(goalId);
+            goalsData.goals = goalsData.goals.filter(g => g.id !== normalizedId);
             saveGoals();
             closeGoal();
             renderGoals();
@@ -1179,6 +1471,7 @@
         function saveGoals() {
             // Save to localStorage as backup
             localStorage.setItem('goalsData', JSON.stringify(goalsData));
+            window.LinkedItems.invalidateCache();
             
             // Save to API (persists to file)
             fetch(`http://${window.location.hostname}:8081/api/goals`, {
@@ -1203,7 +1496,7 @@
                     const localData = JSON.parse(local);
                     // Use local data - it has user's edits
                     if (localData && localData.goals) {
-                        goalsData = localData;
+                        goalsData = normalizeGoalsData(localData);
                         console.log('Loaded', localData.goals.length, 'goals from localStorage');
                         return true;
                     }
@@ -1309,6 +1602,7 @@
 
         function renderKanbanCard(goal) {
             const cat = goalsData.categories[goal.category] || {};
+            const stage = goalStageMeta(goal.stage);
             const isCompleted = goal.status === 'completed';
             
             // Calculate progress
@@ -1325,7 +1619,8 @@
                     ${goal.description ? `<div class="kanban-card-desc">${goal.description}</div>` : ''}
                     <div class="kanban-card-meta">
                         <span class="kanban-tag" style="background: ${cat.color}22; color: ${cat.color};">${cat.emoji || ''} ${cat.label || goal.category}</span>
-                        ${goal.priority === 'high' ? '<span class="kanban-tag" style="background: #ef444422; color: #ef4444;">⚡ High</span>' : ''}
+                        <span class="kanban-tag stage-badge">${stage.emoji} ${stage.label}</span>
+                        <span class="kanban-tag">${renderPriorityStars(goal.priority)}</span>
                     </div>
                     ${total > 0 ? `
                         <div class="kanban-card-progress">
@@ -1431,7 +1726,7 @@
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.slice(1);
             if (hash) {
-                openGoal(hash);
+                openGoal(goalHashToId(hash));
             } else {
                 closeGoal();
             }
@@ -1439,6 +1734,8 @@
 
         // Initialize
         async function init() {
+            initGoalFormControls();
+
             // Try localStorage first (has user's edits)
             const hasLocal = loadLocalChanges();
             
@@ -1455,10 +1752,11 @@
             
             // Check for hash (deep link)
             const hash = window.location.hash.slice(1);
-            if (hash) openGoal(hash);
+            if (hash) openGoal(goalHashToId(hash));
         }
         init();
     </script>
+    <script src="link-picker.js"></script>
     <script src="shared.js"></script>
     <script type="module" src="js/sse-init-goals.js"></script>
 </body>
