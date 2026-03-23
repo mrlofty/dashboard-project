@@ -146,7 +146,8 @@
         .quick-add-trigger:hover,
         .modal-close:hover,
         .subtask-delete:hover,
-        .subtask-toggle:hover {
+        .subtask-title-btn:hover,
+        .subtask-expand:hover {
             border-color: rgba(168, 85, 247, 0.35);
             background: rgba(168, 85, 247, 0.1);
         }
@@ -773,19 +774,25 @@
         }
 
         .subtask-row {
-            display: grid;
-            grid-template-columns: auto minmax(0, 1fr) auto;
-            gap: 0.55rem;
-            align-items: center;
-            padding: 0.72rem 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 0.8rem 0.85rem;
             border: 1px solid var(--border);
             border-radius: 14px;
             background: rgba(255, 255, 255, 0.03);
         }
 
-        .subtask-row.done .subtask-toggle {
+        .subtask-row.done .subtask-title-btn {
             text-decoration: line-through;
             color: var(--text-dim);
+        }
+
+        .subtask-header {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto auto;
+            gap: 0.55rem;
+            align-items: center;
         }
 
         .subtask-check {
@@ -794,24 +801,103 @@
             cursor: pointer;
         }
 
-        .subtask-toggle {
+        .subtask-title-btn,
+        .subtask-expand,
+        .subtask-delete {
+            transition: 0.18s ease;
+        }
+
+        .subtask-title-btn {
             border: 1px solid transparent;
             background: transparent;
             color: var(--text-primary);
             text-align: left;
-            padding: 0.2rem 0.35rem;
+            padding: 0.3rem 0.45rem;
             border-radius: 10px;
+            cursor: pointer;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .subtask-expand {
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-secondary);
+            border-radius: 10px;
+            width: 32px;
+            height: 32px;
             cursor: pointer;
         }
 
         .subtask-delete {
-            border: 1px solid transparent;
+            border: 1px solid rgba(239, 68, 68, 0.24);
             background: transparent;
-            color: var(--text-dim);
+            color: #fca5a5;
             border-radius: 10px;
             width: 30px;
             height: 30px;
             cursor: pointer;
+        }
+
+        .subtask-detail {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(180px, 0.42fr) minmax(160px, 0.34fr);
+            gap: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .subtask-detail-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            min-width: 0;
+        }
+
+        .subtask-detail-field.wide {
+            grid-column: 1 / -1;
+        }
+
+        .subtask-detail-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-dim);
+        }
+
+        .subtask-detail-input,
+        .subtask-detail-textarea,
+        .subtask-detail-select,
+        .subtask-detail-date {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 12px;
+            outline: none;
+            transition: 0.18s ease;
+        }
+
+        .subtask-detail-input,
+        .subtask-detail-select,
+        .subtask-detail-date {
+            padding: 0.65rem 0.75rem;
+        }
+
+        .subtask-detail-textarea {
+            min-height: 92px;
+            padding: 0.75rem;
+            resize: vertical;
+        }
+
+        .subtask-detail-input:focus,
+        .subtask-detail-textarea:focus,
+        .subtask-detail-select:focus,
+        .subtask-detail-date:focus {
+            border-color: rgba(168, 85, 247, 0.65);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.14);
         }
 
         .subtask-add {
@@ -886,6 +972,14 @@
             .modal-footer {
                 padding-left: 0.9rem;
                 padding-right: 0.9rem;
+            }
+
+            .subtask-detail {
+                grid-template-columns: 1fr;
+            }
+
+            .subtask-header {
+                grid-template-columns: auto minmax(0, 1fr) auto auto;
             }
         }
     </style>
@@ -1104,7 +1198,8 @@
             activeCardId: null,
             editorMode: 'split',
             saveTimer: null,
-            dragCardId: null
+            dragCardId: null,
+            expandedSubtasks: new Set()
         };
 
         const els = {};
@@ -1276,7 +1371,10 @@
             return {
                 id: subtask.id || uid('subtask-' + index),
                 text: subtask.text || '',
-                done: Boolean(subtask.done)
+                done: Boolean(subtask.done),
+                body: subtask.body || '',
+                assignee: subtask.assignee || '',
+                dueDate: subtask.dueDate || ''
             };
         }
 
@@ -1722,12 +1820,43 @@
                 return;
             }
 
+            const assigneeOptions = (selectedValue) => {
+                const names = assigneeNames().filter((name) => name !== 'Unassigned');
+                return ['<option value="">Unassigned</option>']
+                    .concat(names.map((name) => '<option value="' + escapeHtml(name) + '"' + (selectedValue === name ? ' selected' : '') + '>' + escapeHtml(name) + '</option>'))
+                    .join('');
+            };
+
             els.subtaskList.innerHTML = item.subtasks.map((subtask) => {
+                const expanded = state.expandedSubtasks.has(subtask.id);
                 return '' +
                     '<div class="subtask-row' + (subtask.done ? ' done' : '') + '" data-subtask-id="' + subtask.id + '">' +
-                        '<input class="subtask-check" type="checkbox"' + (subtask.done ? ' checked' : '') + '>' +
-                        '<button class="subtask-toggle" type="button">' + escapeHtml(subtask.text || 'Untitled subtask') + '</button>' +
-                        '<button class="subtask-delete" type="button" aria-label="Delete subtask">×</button>' +
+                        '<div class="subtask-header">' +
+                            '<input class="subtask-check" type="checkbox"' + (subtask.done ? ' checked' : '') + '>' +
+                            '<button class="subtask-title-btn" type="button" aria-expanded="' + String(expanded) + '">' + escapeHtml(subtask.text || 'Untitled subtask') + '</button>' +
+                            '<button class="subtask-expand" type="button" aria-label="' + (expanded ? 'Collapse subtask details' : 'Expand subtask details') + '">' + (expanded ? '⌃' : '⌄') + '</button>' +
+                            '<button class="subtask-delete" type="button" aria-label="Delete subtask">×</button>' +
+                        '</div>' +
+                        (expanded
+                            ? '<div class="subtask-detail">' +
+                                '<div class="subtask-detail-field wide">' +
+                                    '<label class="subtask-detail-label">Title</label>' +
+                                    '<input class="subtask-detail-input" type="text" data-subtask-field="text" value="' + escapeHtml(subtask.text || '') + '" placeholder="Subtask title">' +
+                                '</div>' +
+                                '<div class="subtask-detail-field wide">' +
+                                    '<label class="subtask-detail-label">Description</label>' +
+                                    '<textarea class="subtask-detail-textarea" data-subtask-field="body" placeholder="Add description or notes...">' + escapeHtml(subtask.body || '') + '</textarea>' +
+                                '</div>' +
+                                '<div class="subtask-detail-field">' +
+                                    '<label class="subtask-detail-label">Assignee</label>' +
+                                    '<select class="subtask-detail-select" data-subtask-field="assignee">' + assigneeOptions(subtask.assignee || '') + '</select>' +
+                                '</div>' +
+                                '<div class="subtask-detail-field">' +
+                                    '<label class="subtask-detail-label">Due Date</label>' +
+                                    '<input class="subtask-detail-date" type="date" data-subtask-field="dueDate" value="' + escapeHtml(subtask.dueDate || '') + '">' +
+                                '</div>' +
+                            '</div>'
+                            : '') +
                     '</div>';
             }).join('');
 
@@ -1744,26 +1873,42 @@
                     queueSave();
                 });
 
-                row.querySelector('.subtask-toggle').addEventListener('click', () => {
+                const toggleExpanded = () => {
+                    if (state.expandedSubtasks.has(subtaskId)) {
+                        state.expandedSubtasks.delete(subtaskId);
+                    } else {
+                        state.expandedSubtasks.add(subtaskId);
+                    }
+                    renderSubtasks();
+                };
+
+                row.querySelector('.subtask-title-btn').addEventListener('click', toggleExpanded);
+                row.querySelector('.subtask-expand').addEventListener('click', toggleExpanded);
+
+                row.querySelector('.subtask-delete').addEventListener('click', () => {
                     const card = activeCard();
-                    const subtask = card.subtasks.find((entry) => entry.id === subtaskId);
-                    if (!subtask) return;
-                    const nextText = window.prompt('Edit subtask', subtask.text || '');
-                    if (nextText === null) return;
-                    subtask.text = nextText.trim();
+                    card.subtasks = card.subtasks.filter((entry) => entry.id !== subtaskId);
+                    state.expandedSubtasks.delete(subtaskId);
                     touchCard(card);
                     renderSubtasks();
                     renderBoard();
                     queueSave();
                 });
 
-                row.querySelector('.subtask-delete').addEventListener('click', () => {
-                    const card = activeCard();
-                    card.subtasks = card.subtasks.filter((entry) => entry.id !== subtaskId);
-                    touchCard(card);
-                    renderSubtasks();
-                    renderBoard();
-                    queueSave();
+                row.querySelectorAll('[data-subtask-field]').forEach((field) => {
+                    const fieldName = field.dataset.subtaskField;
+                    const eventName = field.tagName === 'TEXTAREA' || field.type === 'text' ? 'blur' : 'change';
+                    field.addEventListener(eventName, (event) => {
+                        const card = activeCard();
+                        if (!card) return;
+                        const subtask = card.subtasks.find((entry) => entry.id === subtaskId);
+                        if (!subtask) return;
+                        subtask[fieldName] = event.target.value;
+                        touchCard(card);
+                        renderSubtasks();
+                        renderBoard();
+                        queueSave();
+                    });
                 });
             });
         }
@@ -1884,6 +2029,7 @@
 
         function closeModal() {
             state.activeCardId = null;
+            state.expandedSubtasks.clear();
             els.modalOverlay.classList.remove('active');
         }
 
@@ -1922,10 +2068,14 @@
             item.subtasks.push({
                 id: uid('subtask'),
                 text,
-                done: false
+                done: false,
+                body: '',
+                assignee: '',
+                dueDate: ''
             });
 
             els.newSubtaskText.value = '';
+            state.expandedSubtasks.add(item.subtasks[item.subtasks.length - 1].id);
             touchCard(item);
             renderSubtasks();
             renderBoard();
