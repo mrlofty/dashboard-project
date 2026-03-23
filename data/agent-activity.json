@@ -339,5 +339,19 @@
       "/home/adam/clawd/dashboard-project/goals.html",
       "/home/adam/clawd/dashboard-project/inbox.html"
     ]
+  },
+  {
+    "id": "evt_board_consolidation",
+    "agent": "Forge",
+    "category": "BUILD",
+    "headline": "Board Consolidation — Unified Project Board",
+    "timestamp": "2026-03-24T00:02:00+11:00",
+    "importance": 10,
+    "details": "Consolidated goals.html and board.html into ONE unified project board. Ported ALL new features from goals.html → board.html: stage pills (💡Idea→🚀Active, 7 stages), star rating priority (5 stars, gold filled, hover preview), linked items system (link picker, clickable chips, reverse links with type:id schema). Switched data source from board.json → goals.json. Created migration script that merged 6 board items into goals.json (23 total goals now). Preserved board.html strengths: kanban drag-drop, embedded MD editor, 6-column lifecycle, agent assignment, subtasks. Added 120 lines CSS (pills + stars + linked-items integration), 200 lines JS (stage/star handlers, link picker integration, reverse link computation). Migration created backups of both files before merge. goals.html now redundant (all features in board.html). Built with Codex CLI in 12 minutes. The big consolidation — one board to rule them all.",
+    "sources": [
+      "/home/adam/clawd/agents/builder/output/board-consolidation/",
+      "/home/adam/clawd/dashboard-project/board.html",
+      "/home/adam/clawd/dashboard-project/data/goals.json"
+    ]
   }
 ]

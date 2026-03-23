@@ -95,7 +95,7 @@
     {
       "id": "goal:voice-calling",
       "title": "Voice calling capability",
-      "status": "active",
+      "status": "paused",
       "stage": "active",
       "priority": 1,
       "category": "capability",
@@ -126,10 +126,10 @@
       "assignee": "Unassigned",
       "linkedItems": [],
       "created": "2026-02-10",
-      "updated": "2026-02-19",
+      "updated": "2026-03-23",
       "notes": "Security model: outbound open, inbound Adam-only to prevent voice prompt injection",
       "tags": [],
-      "order": 2,
+      "order": 3,
       "queuedAgent": "",
       "queuedAt": ""
     },
@@ -1051,6 +1051,11 @@
         {
           "id": "s15",
           "text": "Polish mobile scroll behavior",
+          "done": false
+        },
+        {
+          "id": "subtask-tkowmqgp",
+          "text": "test",
           "done": false
         }
       ],

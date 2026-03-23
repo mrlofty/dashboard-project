@@ -557,6 +557,60 @@
         "https://x.com/heynavtoor/status/2034817556733931564"
       ],
       "linkedItems": []
+    },
+    {
+      "id": "topic:pwa-dashboard-2026",
+      "title": "PWA Architecture for Dashboard (2026)",
+      "summary": "Progressive Web Apps fully matured in 2026 - universal browser support (Chrome/Edge/Firefox/Safari, iOS 16.4+ Web Push). Three pillars: Service Workers (background JS proxy), Web App Manifest (installation config), Caching Strategies (Cache First/Network First/Stale While Revalidate). App Shell Model = instant load architecture (static UI shell cached, dynamic content fetched). Background Sync queues offline writes. Push notifications for agent status. Real-world gains: 2-3× faster repeat loads, 60% engagement uplift (Pinterest case study). Implementation roadmap: Phase 1 offline support (weekend), Phase 2 background sync (week 2), Phase 3 push notifications (month 1). Perfect fit for Quinn+Adam dashboard.",
+      "tags": [
+        "technical",
+        "web-dev",
+        "infrastructure"
+      ],
+      "dateAdded": "2026-03-24T04:00:00+11:00",
+      "lastUpdated": "2026-03-24T04:00:00+11:00",
+      "source": "memory/2026/03/2026-03-23.md",
+      "links": [
+        "https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Best_practices",
+        "https://web.dev/articles/pwa-checklist",
+        "https://developers.google.com/web/tools/workbox"
+      ],
+      "linkedItems": []
+    },
+    {
+      "id": "topic:autonomous-research-agents-2026",
+      "title": "Autonomous Research Agent Architecture (2026)",
+      "summary": "4-stage deep research pipeline: Planning (decompose broad questions into subgoals) → Question Developing (generate targeted queries) → Web Exploration (parallel search execution) → Report Generation (evidence aggregation + synthesis). Key innovation: planner/executor split enables parallelization (3-5× speed gain). GPT Researcher architecture: Planner → parallel Crawler agents → Publisher. Cost: ~$0.40/run (o3-mini) vs $0.69 (Sonnet parallel). ROI: 46× (time savings worth $1300/mo for $28/mo added cost). Critical for Scout: separate planning from execution, evidence aggregation prevents hallucinations, memory is context engineering. Three multi-agent patterns: Hierarchical (manager/workers), Collaborative (peer debate), Pipeline (sequential handoffs). Implementation phases: Enhanced overnight research (weekend), Golden Key scanner (week 2), Deep research mode (month 1).",
+      "tags": [
+        "technical",
+        "research",
+        "multi-agent",
+        "future"
+      ],
+      "dateAdded": "2026-03-24T04:00:00+11:00",
+      "lastUpdated": "2026-03-24T04:00:00+11:00",
+      "source": "memory/2026/03/2026-03-24.md",
+      "links": [
+        "https://arxiv.org/html/2508.12752v1",
+        "https://github.com/assafelovic/gpt-researcher"
+      ],
+      "linkedItems": []
+    },
+    {
+      "id": "topic:chris-bledsoe-april-2026-prediction",
+      "title": "Chris Bledsoe's April 2026 Regulus Prophecy",
+      "summary": "UAP experiencer Chris Bledsoe claims NHI entity 'The Lady' predicted: April 2026, blue star Regulus will appear red on horizon in front of Sphinx (Egypt), marking 'shift into new knowledge' - possibly major archaeological discovery OR UAP disclosure. Astronomically verified alignment (star position confirmed real). ONE MONTH from prediction deadline. Rare falsifiable UAP claim with concrete deadline. Academic analysis by Lisa Puzo Strickland PhD. Lead story potential for AAD - testable, time-stamped, separates signal from noise.",
+      "tags": [
+        "disclosure",
+        "consciousness",
+        "active",
+        "rabbit-hole"
+      ],
+      "dateAdded": "2026-03-24T04:00:00+11:00",
+      "lastUpdated": "2026-03-24T04:00:00+11:00",
+      "source": "memory/2026/03/2026-03-24.md",
+      "links": [],
+      "linkedItems": []
     }
   ]
 }

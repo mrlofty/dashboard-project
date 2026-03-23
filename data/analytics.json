@@ -1,36 +1,45 @@
 {
-  "lastUpdated": "2026-03-23T06:00:04.948617",
+  "lastUpdated": "2026-03-24T06:00:04.711419",
   "sites": {
     "afteraliendisclosure.com": {
-      "today": {},
+      "today": {
+        "users": 0,
+        "pageViews": 1,
+        "sessions": 1
+      },
       "week": {
         "users": 11,
-        "pageViews": 119,
-        "sessions": 24
+        "pageViews": 36,
+        "sessions": 21
       },
       "topPages": [
         {
           "path": "/index.html",
-          "views": 49
-        },
-        {
-          "path": "/poll/",
-          "views": 16
-        },
-        {
-          "path": "/",
           "views": 12
         },
         {
-          "path": "/essays/disclosure-day.html",
-          "views": 10
+          "path": "/",
+          "views": 9
         },
         {
-          "path": "/essays/index.html",
-          "views": 8
+          "path": "/essays/aliens-gov.html",
+          "views": 6
+        },
+        {
+          "path": "/essays/disclosure-day.html",
+          "views": 3
+        },
+        {
+          "path": "/essays/the-non-human-archive.html",
+          "views": 3
         }
       ],
-      "countries": []
+      "countries": [
+        {
+          "country": "Australia",
+          "users": 0
+        }
+      ]
     },
     "quinn.adamdunstan.com": {
       "today": {},
@@ -50,29 +59,25 @@
     "immaculatevibes.art": {
       "today": {},
       "week": {
-        "users": 16,
-        "pageViews": 17,
-        "sessions": 17
+        "users": 15,
+        "pageViews": 15,
+        "sessions": 15
       },
       "topPages": [
         {
           "path": "/",
-          "views": 5
+          "views": 7
         },
         {
           "path": "/city-scapes",
-          "views": 4
-        },
-        {
-          "path": "/fantasy",
           "views": 3
         },
         {
-          "path": "/fantasy/lowfi",
-          "views": 2
+          "path": "/gentlemen",
+          "views": 3
         },
         {
-          "path": "/gentlemen",
+          "path": "/fantasy",
           "views": 2
         }
       ],
@@ -87,14 +92,14 @@
     "cheeselandslide.com": {
       "today": {},
       "week": {
-        "users": 4,
-        "pageViews": 3,
-        "sessions": 4
+        "users": 3,
+        "pageViews": 2,
+        "sessions": 3
       },
       "topPages": [
         {
           "path": "/",
-          "views": 3
+          "views": 2
         }
       ],
       "countries": []
@@ -108,7 +113,7 @@
     "adamdunstan.com": {
       "today": {},
       "week": {
-        "users": 11,
+        "users": 10,
         "pageViews": 14,
         "sessions": 15
       },
